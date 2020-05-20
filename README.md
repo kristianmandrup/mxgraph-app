@@ -1,4 +1,4 @@
-# Typescript monorepo for React project
+# MxGraph Diagram App
 
 ## What I want to achieve?
 
@@ -13,17 +13,25 @@
 
 ## Packages structure
 
-- [`d`](packages/d) - utility library
-- [`b`](packages/b) - React components library, which depends on `d`
-- [`c`](packages/c) - another React components library, which depends on `d`
+- [`actions`](packages/actions) - Action and Keyboard handlers
+- [`dialogs`](packages/dialogs) - Dialog components
+- [`editor`](packages/editor) - Diagram Editor
+- [`format`](packages/editor) - Formatting components
+- [`graph`](packages/graph) - Diagram Graph
+- [`menus`](packages/menus) - Editor Menus
+- [`mx`](packages/mx) - mxGraph API
+- [`resources`](packages/resources) - shared resources
+- [`sidebar`](packages/sidebar) - Editor Sidebar
+- [`toolbar`](packages/toolbar) - Editor Toolbar
 - [`stories`](packages/stories) - showcase of `b` and `c` package's compnents as well used for development (initial plan, can change later)
 
 ## Tools
 
 **⚠️⚠️⚠️ Info in this section is stale ⚠️⚠️⚠️**:
-  - **Problem 1** is resolved in PR [#2](https://github.com/stereobooster/typescript-monorepo/pull/2)
-  - **Problem 2** is resolved in PR [#5](https://github.com/stereobooster/typescript-monorepo/pull/5)
-  - **Problem 4** is resolved in PR [#4](https://github.com/stereobooster/typescript-monorepo/pull/4)
+
+- **Problem 1** is resolved in PR [#2](https://github.com/stereobooster/typescript-monorepo/pull/2)
+- **Problem 2** is resolved in PR [#5](https://github.com/stereobooster/typescript-monorepo/pull/5)
+- **Problem 4** is resolved in PR [#4](https://github.com/stereobooster/typescript-monorepo/pull/4)
 
 ### yarn
 

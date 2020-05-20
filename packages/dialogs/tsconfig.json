@@ -1,0 +1,16 @@
+{
+  "include": ["src"],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src"
+  },
+  "references": [
+    {
+      "path": "../mx"
+    },
+    {
+      "path": "../resources"
+    }
+  ]
+}
