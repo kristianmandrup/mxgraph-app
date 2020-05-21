@@ -1,4 +1,4 @@
-export * from "./Align";
+export * from "./AlignMenu";
 export * from "./AlignItem";
 export * from "./BottomAlign";
 export * from "./Center";

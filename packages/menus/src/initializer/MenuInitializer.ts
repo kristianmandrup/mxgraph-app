@@ -1,7 +1,9 @@
 import { MenuItems } from "../menus/MenuItems";
+import { Menus } from "../menus";
 
 export class MenuInitializer {
   editorUi: any;
+  menus: Menus;
   // customFonts: any[] = [];
   // customFontSizes: any[] = [];
   // put: any;
@@ -13,13 +15,14 @@ export class MenuInitializer {
   // menuStyler: any;
   menuItems: MenuItems;
 
-  constructor(editorUi: any, menuItems?: MenuItems) {
+  constructor(editorUi: any, menus: Menus, menuItems?: MenuItems) {
     this.editorUi = editorUi;
     this.menuItems = menuItems || this.createMenuItems();
+    this.menus = menus;
   }
 
   createMenuItems() {
-    return new MenuItems();
+    return new MenuItems(this.editorUi, this.menus.menus);
   }
 
   /**
