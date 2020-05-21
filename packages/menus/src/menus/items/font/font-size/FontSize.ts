@@ -1,12 +1,11 @@
-import { MenuAdder } from "../../../MenuAdder";
-import { Menu } from "../../../../Menu";
+import { Menu, MenuAdder } from "@mxgraph-app/menus";
 import { FontItem } from "./FontItem";
 import mx from "@mxgraph-app/mx";
 const { mxConstants, mxResources } = mx;
 
 export class FontSizeMenu extends MenuAdder {
-  constructor(editorUi, graph, opts: any) {
-    super(editorUi, graph, opts);
+  constructor(editorUi, opts: any) {
+    super(editorUi, opts);
   }
 
   add() {

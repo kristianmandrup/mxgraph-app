@@ -1,5 +1,4 @@
-import { MenuAdder } from "../MenuAdder";
-import { Menu } from "../../Menu";
+import { Menu, MenuAdder } from "@mxgraph-app/menus";
 import mx from "@mxgraph-app/mx";
 const { mxResources } = mx;
 

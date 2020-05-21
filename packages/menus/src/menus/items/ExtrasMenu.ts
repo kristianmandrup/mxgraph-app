@@ -1,11 +1,10 @@
-import { MenuAdder } from "../MenuAdder";
-import { Menu } from "../../Menu";
+import { Menu, MenuAdder } from "@mxgraph-app/menus";
 
-export class Extras extends MenuAdder {
+export class ExtrasMenu extends MenuAdder {
   add() {
     this.put(
       "extras",
-      new Menu((menu, parent) => {
+      new Menu((menu, _parent) => {
         this.addMenuItems(menu, [
           "copyConnect",
           "collapseExpand",

@@ -11,7 +11,9 @@ export class MenuItemAdder {
     this.menu = menu;
   }
 
-  addItem(item: any, submenu, fn, node) {}
+  addItem(item: any, submenu, fn, node) {
+    this.menu.addItem(item, submenu, fn, node);
+  }
 
   promptSpacing = (defaultValue, fn) => {
     var dlg: any = new FilenameDialog(
@@ -21,7 +23,7 @@ export class MenuItemAdder {
       (newValue) => {
         fn(parseFloat(newValue));
       },
-      mxResources.get("spacing"),
+      mxResources.get("spacing")
     );
     this.editorUi.showDialog(dlg.container, 300, 80, true, true);
     dlg.init();

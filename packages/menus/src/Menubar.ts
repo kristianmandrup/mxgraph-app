@@ -8,6 +8,7 @@ export class Menubar {
   editorUi: any;
   container: any;
   currentElt: any;
+  show: any;
 
   constructor(editorUi, container) {
     this.editorUi = editorUi;
@@ -44,7 +45,9 @@ export class Menubar {
    */
   addMenuHandler(elt, funct) {
     if (funct != null) {
-      var show = true;
+      this.show = true;
+
+      const { show } = this;
 
       var clickHandler = (evt) => {
         if ((show && elt.enabled == null) || elt.enabled) {
@@ -81,25 +84,25 @@ export class Menubar {
         }
       });
 
-      // Hides menu if already showing and prevents focus
-      mxEvent.addListener(
-        elt,
-        mxClient.IS_POINTER ? "pointerdown" : "mousedown",
-        (evt) => {
-          show = this.currentElt != elt;
-          evt.preventDefault();
-        },
-      );
+      this.setMouseDown(elt);
 
-      mxEvent.addListener(
-        elt,
-        "click",
-        (evt) => {
-          clickHandler(evt);
-          show = true;
-        },
-      );
+      mxEvent.addListener(elt, "click", (evt) => {
+        clickHandler(evt);
+        this.show = true;
+      });
     }
+  }
+
+  setMouseDown(elt) {
+    // Hides menu if already showing and prevents focus
+    mxEvent.addListener(
+      elt,
+      mxClient.IS_POINTER ? "pointerdown" : "mousedown",
+      (evt) => {
+        this.show = this.currentElt != elt;
+        evt.preventDefault();
+      }
+    );
   }
 
   /**

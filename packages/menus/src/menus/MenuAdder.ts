@@ -1,6 +1,6 @@
 import { Menu } from "../Menu";
 import { MenuPrompt, Menus } from "./manager";
-import { MenuStyler } from "./manager/MenuStyler";
+import { MenuStyler } from "./manager";
 
 export class MenuAdder {
   editorUi: any;
@@ -18,15 +18,32 @@ export class MenuAdder {
   customFonts: any;
   customFontSizes: any;
 
-  constructor(editorUi, graph, { menus, menuStyler }) {
+  constructor(editorUi, { graph, menus, menuStyler }: any = {}) {
     this.editorUi = editorUi;
-    this.graph = graph;
+    this.graph = graph || editorUi.editor.graph;
     this.menus = menus || this.createMenus();
-    this.menuStyler = menuStyler;
+    this.menuStyler = menuStyler || this.createMenuStyler();
+  }
+
+  createMenuStyler() {
+    return new MenuStyler(this.editorUi);
   }
 
   createMenus() {
     return new Menus(this.editorUi);
+  }
+
+  styleChange(menu, label, keys, values, sprite?, parent?, fn?, post?) {
+    this.menuStyler.styleChange(
+      menu,
+      label,
+      keys,
+      values,
+      sprite,
+      parent,
+      fn,
+      post
+    );
   }
 
   // from Menus
@@ -70,5 +87,5 @@ export class MenuAdder {
     this.extraItems(menu, parent);
   };
 
-  extraItems(menu, parent) {}
+  extraItems(_menu, _parent) {}
 }

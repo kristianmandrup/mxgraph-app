@@ -1,5 +1,4 @@
-import { MenuAdder } from "../MenuAdder";
-import { Menu } from "../../Menu";
+import { Menu, MenuAdder } from "@mxgraph-app/menus";
 
 export class ViewPanelsMenu extends MenuAdder {
   add() {

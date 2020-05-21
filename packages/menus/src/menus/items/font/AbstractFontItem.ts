@@ -5,6 +5,8 @@ export class AbstractFontItem {
 
   constructor(menuStyler, menu, graph) {
     this.menuStyler = menuStyler;
+    this.menu = menu;
+    this.graph = graph;
   }
 
   // from Menus
