@@ -5,12 +5,5 @@
     "outDir": "lib",
     "rootDir": "src"
   },
-  "references": [
-    {
-      "path": "../mx"
-    },
-    {
-      "path": "../resources"
-    }
-  ]
+  "references": [{ "path": "../mx" }, { "path": "../resources" }]
 }

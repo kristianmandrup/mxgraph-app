@@ -1,15 +1,17 @@
 # MxGraph Diagram App
 
-## What I want to achieve?
+Components for building a Diagram App based on [MxGraph](https://jgraph.github.io/mxgraph/) 4.1+
+
+## Project structure
 
 - [Monorepo](https://www.atlassian.com/git/tutorials/monorepos) project, to be able to comfortably to develop several packages, which can be used separately but as well together
 - Typescript
 - React
-- Testing library. I want to start with Jest, but as well we can choose something else
-- Storybook (or similar tool) for React components development and showcasing
+- [Jest](https://jestjs.io/) Testing library
+- [Storybook](https://storybook.js.org/) for React components development and showcasing
 - (nice to have, but optional) ESlint with [eslint-config-react-app](https://www.npmjs.com/package/eslint-config-react-app)
-- (nice to have, but optional) Rollup to bundle and minify
-- (nice to have, but optional) pre-commit hooks with prettier
+- [Rollup](https://rollupjs.org/guide/en/) to bundle and minify
+- pre-commit hooks with [prettier](https://prettier.io/)
 
 ## Packages structure
 
@@ -26,12 +28,6 @@
 - [`stories`](packages/stories) - showcase of `b` and `c` package's compnents as well used for development (initial plan, can change later)
 
 ## Tools
-
-**⚠️⚠️⚠️ Info in this section is stale ⚠️⚠️⚠️**:
-
-- **Problem 1** is resolved in PR [#2](https://github.com/stereobooster/typescript-monorepo/pull/2)
-- **Problem 2** is resolved in PR [#5](https://github.com/stereobooster/typescript-monorepo/pull/5)
-- **Problem 4** is resolved in PR [#4](https://github.com/stereobooster/typescript-monorepo/pull/4)
 
 ### yarn
 

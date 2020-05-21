@@ -3,8 +3,8 @@ import { addParameters, configure } from "@storybook/react";
 
 addParameters({
   options: {
-    name: "@stereobooster/typescript-monorepo",
-    url: "https://github.com/stereoboster/typescript-monorepo",
+    name: "@mxgraph-app/mxgraph-app",
+    url: "https://github.com/kristianmandrup/mxgraph-app",
     hierarchySeparator: "/",
     showAddonPanel: false,
   },
@@ -13,7 +13,7 @@ addParameters({
 // Automatically import all files ending in *.stories.tsx
 const req = require.context("../src", true, /.stories.tsx$/);
 function loadStories() {
-  req.keys().forEach(filename => req(filename));
+  req.keys().forEach((filename) => req(filename));
 }
 
 configure(loadStories, module);

@@ -1,6 +1,13 @@
 {
-  "exclude": ["node_modules", "dist", "lib", "__tests__", "**/*.test*", "**/*.spec*"],
-  "files":  [],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "lib",
+    "__tests__",
+    "**/*.test*",
+    "**/*.spec*"
+  ],
+  "files": [],
   "compilerOptions": {
     "skipLibCheck": false,
     "target": "esnext",
@@ -15,6 +22,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
+    "noImplicitAny": false,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
@@ -22,17 +30,24 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@stereobooster/*": ["packages/*/src"]
+      "@mxgraph-app/*": ["packages/*/src"]
     },
     // https://github.com/RyanCavanaugh/learn-a/#tsconfigsettingsjson
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
+    "sourceMap": true
   },
   "references": [
-    { "path": "packages/d" },
-    { "path": "packages/b" },
-    { "path": "packages/c" }
+    // { "path": "packages/actions" },
+    // { "path": "packages/dialogs" },
+    // { "path": "packages/editor" },
+    // { "path": "packages/format" },
+    // { "path": "packages/graph" },
+    // { "path": "packages/menu" },
+    { "path": "packages/mx" },
+    { "path": "packages/resources" }
+    // { "path": "packages/sidebar" },
+    // { "path": "packages/toolbar" }
   ]
 }
