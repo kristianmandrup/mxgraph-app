@@ -40,11 +40,11 @@
   },
   "references": [
     // { "path": "packages/actions" },
-    // { "path": "packages/dialogs" },
+    { "path": "packages/dialogs" },
     // { "path": "packages/editor" },
     // { "path": "packages/format" },
     // { "path": "packages/graph" },
-    // { "path": "packages/menu" },
+    { "path": "packages/menus" },
     { "path": "packages/mx" },
     { "path": "packages/resources" }
     // { "path": "packages/sidebar" },

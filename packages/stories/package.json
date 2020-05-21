@@ -1,8 +1,8 @@
 {
-  "name": "@stereobooster/stories",
+  "name": "@mxgraph-app/stories",
   "private": true,
   "version": "0.0.0",
-  "description": "Stories for typescript monorepo",
+  "description": "Stories for mxgraph-app",
   "license": "MIT",
   "scripts": {
     "start": "start-storybook -p 8080",
@@ -12,9 +12,8 @@
     "clean": "rimraf tsconfig.tsbuildinfo lib dist"
   },
   "dependencies": {
-    "@stereobooster/d": "*",
-    "@stereobooster/b": "*",
-    "@stereobooster/c": "*"
+    "@mxgraph-app/menus": "*",
+    "@mxgraph-app/dialogs": "*"
   },
   "peerDependencies": {
     "react": "^16.8.0",

@@ -1,7 +1,7 @@
 {
-  "name": "@stereobooster/d",
+  "name": "@mxgraph-app/resources",
   "version": "0.0.1",
-  "description": "d",
+  "description": "mxgraph app resources",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "repository": "",

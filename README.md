@@ -56,6 +56,10 @@ Create `lerna.json`:
 }
 ```
 
+#### Bootstrap project
+
+Run `npx lerna bootstrap` to install dependencies for all projects
+
 ### TypeScript
 
 We will use `typescript` to check types and compile TS down to desired JS files (ES5 or ES2015, CommonJS or ES modules).

@@ -1,7 +1,7 @@
 {
   "name": "@mxgraph-app/mx",
   "version": "0.0.1",
-  "description": "d",
+  "description": "mxgraph factory exports",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "repository": "",

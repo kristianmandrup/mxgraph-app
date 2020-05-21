@@ -1,4 +1,4 @@
-import mx from "mx";
+import mx from "@mxgraph-app/mx";
 import { Menubar } from "../../Menubar";
 const {
   mxMouseEvent,
@@ -20,7 +20,7 @@ const {
 export class Menus {
   editorUi: any;
   menus: any;
-  checkmarkImage: any;
+  checkmarkImage: any; // Editor.checkmarkImage
   customFonts: any[] = [];
   customFontSizes: any[] = [];
   documentMode: any;
@@ -70,8 +70,8 @@ export class Menus {
    * Adds the label menu items to the given menu and parent.
    */
   init() {
-    var graph = this.editorUi.editor.graph;
-    var isGraphEnabled = mxUtils.bind(graph, graph.isEnabled);
+    // var graph = this.editorUi.editor.graph;
+    // var isGraphEnabled = mxUtils.bind(graph, graph.isEnabled);
 
     this.customFonts = [];
     this.customFontSizes = [];
@@ -111,7 +111,7 @@ export class Menus {
           null,
           parent,
           null,
-          enabled,
+          enabled
         );
         this.addMenu(name, menu, submenu);
       }
@@ -133,40 +133,47 @@ export class Menus {
    * Adds a menu item to insert a table.
    */
   addInsertTableItem(menu, insertFn) {
-    insertFn = insertFn != null ? insertFn : (evt, rows, cols) => {
-      var graph = this.editorUi.editor.graph;
-      var td = graph.getParentByName(mxEvent.getSource(evt), "TD");
+    insertFn =
+      insertFn != null
+        ? insertFn
+        : (evt, rows, cols) => {
+            var graph = this.editorUi.editor.graph;
+            var td = graph.getParentByName(mxEvent.getSource(evt), "TD");
 
-      if (td != null && graph.cellEditor.textarea != null) {
-        var row2 = graph.getParentByName(td, "TR");
+            if (td != null && graph.cellEditor.textarea != null) {
+              // var row2 = graph.getParentByName(td, "TR");
 
-        // To find the new link, we create a list of all existing links first
-        // LATER: Refactor for reuse with code for finding inserted image below
-        var tmp: any = graph.cellEditor.textarea.getElementsByTagName("table");
-        var oldTables: any[] = [];
+              // To find the new link, we create a list of all existing links first
+              // LATER: Refactor for reuse with code for finding inserted image below
+              var tmp: any = graph.cellEditor.textarea.getElementsByTagName(
+                "table"
+              );
+              var oldTables: any[] = [];
 
-        for (var i = 0; i < tmp.length; i++) {
-          oldTables.push(tmp[i]);
-        }
+              for (var i = 0; i < tmp.length; i++) {
+                oldTables.push(tmp[i]);
+              }
 
-        // Finding the new table will work with insertHTML, but IE does not support that
-        graph.container.focus();
-        graph.pasteHtmlAtCaret(createTable(rows, cols));
+              // Finding the new table will work with insertHTML, but IE does not support that
+              graph.container.focus();
+              graph.pasteHtmlAtCaret(createTable(rows, cols));
 
-        // Moves cursor to first table cell
-        var newTables = graph.cellEditor.textarea.getElementsByTagName("table");
+              // Moves cursor to first table cell
+              var newTables = graph.cellEditor.textarea.getElementsByTagName(
+                "table"
+              );
 
-        if (newTables.length == oldTables.length + 1) {
-          // Inverse order in favor of appended tables
-          for (var i = newTables.length - 1; i >= 0; i--) {
-            if (i == 0 || newTables[i] != oldTables[i - 1]) {
-              graph.selectNode(newTables[i].rows[0].cells[0]);
-              break;
+              if (newTables.length == oldTables.length + 1) {
+                // Inverse order in favor of appended tables
+                for (var i = newTables.length - 1; i >= 0; i--) {
+                  if (i == 0 || newTables[i] != oldTables[i - 1]) {
+                    graph.selectNode(newTables[i].rows[0].cells[0]);
+                    break;
+                  }
+                }
+              }
             }
-          }
-        }
-      }
-    };
+          };
 
     // KNOWN: Does not work in IE8 standards and quirks
     var graph = this.editorUi.editor.graph;
@@ -192,19 +199,18 @@ export class Menus {
     }
 
     // Show table size dialog
-    var elt2 = menu.addItem(
-      "",
-      null,
-      (evt) => {
-        if (td != null && row2 != null) {
-          insertFn(evt, row2.sectionRowIndex + 1, td.cellIndex + 1);
-        }
-      },
-    );
+    var elt2 = menu.addItem("", null, (evt) => {
+      if (td != null && row2 != null) {
+        insertFn(evt, row2.sectionRowIndex + 1, td.cellIndex + 1);
+      }
+    });
 
     // Quirks mode does not add cell padding if cell is empty, needs good old spacer solution
-    var quirksCellHtml = '<img src="' + mxClient.imageBasePath +
-      "/transparent.gif" + '" width="16" height="16"/>';
+    var quirksCellHtml =
+      '<img src="' +
+      mxClient.imageBasePath +
+      "/transparent.gif" +
+      '" width="16" height="16"/>';
 
     function createPicker(rows, cols) {
       var table2 = document.createElement("table");
@@ -274,7 +280,7 @@ export class Menus {
         extendPicker(
           picker,
           Math.min(20, row2.sectionRowIndex + 2),
-          Math.min(20, td.cellIndex + 2),
+          Math.min(20, td.cellIndex + 2)
         );
         label.innerHTML = td.cellIndex + 1 + "x" + (row2.sectionRowIndex + 1);
 
@@ -344,15 +350,15 @@ export class Menus {
               "values",
               values,
               "cells",
-              edges,
-            ),
+              edges
+            )
           );
         } finally {
           graph.getModel().endUpdate();
         }
       },
       parent,
-      sprite,
+      sprite
     );
   }
 
@@ -375,7 +381,7 @@ export class Menus {
         }
       },
       parent,
-      sprite,
+      sprite
     );
   }
 
@@ -424,8 +430,8 @@ export class Menus {
             "values",
             values,
             "cells",
-            cells,
-          ),
+            cells
+          )
         );
       } finally {
         graph.getModel().endUpdate();
@@ -447,8 +453,8 @@ export class Menus {
         "values",
         [value],
         "cells",
-        graph.getSelectionCells(),
-      ),
+        graph.getSelectionCells()
+      )
     );
   }
 
@@ -459,7 +465,8 @@ export class Menus {
     var action = this.editorUi.actions.get(key);
 
     if (
-      action != null && (menu.showDisabled || action.isEnabled()) &&
+      action != null &&
+      (menu.showDisabled || action.isEnabled()) &&
       action.visible
     ) {
       var item = menu.addItem(
@@ -470,12 +477,12 @@ export class Menus {
         },
         parent,
         sprite,
-        action.isEnabled(),
+        action.isEnabled()
       );
 
       // Adds checkmark image
       if (action.toggleAction && action.isSelected()) {
-        menu.addCheckmark(item, Editor.checkmarkImage);
+        menu.addCheckmark(item, this.checkmarkImage);
       }
 
       this.addShortcut(item, action);
@@ -512,7 +519,7 @@ export class Menus {
           keys[i],
           parent,
           trigger,
-          sprites != null ? sprites[i] : null,
+          sprites != null ? sprites[i] : null
         );
       }
     }
@@ -535,7 +542,7 @@ export class Menus {
   /**
    * Creates the keyboard event handler for the current graph and history.
    */
-  addPopupMenuHistoryItems(menu, cell, evt) {
+  addPopupMenuHistoryItems(menu, _cell, evt) {
     if (this.editorUi.editor.graph.isSelectionEmpty()) {
       this.addMenuItems(menu, ["undo", "redo"], null, evt);
     }
@@ -544,7 +551,7 @@ export class Menus {
   /**
    * Creates the keyboard event handler for the current graph and history.
    */
-  addPopupMenuEditItems(menu, cell, evt) {
+  addPopupMenuEditItems(menu, _cell, evt) {
     if (this.editorUi.editor.graph.isSelectionEmpty()) {
       this.addMenuItems(menu, ["pasteHere"], null, evt);
     } else {
@@ -552,7 +559,7 @@ export class Menus {
         menu,
         ["delete", "-", "cut", "copy", "-", "duplicate"],
         null,
-        evt,
+        evt
       );
     }
   }
@@ -560,7 +567,7 @@ export class Menus {
   /**
    * Creates the keyboard event handler for the current graph and history.
    */
-  addPopupMenuStyleItems(menu, cell, evt) {
+  addPopupMenuStyleItems(menu, _cell, evt) {
     if (this.editorUi.editor.graph.getSelectionCount() == 1) {
       this.addMenuItems(menu, ["-", "setAsDefaultStyle"], null, evt);
     } else if (this.editorUi.editor.graph.isSelectionEmpty()) {
@@ -606,18 +613,18 @@ export class Menus {
         graph.getModel().isEdge(cell) &&
         mxUtils.getValue(state.style, mxConstants.STYLE_EDGE, null) !=
           "entityRelationEdgeStyle" &&
-        mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) !=
-          "arrow"
+        mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) != "arrow"
       ) {
         var handler = graph.selectionCellsHandler.getHandler(cell);
         var isWaypoint = false;
 
         if (
-          handler instanceof mxEdgeHandler && handler.bends != null &&
+          handler instanceof mxEdgeHandler &&
+          handler.bends != null &&
           handler.bends.length > 2
         ) {
           var index = handler.getHandleForEvent(
-            graph.updateMouseEvent(new mxMouseEvent(evt)),
+            graph.updateMouseEvent(new mxMouseEvent(evt))
           );
 
           // Configures removeWaypoint action before execution
@@ -636,19 +643,19 @@ export class Menus {
           null,
           evt,
           null,
-          mxResources.get("reverse"),
+          mxResources.get("reverse")
         );
         this.addMenuItems(
           menu,
           [isWaypoint ? "removeWaypoint" : "addWaypoint"],
           null,
-          evt,
+          evt
         );
 
         // Adds reset waypoints option if waypoints exist
         var geo = graph.getModel().getGeometry(cell);
-        hasWaypoints = geo != null && geo.points != null &&
-          geo.points.length > 0;
+        hasWaypoints =
+          geo != null && geo.points != null && geo.points.length > 0;
       }
 
       if (
@@ -670,8 +677,13 @@ export class Menus {
         mxUtils.getValue(state.style, mxConstants.STYLE_IMAGE, null) != null
       ) {
         menu.addSeparator();
-        this.addMenuItem(menu, "image", null, evt).firstChild.nextSibling
-          .innerHTML = mxResources.get("editImage") + "...";
+        this.addMenuItem(
+          menu,
+          "image",
+          null,
+          evt
+        ).firstChild.nextSibling.innerHTML =
+          mxResources.get("editImage") + "...";
       }
     }
   }
@@ -679,13 +691,13 @@ export class Menus {
   /**
    * Creates the keyboard event handler for the current graph and history.
    */
-  addPopupMenuSelectionItems(menu, cell, evt) {
+  addPopupMenuSelectionItems(menu, _cell, evt) {
     if (this.editorUi.editor.graph.isSelectionEmpty()) {
       this.addMenuItems(
         menu,
         ["-", "selectVertices", "selectEdges", "selectAll"],
         null,
-        evt,
+        evt
       );
     }
   }

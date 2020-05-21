@@ -1,7 +1,7 @@
 {
-  "name": "@mxgraph-app/menus",
+  "name": "@mxgraph-app/dialogs",
   "version": "0.0.1",
-  "description": "mxgraph app menus",
+  "description": "mxgraph app dialogs",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "repository": "",
@@ -13,7 +13,9 @@
   "files": [
     "lib"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "jscolor": "^0.3.0"
+  },
   "peerDependencies": {
     "@mxgraph-app/mx": "0.0.1",
     "@mxgraph-app/resources": "0.0.1",

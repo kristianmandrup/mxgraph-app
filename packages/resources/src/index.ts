@@ -1,3 +1,5 @@
 export * from "./LoadResources";
 export * from "./ParseUrlParam";
-export * from "./resources";
+import resources from "./resources";
+
+export default resources;
