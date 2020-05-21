@@ -1,35 +1,35 @@
-import { MenuItemAdder } from '../../MenuItemAdder'
-import mx from 'mx'
-const { mxResources, mxFastOrganicLayout } = mx
+import { MenuItemAdder } from "../../MenuItemAdder";
+import mx from "@mxgraph-app/mx";
+const { mxResources, mxFastOrganicLayout } = mx;
 
 export class OrganicItem extends MenuItemAdder {
   add() {
-    const { graph } = this
+    const { graph } = this;
     this.addItem(
-      mxResources.get('organic'),
+      mxResources.get("organic"),
       null,
       () => {
-        var layout = new mxFastOrganicLayout(graph)
+        var layout = new mxFastOrganicLayout(graph);
 
         this.promptSpacing(layout.forceConstant, (newValue) => {
-          layout.forceConstant = newValue
+          layout.forceConstant = newValue;
 
           this.editorUi.executeLayout(function () {
-            var tmp = graph.getSelectionCell()
+            var tmp = graph.getSelectionCell();
 
             if (tmp == null || graph.getModel().getChildCount(tmp) == 0) {
-              tmp = graph.getDefaultParent()
+              tmp = graph.getDefaultParent();
             }
 
-            layout.execute(tmp)
+            layout.execute(tmp);
 
             if (graph.getModel().isVertex(tmp)) {
-              graph.updateGroupBounds([tmp], graph.gridSize * 2, true)
+              graph.updateGroupBounds([tmp], graph.gridSize * 2, true);
             }
-          }, true)
-        })
+          }, true);
+        });
       },
       parent
-    )
+    );
   }
 }

@@ -1,10 +1,10 @@
-import { AlignItem } from './AlignItem'
-import mx from 'mx'
-const { mxConstants } = mx
+import { AlignItem } from "./AlignItem";
+import mx from "@mxgraph-app/mx";
+const { mxConstants } = mx;
 
 export class RightAlign extends AlignItem {
   align = {
-    name: 'rightAlign',
+    name: "rightAlign",
     direction: mxConstants.ALIGN_RIGHT,
-  }
+  };
 }

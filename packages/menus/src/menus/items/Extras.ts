@@ -1,13 +1,18 @@
-import { MenuAdder } from '../MenuAdder'
-import { Menu } from 'ui/menus/Menu'
+import { MenuAdder } from "../MenuAdder";
+import { Menu } from "../../Menu";
 
 export class Extras extends MenuAdder {
   add() {
     this.put(
-      'extras',
+      "extras",
       new Menu((menu, parent) => {
-        this.addMenuItems(menu, ['copyConnect', 'collapseExpand', '-', 'editDiagram'])
+        this.addMenuItems(menu, [
+          "copyConnect",
+          "collapseExpand",
+          "-",
+          "editDiagram",
+        ]);
       })
-    )
+    );
   }
 }

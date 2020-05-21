@@ -1,21 +1,13 @@
-import mx from 'mx'
-import { MenuAdder } from '../../../MenuAdder'
-const { mxEventObject, mxConstants } = mx
+import mx from "@mxgraph-app/mx";
+import { AbstractFontItem } from "../AbstractFontItem";
+const { mxConstants } = mx;
 
-export class FontItem {
-  menu: any
-  graph: any
-
-  // from Menus
-  styleChange(menu, label, keys, values, sprite, parent, fn?, post?) {}
-
-  constructor(graph: any, menu: any) {
-    this.graph = graph
-    this.menu = menu
-  }
+export class FontItem extends AbstractFontItem {
+  menu: any;
+  graph: any;
 
   addItem(fontname) {
-    const { graph, menu } = this
+    const { menu } = this;
     var tr: any = this.styleChange(
       menu,
       fontname,
@@ -24,19 +16,22 @@ export class FontItem {
       null,
       parent,
       () => {
-        document.execCommand('fontname', false, fontname)
+        document.execCommand("fontname", false, fontname);
       },
-      () => {
-        graph.updateLabelElements(graph.getSelectionCells(), function (elt) {
-          elt.removeAttribute('face')
-          elt.style.fontFamily = null
-
-          if (elt.nodeName == 'PRE') {
-            graph.replaceElement(elt, 'div')
-          }
-        })
-      }
-    )
-    tr.firstChild.nextSibling.style.fontFamily = fontname
+      this.postFn
+    );
+    tr.firstChild.nextSibling.style.fontFamily = fontname;
   }
+
+  postFn = () => {
+    const { graph } = this;
+    graph.updateLabelElements(graph.getSelectionCells(), function (elt) {
+      elt.removeAttribute("face");
+      elt.style.fontFamily = null;
+
+      if (elt.nodeName == "PRE") {
+        graph.replaceElement(elt, "div");
+      }
+    });
+  };
 }

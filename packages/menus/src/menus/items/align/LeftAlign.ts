@@ -1,10 +1,10 @@
-import { MenuItemAdder } from '../../MenuItemAdder'
-import mx from 'mx'
-const { mxConstants } = mx
+import { MenuItemAdder } from "../../MenuItemAdder";
+import mx from "@mxgraph-app/mx";
+const { mxConstants } = mx;
 
 export class LeftAlign extends MenuItemAdder {
   align = {
-    name: 'leftAlign',
+    name: "leftAlign",
     direction: mxConstants.ALIGN_LEFT,
-  }
+  };
 }

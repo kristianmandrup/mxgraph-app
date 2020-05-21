@@ -1,10 +1,10 @@
-import { MenuItemAdder } from '../../MenuItemAdder'
-import mx from 'mx'
-const { mxConstants } = mx
+import { MenuItemAdder } from "../../MenuItemAdder";
+import mx from "@mxgraph-app/mx";
+const { mxConstants } = mx;
 
 export class Middle extends MenuItemAdder {
   align = {
-    name: 'middle',
+    name: "middle",
     direction: mxConstants.ALIGN_MIDDLE,
-  }
+  };
 }

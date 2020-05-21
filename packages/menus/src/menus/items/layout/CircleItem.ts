@@ -1,31 +1,31 @@
-import { MenuItemAdder } from '../../MenuItemAdder'
-import mx from 'mx'
-const { mxResources, mxCircleLayout } = mx
+import { MenuItemAdder } from "../../MenuItemAdder";
+import mx from "@mxgraph-app/mx";
+const { mxResources, mxCircleLayout } = mx;
 
 export class CircleItem extends MenuItemAdder {
   add() {
-    const { graph } = this
+    const { graph } = this;
     this.addItem(
-      mxResources.get('circle'),
+      mxResources.get("circle"),
       null,
       () => {
-        var layout = new mxCircleLayout(graph)
+        var layout = new mxCircleLayout(graph);
 
         this.editorUi.executeLayout(function () {
-          var tmp = graph.getSelectionCell()
+          var tmp = graph.getSelectionCell();
 
           if (tmp == null || graph.getModel().getChildCount(tmp) == 0) {
-            tmp = graph.getDefaultParent()
+            tmp = graph.getDefaultParent();
           }
 
-          layout.execute(tmp)
+          layout.execute(tmp);
 
           if (graph.getModel().isVertex(tmp)) {
-            graph.updateGroupBounds([tmp], graph.gridSize * 2, true)
+            graph.updateGroupBounds([tmp], graph.gridSize * 2, true);
           }
-        }, true)
+        }, true);
       },
       parent
-    )
+    );
   }
 }

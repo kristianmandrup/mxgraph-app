@@ -1,39 +1,39 @@
-import { MenuAdder } from '../MenuAdder'
-import { Menu } from 'ui/menus/Menu'
+import { MenuAdder } from "../MenuAdder";
+import { Menu } from "../../Menu";
 
 export class Edit extends MenuAdder {
   add() {
     this.put(
-      'edit',
+      "edit",
       new Menu((menu, parent) => {
         this.addMenuItems(menu, [
-          'undo',
-          'redo',
-          '-',
-          'cut',
-          'copy',
-          'paste',
-          'delete',
-          '-',
-          'duplicate',
-          '-',
-          'editData',
-          'editTooltip',
-          'editStyle',
-          '-',
-          'edit',
-          '-',
-          'editLink',
-          'openLink',
-          '-',
-          'selectVertices',
-          'selectEdges',
-          'selectAll',
-          'selectNone',
-          '-',
-          'lockUnlock',
-        ])
+          "undo",
+          "redo",
+          "-",
+          "cut",
+          "copy",
+          "paste",
+          "delete",
+          "-",
+          "duplicate",
+          "-",
+          "editData",
+          "editTooltip",
+          "editStyle",
+          "-",
+          "edit",
+          "-",
+          "editLink",
+          "openLink",
+          "-",
+          "selectVertices",
+          "selectEdges",
+          "selectAll",
+          "selectNone",
+          "-",
+          "lockUnlock",
+        ]);
       })
-    )
+    );
   }
 }

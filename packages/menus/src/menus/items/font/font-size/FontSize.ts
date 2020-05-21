@@ -1,63 +1,65 @@
-import { MenuAdder } from '../../../MenuAdder'
-import { Menu } from 'ui/menus/Menu'
-import { FontItem } from './FontItem'
-import mx from 'mx'
-const { mxConstants, mxResources } = mx
+import { MenuAdder } from "../../../MenuAdder";
+import { Menu } from "../../../../Menu";
+import { FontItem } from "./FontItem";
+import mx from "@mxgraph-app/mx";
+const { mxConstants, mxResources } = mx;
 
 export class FontSizeMenu extends MenuAdder {
+  constructor(editorUi, graph, opts: any) {
+    super(editorUi, graph, opts);
+  }
+
   add() {
-    const { graph } = this
+    const { graph } = this;
     this.put(
-      'fontSize',
+      "fontSize",
       new Menu((menu, parent) => {
         const createAddItem = (menu) => {
-          const fontSizeItem = new FontItem(graph, menu)
+          const fontSizeItem = new FontItem(this.menuStyler, graph, menu);
           return (item) => {
-            fontSizeItem.addItem(item)
-          }
-        }
-        const addItem = createAddItem(menu)
+            fontSizeItem.addItem(item);
+          };
+        };
+        const addItem = createAddItem(menu);
 
-        var sizes = [6, 8, 9, 10, 11, 12, 14, 18, 24, 36, 48, 72]
+        var sizes = [6, 8, 9, 10, 11, 12, 14, 18, 24, 36, 48, 72];
 
         for (var i = 0; i < sizes.length; i++) {
-          addItem(sizes[i])
+          addItem(sizes[i]);
         }
 
-        menu.addSeparator(parent)
+        menu.addSeparator(parent);
 
         if (this.customFontSizes.length > 0) {
           for (var i = 0; i < this.customFontSizes.length; i++) {
-            addItem(this.customFontSizes[i])
+            addItem(this.customFontSizes[i]);
           }
 
-          menu.addSeparator(parent)
+          menu.addSeparator(parent);
 
           menu.addItem(
-            mxResources.get('reset'),
+            mxResources.get("reset"),
             null,
             () => {
-              this.customFontSizes = []
+              this.customFontSizes = [];
             },
             parent
-          )
+          );
 
-          menu.addSeparator(parent)
+          menu.addSeparator(parent);
         }
 
-        this.promptChange(
-          menu,
-          mxResources.get('custom') + '...',
-          '(pt)',
-          '12',
-          mxConstants.STYLE_FONTSIZE,
+        this.promptChange(menu, mxResources.get("custom") + "...", "(pt)", {
+          defaultValue: "12",
+          key: mxConstants.STYLE_FONTSIZE,
           parent,
-          true,
-          (newValue) => {
-            this.customFontSizes.push(newValue)
-          }
-        )
+          enabled: true,
+          fn: (newValue) => {
+            this.customFontSizes.push(newValue);
+          },
+          sprite: true,
+        });
       })
-    )
+    );
   }
 }

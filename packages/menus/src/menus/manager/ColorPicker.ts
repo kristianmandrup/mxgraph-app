@@ -1,6 +1,6 @@
 import { ColorDialog } from "../../_imports";
 import mx from "@mxgraph-app/mx";
-const { mxConstants, mxUtils } = mx;
+const { mxConstants } = mx;
 
 export class ColorPicker {
   editorUi: any;
@@ -11,9 +11,10 @@ export class ColorPicker {
   pickColor(key, cmd, defaultValue) {
     const proto: any = ColorDialog.prototype;
     var graph = this.editorUi.editor.graph;
-    var h = 226 +
+    var h =
+      226 +
       (Math.ceil(proto.presetColors.length / 12) +
-          Math.ceil(proto.defaultColors.length / 12)) *
+        Math.ceil(proto.defaultColors.length / 12)) *
         17;
 
     if (cmd != null && graph.cellEditor.isContentEditing()) {
@@ -28,12 +29,12 @@ export class ColorPicker {
           document.execCommand(
             cmd,
             false,
-            color != mxConstants.NONE ? color : "transparent",
+            color != mxConstants.NONE ? color : "transparent"
           );
         },
         () => {
           graph.cellEditor.restoreSelection(selState);
-        },
+        }
       );
       this.editorUi.showDialog(dlg.container, 230, h, true, true);
       dlg.init();

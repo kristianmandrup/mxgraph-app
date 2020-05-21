@@ -9,7 +9,7 @@ export class MenuPrompt {
   key: any;
   fn: any;
 
-  constructor(editorUi, { defaultValue }) {
+  constructor(editorUi, { defaultValue }: any = {}) {
     this.editorUi = editorUi;
     this.defaultValue = defaultValue;
   }
@@ -30,10 +30,14 @@ export class MenuPrompt {
     return this.editorUi.editor.graph;
   }
 
+  get state() {
+    const { graph } = this;
+    return graph.getView().getState(graph.getSelectionCell());
+  }
+
   add = () => {
-    const { defaultValue, graph, key, fn, hint } = this;
+    const { state, defaultValue, key, hint } = this;
     var value = defaultValue;
-    var state = graph.getView().getState(graph.getSelectionCell());
 
     if (state != null) {
       value = state.style[key] || value;
@@ -43,24 +47,26 @@ export class MenuPrompt {
       this.editorUi,
       value,
       mxResources.get("apply"),
-      (newValue) => {
-        if (newValue != null && newValue.length > 0) {
-          graph.getModel().beginUpdate();
-          try {
-            graph.stopEditing(false);
-            graph.setCellStyles(key, newValue);
-          } finally {
-            graph.getModel().endUpdate();
-          }
-
-          if (fn != null) {
-            fn(newValue);
-          }
-        }
-      },
+      this.dialogueFunct,
       mxResources.get("enterValue") + (hint.length > 0 ? " " + hint : "")
     );
     this.editorUi.showDialog(dlg.container, 300, 80, true, true);
     dlg.init();
+  };
+
+  dialogueFunct = (newValue) => {
+    const { graph, key, fn } = this;
+    if (newValue != null && newValue.length > 0) {
+      graph.getModel().beginUpdate();
+      try {
+        graph.stopEditing(false);
+        graph.setCellStyles(key, newValue);
+      } finally {
+        graph.getModel().endUpdate();
+      }
+      if (fn != null) {
+        fn(newValue);
+      }
+    }
   };
 }
