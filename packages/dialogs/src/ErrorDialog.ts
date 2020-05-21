@@ -8,19 +8,8 @@ export class ErrorDialog {
   btn: any;
   container: any;
 
-  constructor(
-    editorUi,
-    title,
-    message,
-    buttonText,
-    fn,
-    retry,
-    buttonText2,
-    fn2,
-    hide,
-    buttonText3,
-    fn3
-  ) {
+  constructor(editorUi, title, message, buttonText, opts: any = {}) {
+    let { fn, retry, buttonText2, fn2, hide, buttonText3, fn3 } = opts;
     hide = hide != null ? hide : true;
 
     var div = document.createElement("div");
