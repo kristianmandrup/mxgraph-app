@@ -1822,7 +1822,7 @@ export class TextFormatPanel extends BaseFormatPanel {
                 // Converts rgb(r,g,b) values
                 var color = css.color.replace(
                   /\brgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g,
-                  function ($0, $1, $2, $3) {
+                  function (_$0, $1, $2, $3) {
                     return (
                       "#" +
                       ("0" + Number($1).toString(16)).substr(-2) +
@@ -1833,7 +1833,7 @@ export class TextFormatPanel extends BaseFormatPanel {
                 );
                 var color2 = css.backgroundColor.replace(
                   /\brgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g,
-                  function ($0, $1, $2, $3) {
+                  function (_$0, $1, $2, $3) {
                     return (
                       "#" +
                       ("0" + Number($1).toString(16)).substr(-2) +

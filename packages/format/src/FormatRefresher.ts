@@ -3,13 +3,8 @@ import { Dialog } from "@mxgraph-app/dialogs";
 import { DiagramFormatPanel } from "./DiagramFormatPanel";
 import { TextFormatPanel } from "./TextFormatPanel";
 import { StyleFormatPanel } from "./StyleFormatPanel";
-import { ArrangePanel } from "./ArrangePanel";
-const {
-  mxResources,
-  mxClient,
-  mxEvent,
-  mxUtils,
-} = mx;
+import { ArrangePanel } from "./arrange/ArrangePanel";
+const { mxResources, mxClient, mxEvent, mxUtils } = mx;
 
 export class FormatRefresher {
   container: any;
@@ -49,8 +44,8 @@ export class FormatRefresher {
     label.style.fontSize = "13px";
     label.style.borderWidth = "0px 0px 1px 1px";
     label.style.borderStyle = "solid";
-    label.style.display = (mxClient.IS_QUIRKS) ? "inline" : "inline-block";
-    label.style.height = (mxClient.IS_QUIRKS) ? "34px" : "25px";
+    label.style.display = mxClient.IS_QUIRKS ? "inline" : "inline-block";
+    label.style.height = mxClient.IS_QUIRKS ? "34px" : "25px";
     label.style.overflow = "hidden";
     label.style.width = "100%";
     this.container.appendChild(div);
@@ -58,10 +53,10 @@ export class FormatRefresher {
     // Prevents text selection
     mxEvent.addListener(
       label,
-      (mxClient.IS_POINTER) ? "pointerdown" : "mousedown",
+      mxClient.IS_POINTER ? "pointerdown" : "mousedown",
       (evt) => {
         evt.preventDefault();
-      },
+      }
     );
 
     if (graph.isSelectionEmpty()) {
@@ -105,7 +100,7 @@ export class FormatRefresher {
       var currentPanel: any;
 
       var addClickHandler = (elt, panel, index) => {
-        var clickHandler = (evt?) => {
+        var clickHandler = (_evt?) => {
           if (currentLabel != elt) {
             if (containsLabel) {
               this.labelIndex = index;
@@ -114,8 +109,7 @@ export class FormatRefresher {
             }
 
             if (currentLabel != null) {
-              currentLabel.style.backgroundColor =
-                this.inactiveTabBackgroundColor;
+              currentLabel.style.backgroundColor = this.inactiveTabBackgroundColor;
               currentLabel.style.borderBottomWidth = "1px";
             }
 
@@ -139,13 +133,13 @@ export class FormatRefresher {
         // Prevents text selection
         mxEvent.addListener(
           elt,
-          (mxClient.IS_POINTER) ? "pointerdown" : "mousedown",
+          mxClient.IS_POINTER ? "pointerdown" : "mousedown",
           (evt) => {
             evt.preventDefault();
-          },
+          }
         );
 
-        if (index == ((containsLabel) ? this.labelIndex : this.currentIndex)) {
+        if (index == (containsLabel ? this.labelIndex : this.currentIndex)) {
           // Invokes handler directly as a workaround for no click on DIV in KHTML.
           clickHandler();
         }
@@ -156,8 +150,8 @@ export class FormatRefresher {
       label.style.backgroundColor = this.inactiveTabBackgroundColor;
       label.style.borderLeftWidth = "1px";
       label.style.cursor = "pointer";
-      label.style.width = (containsLabel) ? "50%" : "33.3%";
-      label.style.width = (containsLabel) ? "50%" : "33.3%";
+      label.style.width = containsLabel ? "50%" : "33.3%";
+      label.style.width = containsLabel ? "50%" : "33.3%";
       var label2: any = label.cloneNode(false);
       var label3: any = label2.cloneNode(false);
 
