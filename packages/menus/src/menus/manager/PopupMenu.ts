@@ -1,8 +1,8 @@
 import mx from "@mxgraph-app/mx";
-import { AbstractMenuItemAdder } from "../AbstractMenuItemAdder";
+import { MenuManager } from "../MenuManager";
 const { mxResources, mxMouseEvent, mxUtils, mxConstants, mxEdgeHandler } = mx;
 
-export class PopupMenu extends AbstractMenuItemAdder {
+export class PopupMenu extends MenuManager {
   editorUi: any;
   addMenuItems: any;
 

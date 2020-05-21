@@ -1,6 +1,5 @@
 import { BaseFormatPanel } from "./BaseFormatPanel";
 import mx from "@mxgraph-app/mx";
-import { Menus } from "@mxgraph-app/menus";
 import { FilenameDialog } from "@mxgraph-app/dialogs";
 const { mxConstants, mxClient, mxResources, mxEvent, mxUtils } = mx;
 
@@ -11,6 +10,12 @@ export class TextFormatPanel extends BaseFormatPanel {
   ctrlKey: any; // Editor.ctrlKey
   selection: any; // document.selection
   documentMode: any; // document.documentMode
+
+  /**
+   * Sets the default font family and size
+   */
+  defaultFont = "Helvetica";
+  defaultFontSize = "12";
 
   constructor(format, editorUi, container) {
     super(format, editorUi, container);
@@ -579,7 +584,7 @@ export class TextFormatPanel extends BaseFormatPanel {
     var inputUpdate = this.installInputHandler(
       input,
       mxConstants.STYLE_FONTSIZE,
-      Menus.prototype.defaultFontSize,
+      this.defaultFontSize,
       1,
       999,
       " pt",
@@ -705,7 +710,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       1,
       10,
       true,
-      Menus.prototype.defaultFontSize
+      this.defaultFontSize
     );
     stepper.style.display = input.style.display;
     stepper.style.marginTop = "4px";
@@ -1404,7 +1409,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       fontMenu.firstChild.nodeValue = mxUtils.getValue(
         ss.style,
         mxConstants.STYLE_FONTFAMILY,
-        Menus.prototype.defaultFont
+        this.defaultFont
       );
 
       setSelected(
@@ -1417,7 +1422,7 @@ export class TextFormatPanel extends BaseFormatPanel {
           mxUtils.getValue(
             ss.style,
             mxConstants.STYLE_FONTSIZE,
-            Menus.prototype.defaultFontSize
+            this.defaultFontSize
           )
         );
         input.value = isNaN(tmp) ? "" : tmp + " pt";

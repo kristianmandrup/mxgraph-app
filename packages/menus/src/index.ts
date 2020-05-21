@@ -1,5 +1,5 @@
 export * from "./Menu";
 export * from "./initializer";
-export * from "./Menubar";
-export * from "./menus/MenusManager";
+export * from "./menubar/Menubar";
+export * from "./menus/MenuManager";
 export * from "./menus";

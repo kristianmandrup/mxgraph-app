@@ -4,6 +4,21 @@ import { FontItem } from "./FontItem";
 const { mxUtils, mxEventObject, mxConstants, mxResources } = mx;
 
 export class FontFamilyMenu extends MenuAdder {
+  /**
+   * Adds the label menu items to the given menu and parent.
+   */
+  defaultFonts = [
+    "Helvetica",
+    "Verdana",
+    "Times New Roman",
+    "Garamond",
+    "Comic Sans MS",
+    "Courier New",
+    "Georgia",
+    "Lucida Console",
+    "Tahoma",
+  ];
+
   add() {
     const { graph } = this;
     this.put(

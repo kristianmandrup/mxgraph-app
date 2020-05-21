@@ -1,14 +1,66 @@
 import mx from "@mxgraph-app/mx";
+import { MenuItems } from ".";
+import { InsertTableItem } from "./manager/InsertTableItem";
+import { EdgeStyleChange } from "./manager/EdgeStyleChange";
 import { BaseMenuAdder } from "./BaseMenuAdder";
-const { mxResources, mxUtils } = mx;
+const { mxClient, mxResources, mxUtils } = mx;
 
-export class AbstractMenuItemAdder extends BaseMenuAdder {
+/**
+ * Copyright (c) 2006-2012, JGraph Ltd
+ */
+/**
+ * Constructs a new graph editor
+ */
+export class MenuManager extends BaseMenuAdder {
   editorUi: any;
-  checkmarkImage: any;
+  menus: any;
+  checkmarkImage: any; // Editor.checkmarkImage
+  customFonts: any[] = [];
+  customFontSizes: any[] = [];
+  documentMode: any;
 
-  constructor(editorUi: any, menus: any = {}) {
+  constructor(editorUi, menus: any = {}) {
     super(menus);
     this.editorUi = editorUi;
+    this.init();
+
+    // Pre-fetches checkmark image
+    if (!mxClient.IS_SVG) {
+      new Image().src = this.checkmarkImage;
+    }
+  }
+
+  get menuItems() {
+    return new MenuItems(this.editorUi, this.menus);
+  }
+
+  /**
+   * Adds the label menu items to the given menu and parent.
+   */
+  init() {
+    this.menuItems.addToMenu();
+  }
+
+  /**
+   * Adds a menu item to insert a table.
+   */
+  addInsertTableItem(menu, insertFn) {
+    new InsertTableItem(this.editorUi).add(menu, insertFn);
+  }
+
+  /**
+   * Adds a style change item to the given menu.
+   */
+  edgeStyleChange(menu, label, keys, values, sprite, parent, reset) {
+    new EdgeStyleChange(this.editorUi).add(
+      menu,
+      label,
+      keys,
+      values,
+      sprite,
+      parent,
+      reset
+    );
   }
 
   /**

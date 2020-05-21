@@ -1,20 +1,21 @@
 import { Menu } from "../../Menu";
-import { MenuPrompt, Menus } from "../manager";
+import { MenuPrompt } from "../manager";
 import { MenuStyler } from "../manager";
+import { MenuManager } from "../MenuManager";
 
 export class MenuAdder {
   editorUi: any;
   graph: any;
 
-  menus: Menus;
+  menus: MenuManager;
   menuStyler: MenuStyler;
+  menuPrompt: MenuPrompt;
   menuItems: any = {};
   menuName = "no name";
 
   itemLayout: string[] = [];
   isGraphEnabled: boolean = true;
 
-  defaultFonts: any;
   customFonts: any;
   customFontSizes: any;
 
@@ -23,6 +24,11 @@ export class MenuAdder {
     this.graph = graph || editorUi.editor.graph;
     this.menus = menus || this.createMenus();
     this.menuStyler = menuStyler || this.createMenuStyler();
+    this.menuPrompt = this.createMenuPrompt();
+  }
+
+  createMenuPrompt() {
+    return new MenuPrompt(this.editorUi);
   }
 
   createMenuStyler() {
@@ -30,7 +36,7 @@ export class MenuAdder {
   }
 
   createMenus() {
-    return new Menus(this.editorUi);
+    return new MenuManager(this.editorUi);
   }
 
   styleChange(menu, label, keys, values, sprite?, parent?, fn?, post?) {

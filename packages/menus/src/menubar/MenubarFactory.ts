@@ -6,8 +6,9 @@ const { mxResources } = mx;
 export class MenubarFactory extends BaseMenuAdder {
   editorUi: any;
   container: any;
-  defaultMenuItems: any;
   documentMode: any;
+
+  defaultMenuItems = ["file", "edit", "view", "arrange", "extras", "help"];
 
   constructor(editorUi, container, menus?: any) {
     super(menus);
