@@ -38,7 +38,7 @@ export class Menu {
   }
 
   /**
-   * Sets the enabled state of the action and fires a stateChanged event.
+   * Executes menu action on parent
    */
   execute(menu, parent) {
     this.funct(menu, parent);

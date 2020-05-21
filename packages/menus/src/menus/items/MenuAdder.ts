@@ -1,6 +1,6 @@
-import { Menu } from "../Menu";
-import { MenuPrompt, Menus } from "./manager";
-import { MenuStyler } from "./manager";
+import { Menu } from "../../Menu";
+import { MenuPrompt, Menus } from "../manager";
+import { MenuStyler } from "../manager";
 
 export class MenuAdder {
   editorUi: any;

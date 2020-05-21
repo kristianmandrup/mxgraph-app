@@ -14,3 +14,5 @@ export * from "./NavigationMenu";
 export * from "./ViewMenu";
 export * from "./ViewPanelsMenu";
 export * from "./ViewZoomMenu";
+export * from "./MenuAdder";
+export * from "./MenuItemAdder";

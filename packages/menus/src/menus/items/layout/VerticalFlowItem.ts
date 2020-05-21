@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { MenuItemAdder } from "../../MenuItemAdder";
+import { MenuItemAdder } from "../MenuItemAdder";
 const { mxResources, mxConstants, mxHierarchicalLayout } = mx;
 
 export class VerticalFlowItem extends MenuItemAdder {

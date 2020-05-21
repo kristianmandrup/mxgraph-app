@@ -1,4 +1,4 @@
-import { MenuItemAdder } from "../../MenuItemAdder";
+import { MenuItemAdder } from "../MenuItemAdder";
 import mx from "@mxgraph-app/mx";
 const { mxCompactTreeLayout, mxResources } = mx;
 

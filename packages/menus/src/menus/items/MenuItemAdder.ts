@@ -1,4 +1,4 @@
-import { FilenameDialog } from "../_imports";
+import { FilenameDialog } from "../../_imports";
 import mx from "@mxgraph-app/mx";
 const { mxResources } = mx;
 

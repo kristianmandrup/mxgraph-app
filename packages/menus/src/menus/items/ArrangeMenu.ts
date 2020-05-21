@@ -1,4 +1,4 @@
-import { MenuAdder } from "../MenuAdder";
+import { MenuAdder } from "./MenuAdder";
 import { Menu } from "../../Menu";
 
 export class ArrangeMenu extends MenuAdder {
