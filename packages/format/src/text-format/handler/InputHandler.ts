@@ -1,5 +1,15 @@
-export class InputHandler {
+import { BaseFormatHandler } from "./BaseFormatHandler";
+import mx from "@mxgraph-app/mx";
+const { mxConstants, mxClient, mxUtils } = mx;
+
+export class InputHandler extends BaseFormatHandler {
+  input: any;
+  installInputHandler: any;
+  defaultFontSize: any;
+  pendingFontSize: any;
+
   create() {
+    const { graph, input } = this;
     return this.installInputHandler(
       input,
       mxConstants.STYLE_FONTSIZE,
@@ -12,10 +22,9 @@ export class InputHandler {
         // KNOWN: Fixes font size issues but bypasses undo
         if (window.getSelection && !mxClient.IS_IE && !mxClient.IS_IE11) {
           var selection: any = window.getSelection();
-          var container =
-            selection.rangeCount > 0
-              ? selection.getRangeAt(0).commonAncestorContainer
-              : graph.cellEditor.textarea;
+          var container = selection.rangeCount > 0
+            ? selection.getRangeAt(0).commonAncestorContainer
+            : graph.cellEditor.textarea;
 
           function updateSize(elt, ignoreContains?) {
             if (
@@ -33,7 +42,7 @@ export class InputHandler {
                 if (css.fontSize != fontSize + "px") {
                   if (
                     mxUtils.getCurrentStyle(elt.parentNode).fontSize !=
-                    fontSize + "px"
+                      fontSize + "px"
                   ) {
                     elt.style.fontSize = fontSize + "px";
                   } else {
@@ -96,7 +105,7 @@ export class InputHandler {
           }
 
           if (par != null && isOrContains(graph.cellEditor.textarea, par)) {
-            pendingFontSize = fontSize;
+            this.pendingFontSize = fontSize;
 
             // Workaround for can't set font size in px is to change font size afterwards
             document.execCommand("fontSize", false, "4");
@@ -105,13 +114,13 @@ export class InputHandler {
             for (var i = 0; i < elts.length; i++) {
               if (elts[i].getAttribute("size") == "4") {
                 elts[i].removeAttribute("size");
-                elts[i].style.fontSize = pendingFontSize + "px";
+                elts[i].style.fontSize = this.pendingFontSize + "px";
 
                 // Overrides fontSize in input with the one just assigned as a workaround
                 // for potential fontSize values of parent elements that don't match
-                window.setTimeout(function () {
-                  input.value = pendingFontSize + " pt";
-                  pendingFontSize = null;
+                window.setTimeout(() => {
+                  input.value = this.pendingFontSize + " pt";
+                  this.pendingFontSize = null;
                 }, 0);
 
                 break;
@@ -120,7 +129,7 @@ export class InputHandler {
           }
         }
       },
-      true
+      true,
     );
   }
 }

@@ -1,12 +1,20 @@
-export class BackgroundPanel {
+import mx from "@mxgraph-app/mx";
+import { BaseFormatPanel } from "../../BaseFormatPanel";
+const { mxConstants, mxResources } = mx;
+
+export class BackgroundPanel extends BaseFormatPanel {
+  currentBgColor: any;
+  bgColorApply: any;
+
   create() {
+    const { graph, currentBgColor } = this;
     const bgPanel = graph.cellEditor.isContentEditing()
       ? this.createColorOption(
           mxResources.get("backgroundColor"),
-          function () {
+          () => {
             return currentBgColor;
           },
-          function (color) {
+          (color) => {
             document.execCommand(
               "backcolor",
               false,
@@ -15,11 +23,11 @@ export class BackgroundPanel {
           },
           "#ffffff",
           {
-            install: function (apply) {
-              bgColorApply = apply;
+            install: (apply) => {
+              this.bgColorApply = apply;
             },
-            destroy: function () {
-              bgColorApply = null;
+            destroy: () => {
+              this.bgColorApply = null;
             },
           },
           null,

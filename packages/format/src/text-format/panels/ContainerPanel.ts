@@ -1,13 +1,23 @@
 import { ToolbarFormatButtons } from "../buttons/ToolbarFormatButtons";
+import mx from "@mxgraph-app/mx";
+import { BaseFormatPanel } from "../../BaseFormatPanel";
+const { mxUtils, mxClient, mxEvent, mxConstants, mxResources } = mx;
 
-export class ContainerPanel {
+export class ContainerPanel extends BaseFormatPanel {
+  extraPanel: any;
+  lineHeightInput: any;
+  spacingPanel: any;
+  stylePanel: any;
+  tableWrapper: any;
   toolbarFormatButtons: ToolbarFormatButtons;
 
-  constructor() {
+  constructor(format, editorUi, container) {
+    super(format, editorUi, container);
     this.toolbarFormatButtons = new ToolbarFormatButtons();
   }
 
   append() {
+    const { graph, container, extraPanel, spacingPanel, stylePanel } = this;
     if (!graph.cellEditor.isContentEditing()) {
       container.appendChild(extraPanel);
       container.appendChild(
@@ -19,7 +29,6 @@ export class ContainerPanel {
       container.appendChild(spacingPanel);
     } else {
       var selState: any;
-      var lineHeightInput: any;
 
       container.appendChild(
         this.createRelativeOption(
@@ -69,9 +78,9 @@ export class ContainerPanel {
 
             input.value = value + " %";
           },
-          function (input) {
+          (input) => {
             // Used in CSS handler to update current value
-            lineHeightInput = input;
+            this.lineHeightInput = input;
 
             // KNOWN: Arrow up/down clear selection text in quirks/IE 8
             // Text size via arrow button limits to 16 in IE11. Why?
@@ -138,7 +147,7 @@ export class ContainerPanel {
       wrapper3.appendChild(tablePanel2);
       container.appendChild(wrapper3);
 
-      tableWrapper = wrapper3;
+      this.tableWrapper = wrapper3;
     }
   }
 

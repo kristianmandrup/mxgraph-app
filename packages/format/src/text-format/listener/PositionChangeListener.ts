@@ -1,7 +1,13 @@
+import mx from "@mxgraph-app/mx";
+import { BaseFormatPanel } from "../../BaseFormatPanel";
+const { mxConstants, mxEvent } = mx;
 import { lset } from "./lset";
 
-export class PositionChangeListener {
+export class PositionChangeListener extends BaseFormatPanel {
+  positionSelect: any;
+
   add() {
+    const { graph, positionSelect } = this;
     mxEvent.addListener(positionSelect, "change", function (evt) {
       graph.getModel().beginUpdate();
       try {

@@ -1,16 +1,12 @@
-import mx from "mx";
-import resources from "resources/resources";
-import { PageSetupDialog } from "sample/PageSetupDialog";
-import { ChangePageSetup } from "sample/ChangePageSetup";
+import mx from "@mxgraph-app/mx";
+import { ChangePageSetup, PageSetupDialog } from "@mxgraph-app/dialogs";
 import { BaseFormatPanel } from "../BaseFormatPanel";
 const {
   mxEventObject,
   mxResources,
   mxConstants,
   mxClient,
-  mxPoint,
   mxEvent,
-  mxGraph,
   mxUtils,
 } = mx;
 // const { IMAGE_PATH } = resources

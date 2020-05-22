@@ -1,5 +1,10 @@
-export class ExtraPanel {
+import mx from "@mxgraph-app/mx";
+import { BaseFormatPanel } from "../../BaseFormatPanel";
+const { mxConstants, mxResources } = mx;
+
+export class ExtraPanel extends BaseFormatPanel {
   create() {
+    const { ss, ui } = this;
     var extraPanel = this.createPanel();
     extraPanel.style.paddingTop = "2px";
     extraPanel.style.paddingBottom = "4px";

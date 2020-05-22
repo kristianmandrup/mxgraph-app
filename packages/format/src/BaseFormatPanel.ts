@@ -22,6 +22,22 @@ export class BaseFormatPanel {
     this.listeners = [];
   }
 
+  get ui() {
+    return this.editorUi;
+  }
+
+  get ss() {
+    return this.format.getSelectionState();
+  }
+
+  get editor() {
+    return this.editorUi.editor;
+  }
+
+  get graph() {
+    return this.editor.graph;
+  }
+
   /**
    *
    */

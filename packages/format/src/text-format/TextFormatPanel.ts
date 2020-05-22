@@ -1,14 +1,25 @@
 import { BaseFormatPanel } from "../BaseFormatPanel";
 import mx from "@mxgraph-app/mx";
-import { UpdateCssHandler } from "./helpers/UpdateCssHandler";
+import { UpdateCssHandler } from "./handler/UpdateCssHandler";
 import { BackgroundPanel } from "./panels/BackgroundPanel";
 import { FontColorPanel } from "./panels/FontColorPanel";
 import { ExtraPanel } from "./panels/ExtraPanel";
-import { InputHandler } from "./helpers/InputHandler";
+import { InputHandler } from "./handler/InputHandler";
 import { ContainerPanel } from "./panels/ContainerPanel";
 import { TextFormatListener, PositionChangeListener } from "./listener";
 import { ToolbarFormatButtons } from "./buttons";
 const { mxConstants, mxClient, mxResources, mxEvent, mxUtils } = mx;
+
+const panelMap = {
+  background: BackgroundPanel,
+  extra: ExtraPanel,
+  fontColor: FontColorPanel,
+  container: ContainerPanel,
+};
+
+const defaults = {
+  panelMap,
+};
 
 /**
  * Adds the label menu items to the given menu and parent.
@@ -17,6 +28,7 @@ export class TextFormatPanel extends BaseFormatPanel {
   ctrlKey: any; // Editor.ctrlKey
   selection: any; // document.selection
   documentMode: any; // document.documentMode
+  panelMap = defaults.panelMap;
 
   protected _spacingPanel: any;
   protected _fontStyleItems: any;
@@ -79,14 +91,11 @@ export class TextFormatPanel extends BaseFormatPanel {
     this.stylePanel = this.createStylePanel();
     container.appendChild(this.stylePanel);
 
-    const colorPanel = this.createColorPanel();
-    const fontMenu = this.createFontMenu();
-
     if (mxClient.IS_QUIRKS) {
       mxUtils.br(container);
     }
 
-    const { graph, stylePanel2 } = this;
+    const { graph, stylePanel2, dirs, dirSet } = this;
 
     container.appendChild(stylePanel2);
 
@@ -113,15 +122,6 @@ export class TextFormatPanel extends BaseFormatPanel {
     // handle multiple different styles for current selection
     var dirSelect = this.createDirSelect();
 
-    // NOTE: For automatic we use the value null since automatic
-    // requires the text to be non formatted and non-wrapped
-    var dirs = ["automatic", "leftToRight", "rightToLeft"];
-    var dirSet = {
-      automatic: null,
-      leftToRight: mxConstants.TEXT_DIRECTION_LTR,
-      rightToLeft: mxConstants.TEXT_DIRECTION_RTL,
-    };
-
     for (var i = 0; i < dirs.length; i++) {
       var dirOption = document.createElement("option");
       dirOption.setAttribute("value", dirs[i]);
@@ -134,7 +134,8 @@ export class TextFormatPanel extends BaseFormatPanel {
     if (!graph.isEditing()) {
       container.appendChild(stylePanel4);
 
-      new PositionChangeListener().add();
+      new PositionChangeListener(this.format, this.editorUi, this.container)
+        .add();
 
       // LATER: Update dir in text editor while editing and update style with label
       // NOTE: The tricky part is handling and passing on the auto value
@@ -144,7 +145,7 @@ export class TextFormatPanel extends BaseFormatPanel {
         graph.setCellStyles(
           mxConstants.STYLE_TEXT_DIRECTION,
           dirSet[dirSelect.value],
-          graph.getSelectionCells()
+          graph.getSelectionCells(),
         );
         mxEvent.consume(evt);
       });
@@ -163,19 +164,7 @@ export class TextFormatPanel extends BaseFormatPanel {
 
     stylePanel2.appendChild(stepper);
 
-    var arrow = fontMenu.getElementsByTagName("div")[0];
-    arrow.style.cssFloat = "right";
-
-    var bgPanel = this.createBgPanel();
-
-    var borderPanel = this.createCellColorOption(
-      mxResources.get("borderColor"),
-      mxConstants.STYLE_LABEL_BORDERCOLOR,
-      "#000000"
-    );
-    borderPanel.style.fontWeight = "bold";
-
-    var panel = this.createFontColorPanel();
+    const { panel, bgPanel, colorPanel, borderPanel } = this;
 
     colorPanel.appendChild(panel);
     colorPanel.appendChild(bgPanel);
@@ -187,11 +176,8 @@ export class TextFormatPanel extends BaseFormatPanel {
     container.appendChild(colorPanel);
 
     this.createExtraPanel();
-
     this.createSpacingSpanPanel();
-
     this.appendPanelToContainer();
-
     this.addKeyHandlers(input);
     const { listener } = this;
 
@@ -204,10 +190,62 @@ export class TextFormatPanel extends BaseFormatPanel {
     listener();
 
     if (graph.cellEditor.isContentEditing()) {
-      new UpdateCssHandler().create();
+      new UpdateCssHandler(this.format, this.editorUi, this.container).create();
     }
     return container;
   }
+
+  get colorPanel() {
+    return this.createColorPanel();
+  }
+
+  get fontMenu() {
+    return this.createFontMenu();
+  }
+
+  get arrow() {
+    const { fontMenu } = this;
+    const arrow = fontMenu.getElementsByTagName("div")[0];
+    arrow.style.cssFloat = "right";
+    return arrow;
+  }
+
+  get bgPanel() {
+    return this.createBgPanel();
+  }
+
+  get borderPanel() {
+    return this.createBorderPanel();
+  }
+
+  get panel() {
+    return this.createFontColorPanel();
+  }
+
+  createBorderPanel() {
+    const borderPanel = this.createCellColorOption(
+      mxResources.get("borderColor"),
+      mxConstants.STYLE_LABEL_BORDERCOLOR,
+      "#000000",
+    );
+    borderPanel.style.fontWeight = "bold";
+    return borderPanel;
+  }
+
+  // NOTE: For automatic we use the value null since automatic
+  // requires the text to be non formatted and non-wrapped
+  get dirSet() {
+    return {
+      automatic: null,
+      leftToRight: mxConstants.TEXT_DIRECTION_LTR,
+      rightToLeft: mxConstants.TEXT_DIRECTION_RTL,
+    };
+  }
+
+  get dirs() {
+    return ["automatic", "leftToRight", "rightToLeft"];
+  }
+
   createPositionSelect() {
     const { directions } = this;
     const positionSelect = document.createElement("select");
@@ -285,10 +323,10 @@ export class TextFormatPanel extends BaseFormatPanel {
       callFn(
         this.editorUi.menus.createStyleChangeFunction(
           [mxConstants.STYLE_VERTICAL_ALIGN],
-          [mxConstants.ALIGN_TOP]
-        )
+          [mxConstants.ALIGN_TOP],
+        ),
       ),
-      stylePanel3
+      stylePanel3,
     );
   }
 
@@ -300,10 +338,10 @@ export class TextFormatPanel extends BaseFormatPanel {
       callFn(
         this.editorUi.menus.createStyleChangeFunction(
           [mxConstants.STYLE_VERTICAL_ALIGN],
-          [mxConstants.ALIGN_MIDDLE]
-        )
+          [mxConstants.ALIGN_MIDDLE],
+        ),
       ),
-      stylePanel3
+      stylePanel3,
     );
   }
 
@@ -315,10 +353,10 @@ export class TextFormatPanel extends BaseFormatPanel {
       callFn(
         this.editorUi.menus.createStyleChangeFunction(
           [mxConstants.STYLE_VERTICAL_ALIGN],
-          [mxConstants.ALIGN_BOTTOM]
-        )
+          [mxConstants.ALIGN_BOTTOM],
+        ),
       ),
-      stylePanel3
+      stylePanel3,
     );
   }
 
@@ -403,7 +441,7 @@ export class TextFormatPanel extends BaseFormatPanel {
         function () {
           document.execCommand("strikeThrough", false);
         },
-        stylePanel2
+        stylePanel2,
       );
       this.styleButtons([strike]);
 
@@ -428,7 +466,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       1,
       10,
       true,
-      this.defaultFontSize
+      this.defaultFontSize,
     );
     stepper.style.display = input.style.display;
     stepper.style.marginTop = "4px";
@@ -483,7 +521,7 @@ export class TextFormatPanel extends BaseFormatPanel {
         function () {
           document.execCommand("subscript", false);
         },
-        stylePanel3
+        stylePanel3,
       ),
       this.editorUi.toolbar.addButton(
         "geSprite-superscript",
@@ -491,7 +529,7 @@ export class TextFormatPanel extends BaseFormatPanel {
         function () {
           document.execCommand("superscript", false);
         },
-        stylePanel3
+        stylePanel3,
       ),
     ]);
   }
@@ -506,19 +544,35 @@ export class TextFormatPanel extends BaseFormatPanel {
   }
 
   createInputHandler() {
-    return new InputHandler().create();
+    return new InputHandler(
+      this.format,
+      this.editorUi,
+      this.container,
+    ).create();
+  }
+
+  appendPanelToContainer() {
+    return this.createNewPanel("container");
   }
 
   createExtraPanel() {
-    return new ExtraPanel().create();
+    return this.createNewPanel("extra");
   }
 
   createFontColorPanel() {
-    return new FontColorPanel().create();
+    return this.createNewPanel("fontColor");
+  }
+
+  createNewPanel(name) {
+    return new this.panelMap[name](
+      this.format,
+      this.editorUi,
+      this.container,
+    ).create();
   }
 
   createBgPanel() {
-    return new BackgroundPanel().create();
+    return this.createNewPanel("background");
   }
 
   createCssMenu() {
@@ -530,7 +584,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       "formatBlock",
       cssPanel,
       null,
-      true
+      true,
     );
     cssMenu.style.color = "rgb(112, 112, 112)";
     cssMenu.style.whiteSpace = "nowrap";
@@ -552,7 +606,7 @@ export class TextFormatPanel extends BaseFormatPanel {
     const fontStyleItems = this.editorUi.toolbar.addItems(
       ["bold", "italic", "underline"],
       stylePanel2,
-      true
+      true,
     );
 
     fontStyleItems[0].setAttribute(
@@ -560,21 +614,21 @@ export class TextFormatPanel extends BaseFormatPanel {
       mxResources.get("bold") +
         " (" +
         this.editorUi.actions.get("bold").shortcut +
-        ")"
+        ")",
     );
     fontStyleItems[1].setAttribute(
       "title",
       mxResources.get("italic") +
         " (" +
         this.editorUi.actions.get("italic").shortcut +
-        ")"
+        ")",
     );
     fontStyleItems[2].setAttribute(
       "title",
       mxResources.get("underline") +
         " (" +
         this.editorUi.actions.get("underline").shortcut +
-        ")"
+        ")",
     );
     return fontStyleItems;
   }
@@ -624,17 +678,13 @@ export class TextFormatPanel extends BaseFormatPanel {
     return input;
   }
 
-  appendPanelToContainer() {
-    return new ContainerPanel().append();
-  }
-
   get topSpacing() {
     return this.addUnitInput(
       this.spacingPanel,
       "pt",
       91,
       44,
-      () => this.topUpdate
+      () => this.topUpdate,
     );
   }
 
@@ -644,7 +694,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       "pt",
       20,
       44,
-      () => this.globalUpdate
+      () => this.globalUpdate,
     );
   }
 
@@ -675,7 +725,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       "pt",
       162,
       44,
-      () => this.leftUpdate
+      () => this.leftUpdate,
     );
   }
 
@@ -690,7 +740,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       "pt",
       91,
       44,
-      () => this.bottomUpdate
+      () => this.bottomUpdate,
     );
   }
 
@@ -700,7 +750,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       "pt",
       20,
       44,
-      () => this.rightUpdate
+      () => this.rightUpdate,
     );
   }
 
@@ -711,7 +761,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       2,
       -999,
       999,
-      " pt"
+      " pt",
     );
   }
 
@@ -722,7 +772,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       0,
       -999,
       999,
-      " pt"
+      " pt",
     );
   }
 
@@ -733,7 +783,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       0,
       -999,
       999,
-      " pt"
+      " pt",
     );
   }
 
@@ -744,7 +794,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       0,
       -999,
       999,
-      " pt"
+      " pt",
     );
   }
 
@@ -755,7 +805,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       0,
       -999,
       999,
-      " pt"
+      " pt",
     );
   }
 
@@ -777,7 +827,7 @@ export class TextFormatPanel extends BaseFormatPanel {
       "fontFamily",
       stylePanel,
       null,
-      true
+      true,
     );
     fontMenu.style.color = "rgb(112, 112, 112)";
     fontMenu.style.whiteSpace = "nowrap";
@@ -825,7 +875,7 @@ export class TextFormatPanel extends BaseFormatPanel {
           document.execCommand("justifyfull", false, undefined);
         }
       },
-      stylePanel3
+      stylePanel3,
     );
     full.style.marginRight = "9px";
     full.style.opacity = 1;
@@ -844,15 +894,15 @@ export class TextFormatPanel extends BaseFormatPanel {
       mxResources.get("left"),
       graph.cellEditor.isContentEditing()
         ? function (evt) {
-            graph.cellEditor.alignText(mxConstants.ALIGN_LEFT, evt);
-          }
+          graph.cellEditor.alignText(mxConstants.ALIGN_LEFT, evt);
+        }
         : callFn(
-            this.editorUi.menus.createStyleChangeFunction(
-              [mxConstants.STYLE_ALIGN],
-              [mxConstants.ALIGN_LEFT]
-            )
+          this.editorUi.menus.createStyleChangeFunction(
+            [mxConstants.STYLE_ALIGN],
+            [mxConstants.ALIGN_LEFT],
           ),
-      stylePanel3
+        ),
+      stylePanel3,
     );
   }
   get center() {
@@ -862,15 +912,15 @@ export class TextFormatPanel extends BaseFormatPanel {
       mxResources.get("center"),
       graph.cellEditor.isContentEditing()
         ? function (evt) {
-            graph.cellEditor.alignText(mxConstants.ALIGN_CENTER, evt);
-          }
+          graph.cellEditor.alignText(mxConstants.ALIGN_CENTER, evt);
+        }
         : callFn(
-            this.editorUi.menus.createStyleChangeFunction(
-              [mxConstants.STYLE_ALIGN],
-              [mxConstants.ALIGN_CENTER]
-            )
+          this.editorUi.menus.createStyleChangeFunction(
+            [mxConstants.STYLE_ALIGN],
+            [mxConstants.ALIGN_CENTER],
           ),
-      stylePanel3
+        ),
+      stylePanel3,
     );
   }
   get right() {
@@ -880,15 +930,15 @@ export class TextFormatPanel extends BaseFormatPanel {
       mxResources.get("right"),
       graph.cellEditor.isContentEditing()
         ? function (evt) {
-            graph.cellEditor.alignText(mxConstants.ALIGN_RIGHT, evt);
-          }
+          graph.cellEditor.alignText(mxConstants.ALIGN_RIGHT, evt);
+        }
         : callFn(
-            this.editorUi.menus.createStyleChangeFunction(
-              [mxConstants.STYLE_ALIGN],
-              [mxConstants.ALIGN_RIGHT]
-            )
+          this.editorUi.menus.createStyleChangeFunction(
+            [mxConstants.STYLE_ALIGN],
+            [mxConstants.ALIGN_RIGHT],
           ),
-      stylePanel3
+        ),
+      stylePanel3,
     );
   }
 

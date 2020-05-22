@@ -1,5 +1,33 @@
-export class UpdateCssHandler {
+import { BaseFormatHandler } from "./BaseFormatHandler";
+import mx from "@mxgraph-app/mx";
+const { mxEvent, mxConstants, mxClient, mxUtils } = mx;
+
+export class UpdateCssHandler extends BaseFormatHandler {
+  setSelected: any;
+  fontStyleItems: any;
+  sup: any;
+  sub: any;
+
+  full: any;
+  left: any;
+  center: any;
+  right: any;
+
+  currentTable: any;
+  tableRow: any;
+  tableCell: any;
+  tableWrapper: any;
+  pendingFontSize: any;
+  input: any;
+  lineHeightInput: any;
+  fontMenu: any;
+  currentFontColor: any;
+  fontColorApply: any;
+  currentBgColor: any;
+  bgColorApply: any;
+
   create() {
+    const { graph } = this;
     if (graph.cellEditor.isContentEditing()) {
       const { updateCssHandler } = this;
       if (
@@ -11,7 +39,7 @@ export class UpdateCssHandler {
         mxEvent.addListener(
           graph.cellEditor.textarea,
           "DOMSubtreeModified",
-          updateCssHandler
+          updateCssHandler,
         );
       }
 
@@ -19,12 +47,12 @@ export class UpdateCssHandler {
       mxEvent.addListener(
         graph.cellEditor.textarea,
         "touchend",
-        updateCssHandler
+        updateCssHandler,
       );
       mxEvent.addListener(
         graph.cellEditor.textarea,
         "mouseup",
-        updateCssHandler
+        updateCssHandler,
       );
       mxEvent.addListener(graph.cellEditor.textarea, "keyup", updateCssHandler);
       this.listeners.push({
@@ -37,11 +65,32 @@ export class UpdateCssHandler {
   }
 
   updateCssHandler = () => {
+    const { graph, setSelected, fontStyleItems, sup, sub, ss } = this;
+    const {
+      full,
+      left,
+      center,
+      right,
+    } = this;
+
+    const {
+      currentTable,
+      tableWrapper,
+      pendingFontSize,
+      lineHeightInput,
+      input,
+      fontMenu,
+      currentFontColor,
+      fontColorApply,
+      currentBgColor,
+      bgColorApply,
+    } = this;
+
     var updating = false;
     if (!updating) {
       updating = true;
 
-      window.setTimeout(function () {
+      window.setTimeout(() => {
         var selectedElement = graph.getSelectedElement();
         var node = selectedElement;
 
@@ -67,8 +116,8 @@ export class UpdateCssHandler {
               if (
                 elt.style.lineHeight != null &&
                 elt.style.lineHeight.substring(
-                  elt.style.lineHeight.length - 1
-                ) == "%"
+                    elt.style.lineHeight.length - 1,
+                  ) == "%"
               ) {
                 return parseInt(elt.style.lineHeight) / 100;
               } else {
@@ -126,7 +175,7 @@ export class UpdateCssHandler {
           function hasParentOrOnlyChild(name) {
             if (
               graph.getParentByName(node, name, graph.cellEditor.textarea) !=
-              null
+                null
             ) {
               return true;
             } else {
@@ -151,7 +200,7 @@ export class UpdateCssHandler {
               } else if (str.length > value.length + 1) {
                 return (
                   str.substring(str.length - value.length - 1, str.length) ==
-                  "-" + value
+                    "-" + value
                 );
               }
             }
@@ -165,25 +214,24 @@ export class UpdateCssHandler {
               css.fontWeight == "bold" ||
                 css.fontWeight > 400 ||
                 hasParentOrOnlyChild("B") ||
-                hasParentOrOnlyChild("STRONG")
+                hasParentOrOnlyChild("STRONG"),
             );
             setSelected(
               fontStyleItems[1],
               css.fontStyle == "italic" ||
                 hasParentOrOnlyChild("I") ||
-                hasParentOrOnlyChild("EM")
+                hasParentOrOnlyChild("EM"),
             );
             setSelected(fontStyleItems[2], hasParentOrOnlyChild("U"));
             setSelected(sup, hasParentOrOnlyChild("SUP"));
             setSelected(sub, hasParentOrOnlyChild("SUB"));
 
             if (!graph.cellEditor.isTableSelected()) {
-              var align =
-                graph.cellEditor.align ||
+              var align = graph.cellEditor.align ||
                 mxUtils.getValue(
                   ss.style,
                   mxConstants.STYLE_ALIGN,
-                  mxConstants.ALIGN_CENTER
+                  mxConstants.ALIGN_CENTER,
                 );
 
               if (isEqualOrPrefixed(css.textAlign, "justify")) {
@@ -204,19 +252,17 @@ export class UpdateCssHandler {
               setSelected(right, isEqualOrPrefixed(css.textAlign, "right"));
             }
 
-            currentTable = graph.getParentByName(
+            this.currentTable = graph.getParentByName(
               node,
               "TABLE",
-              graph.cellEditor.textarea
+              graph.cellEditor.textarea,
             );
-            tableRow =
-              currentTable == null
-                ? null
-                : graph.getParentByName(node, "TR", currentTable);
-            tableCell =
-              currentTable == null
-                ? null
-                : graph.getParentByNames(node, ["TD", "TH"], currentTable);
+            this.tableRow = currentTable == null
+              ? null
+              : graph.getParentByName(node, "TR", currentTable);
+            this.tableCell = currentTable == null
+              ? null
+              : graph.getParentByNames(node, ["TD", "TH"], currentTable);
             tableWrapper.style.display = currentTable != null ? "" : "none";
 
             if (document.activeElement != input) {
@@ -227,7 +273,7 @@ export class UpdateCssHandler {
               ) {
                 node.removeAttribute("size");
                 node.style.fontSize = pendingFontSize + " pt";
-                pendingFontSize = null;
+                this.pendingFontSize = null;
               } else {
                 input.value = isNaN(fontSize) ? "" : fontSize + " pt";
               }
@@ -251,7 +297,7 @@ export class UpdateCssHandler {
                   ("0" + Number($2).toString(16)).substr(-2) +
                   ("0" + Number($3).toString(16)).substr(-2)
                 );
-              }
+              },
             );
             var color2 = css.backgroundColor.replace(
               /\brgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g,
@@ -262,15 +308,15 @@ export class UpdateCssHandler {
                   ("0" + Number($2).toString(16)).substr(-2) +
                   ("0" + Number($3).toString(16)).substr(-2)
                 );
-              }
+              },
             );
 
             // Updates the color picker for the current font
             if (fontColorApply != null) {
               if (color.charAt(0) == "#") {
-                currentFontColor = color;
+                this.currentFontColor = color;
               } else {
-                currentFontColor = "#000000";
+                this.currentFontColor = "#000000";
               }
 
               fontColorApply(currentFontColor, true);
@@ -278,9 +324,9 @@ export class UpdateCssHandler {
 
             if (bgColorApply != null) {
               if (color2.charAt(0) == "#") {
-                currentBgColor = color2;
+                this.currentBgColor = color2;
               } else {
-                currentBgColor = null;
+                this.currentBgColor = null;
               }
 
               bgColorApply(currentBgColor, true);

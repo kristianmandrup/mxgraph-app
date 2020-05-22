@@ -1,9 +1,9 @@
 import mx from "@mxgraph-app/mx";
 import { Dialog } from "@mxgraph-app/dialogs";
-import { DiagramFormatPanel } from "./DiagramFormatPanel";
-import { TextFormatPanel } from "./text-format/TextFormatPanel";
-import { StyleFormatPanel } from "./StyleFormatPanel";
-import { ArrangePanel } from "./arrange/ArrangePanel";
+import { DiagramFormatPanel } from "../diagram-format/DiagramFormatPanel";
+import { TextFormatPanel } from "../text-format/TextFormatPanel";
+import { StyleFormatPanel } from "../StyleFormatPanel";
+import { ArrangePanel } from "../arrange/ArrangePanel";
 const { mxResources, mxClient, mxEvent, mxUtils } = mx;
 
 export class FormatRefresher {

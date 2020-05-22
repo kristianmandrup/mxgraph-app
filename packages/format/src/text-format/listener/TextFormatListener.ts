@@ -1,12 +1,46 @@
+import mx from "@mxgraph-app/mx";
+const { mxConstants, mxUtils } = mx;
+
 export class TextFormatListener {
   format: any;
+  setSelected: any;
+  fontStyleItems: any;
+  fontMenu: any;
+  defaultFont: any;
+  defaultFontSize: any;
+  verticalItem: any;
+  input: any;
+
+  left: any;
+  center: any;
+  right: any;
+
+  top: any;
+  middle: any;
+  bottom: any;
+
+  positionSelect: any;
 
   get ss() {
     return this.format.getSelectionState();
   }
 
   listener = (_sender?, _evt?, force?) => {
-    const { ss, setSelected, fontStyleItems } = this;
+    const {
+      positionSelect,
+      input,
+      verticalItem,
+      fontMenu,
+      ss,
+      setSelected,
+      fontStyleItems,
+      left,
+      center,
+      right,
+      top,
+      middle,
+      bottom,
+    } = this;
 
     var fontStyle = mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSTYLE, 0);
     setSelected(

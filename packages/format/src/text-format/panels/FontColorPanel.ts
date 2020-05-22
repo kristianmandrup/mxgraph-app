@@ -1,5 +1,20 @@
-export class FontColorPanel {
+import mx from "@mxgraph-app/mx";
+import { BaseFormatPanel } from "../../BaseFormatPanel";
+const { mxConstants, mxClient, mxResources } = mx;
+
+export class FontColorPanel extends BaseFormatPanel {
+  editorUi: any;
+  currentFontColor: any;
+  fontColorApply: any;
+  bgPanel: any;
+  borderPanel: any;
+
+  constructor(format, editorUi, container) {
+    super(format, editorUi, container);
+  }
+
   create() {
+    const { graph } = this;
     const panel = graph.cellEditor.isContentEditing()
       ? this.editFontColorOption()
       : this.fontColorOption();
@@ -8,12 +23,13 @@ export class FontColorPanel {
   }
 
   editFontColorOption() {
+    const { currentFontColor, graph, fontColorApply } = this;
     return this.createColorOption(
       mxResources.get("fontColor"),
-      function () {
+      () => {
         return currentFontColor;
       },
-      function (color) {
+      (color) => {
         if (mxClient.IS_FF) {
           // Workaround for Firefox that adds the font element around
           // anchor elements which ignore inherited colors is to move
@@ -79,11 +95,11 @@ export class FontColorPanel {
       },
       "#000000",
       {
-        install: function (apply) {
-          fontColorApply = apply;
+        install: (apply) => {
+          this.fontColorApply = apply;
         },
-        destroy: function () {
-          fontColorApply = null;
+        destroy: () => {
+          this.fontColorApply = null;
         },
       },
       null,
@@ -92,11 +108,12 @@ export class FontColorPanel {
   }
 
   fontColorOption() {
+    const { bgPanel, borderPanel, graph } = this;
     return this.createCellColorOption(
       mxResources.get("fontColor"),
       mxConstants.STYLE_FONTCOLOR,
       "#000000",
-      function (color) {
+      (color) => {
         if (color == null || color == mxConstants.NONE) {
           bgPanel.style.display = "none";
         } else {
@@ -105,7 +122,7 @@ export class FontColorPanel {
 
         borderPanel.style.display = bgPanel.style.display;
       },
-      function (color) {
+      (color) => {
         if (color == null || color == mxConstants.NONE) {
           graph.setCellStyles(
             mxConstants.STYLE_NOLABEL,
