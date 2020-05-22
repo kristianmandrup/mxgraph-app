@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { BaseFormatPanel } from "../../BaseFormatPanel";
+import { BaseFormatPanel } from "../../base/BaseFormatPanel";
 const { mxConstants, mxResources } = mx;
 
 export class ExtraPanel extends BaseFormatPanel {
@@ -18,7 +18,7 @@ export class ExtraPanel extends BaseFormatPanel {
       "null",
       null,
       null,
-      true
+      true,
     );
     wwOpt.style.fontWeight = "bold";
 
@@ -35,7 +35,7 @@ export class ExtraPanel extends BaseFormatPanel {
       null,
       null,
       null,
-      ui.actions.get("formattedText")
+      ui.actions.get("formattedText"),
     );
     htmlOpt.style.fontWeight = "bold";
     extraPanel.appendChild(htmlOpt);

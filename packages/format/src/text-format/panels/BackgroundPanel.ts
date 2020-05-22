@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { BaseFormatPanel } from "../../BaseFormatPanel";
+import { BaseFormatPanel } from "../../base/BaseFormatPanel";
 const { mxConstants, mxResources } = mx;
 
 export class BackgroundPanel extends BaseFormatPanel {
@@ -10,42 +10,42 @@ export class BackgroundPanel extends BaseFormatPanel {
     const { graph, currentBgColor } = this;
     const bgPanel = graph.cellEditor.isContentEditing()
       ? this.createColorOption(
-          mxResources.get("backgroundColor"),
-          () => {
-            return currentBgColor;
+        mxResources.get("backgroundColor"),
+        () => {
+          return currentBgColor;
+        },
+        (color) => {
+          document.execCommand(
+            "backcolor",
+            false,
+            color != mxConstants.NONE ? color : "transparent",
+          );
+        },
+        "#ffffff",
+        {
+          install: (apply) => {
+            this.bgColorApply = apply;
           },
-          (color) => {
-            document.execCommand(
-              "backcolor",
-              false,
-              color != mxConstants.NONE ? color : "transparent"
-            );
+          destroy: () => {
+            this.bgColorApply = null;
           },
-          "#ffffff",
-          {
-            install: (apply) => {
-              this.bgColorApply = apply;
-            },
-            destroy: () => {
-              this.bgColorApply = null;
-            },
-          },
-          null,
-          true
-        )
+        },
+        null,
+        true,
+      )
       : this.createCellColorOption(
-          mxResources.get("backgroundColor"),
-          mxConstants.STYLE_LABEL_BACKGROUNDCOLOR,
-          "#ffffff",
-          null,
-          function (_color) {
-            graph.updateLabelElements(graph.getSelectionCells(), function (
-              elt
-            ) {
-              elt.style.backgroundColor = null;
-            });
-          }
-        );
+        mxResources.get("backgroundColor"),
+        mxConstants.STYLE_LABEL_BACKGROUNDCOLOR,
+        "#ffffff",
+        null,
+        function (_color) {
+          graph.updateLabelElements(graph.getSelectionCells(), function (
+            elt,
+          ) {
+            elt.style.backgroundColor = null;
+          });
+        },
+      );
     bgPanel.style.fontWeight = "bold";
     return bgPanel;
   }

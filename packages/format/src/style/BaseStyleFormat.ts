@@ -1,4 +1,4 @@
-import { BaseFormatPanel } from "../BaseFormatPanel";
+import { BaseFormatPanel } from "../base/BaseFormatPanel";
 
 export class BaseStyleFormat extends BaseFormatPanel {
   /**

@@ -1,4 +1,4 @@
-import { BaseFormatPanel } from "../BaseFormatPanel";
+import { BaseFormatPanel } from "../base/BaseFormatPanel";
 import mx from "@mxgraph-app/mx";
 import { UpdateCssHandler } from "./handler/UpdateCssHandler";
 import { BackgroundPanel } from "./panels/BackgroundPanel";

@@ -1,6 +1,6 @@
 import { ToolbarFormatButtons } from "../buttons/ToolbarFormatButtons";
 import mx from "@mxgraph-app/mx";
-import { BaseFormatPanel } from "../../BaseFormatPanel";
+import { BaseFormatPanel } from "../../base/BaseFormatPanel";
 const { mxUtils, mxClient, mxEvent, mxConstants, mxResources } = mx;
 
 export class ContainerPanel extends BaseFormatPanel {
@@ -23,8 +23,8 @@ export class ContainerPanel extends BaseFormatPanel {
       container.appendChild(
         this.createRelativeOption(
           mxResources.get("opacity"),
-          mxConstants.STYLE_TEXT_OPACITY
-        )
+          mxConstants.STYLE_TEXT_OPACITY,
+        ),
       );
       container.appendChild(spacingPanel);
     } else {
@@ -60,8 +60,8 @@ export class ContainerPanel extends BaseFormatPanel {
               graph.cellEditor.textarea.firstChild != null
             ) {
               if (graph.cellEditor.textarea.firstChild.nodeName != "P") {
-                graph.cellEditor.textarea.innerHTML =
-                  "<p>" + graph.cellEditor.textarea.innerHTML + "</p>";
+                graph.cellEditor.textarea.innerHTML = "<p>" +
+                  graph.cellEditor.textarea.innerHTML + "</p>";
               }
 
               node = graph.cellEditor.textarea.firstChild;
@@ -97,8 +97,8 @@ export class ContainerPanel extends BaseFormatPanel {
             });
 
             input.value = "120 %";
-          }
-        )
+          },
+        ),
       );
 
       var insertPanel: any = stylePanel.cloneNode(false);

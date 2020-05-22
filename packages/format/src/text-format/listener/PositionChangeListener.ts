@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { BaseFormatPanel } from "../../BaseFormatPanel";
+import { BaseFormatPanel } from "../../base/BaseFormatPanel";
 const { mxConstants, mxEvent } = mx;
 import { lset } from "./lset";
 
@@ -17,22 +17,22 @@ export class PositionChangeListener extends BaseFormatPanel {
           graph.setCellStyles(
             mxConstants.STYLE_LABEL_POSITION,
             vals[0],
-            graph.getSelectionCells()
+            graph.getSelectionCells(),
           );
           graph.setCellStyles(
             mxConstants.STYLE_VERTICAL_LABEL_POSITION,
             vals[1],
-            graph.getSelectionCells()
+            graph.getSelectionCells(),
           );
           graph.setCellStyles(
             mxConstants.STYLE_ALIGN,
             vals[2],
-            graph.getSelectionCells()
+            graph.getSelectionCells(),
           );
           graph.setCellStyles(
             mxConstants.STYLE_VERTICAL_ALIGN,
             vals[3],
-            graph.getSelectionCells()
+            graph.getSelectionCells(),
           );
         }
       } finally {

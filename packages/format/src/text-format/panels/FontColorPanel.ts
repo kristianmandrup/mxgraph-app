@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { BaseFormatPanel } from "../../BaseFormatPanel";
+import { BaseFormatPanel } from "../../base/BaseFormatPanel";
 const { mxConstants, mxClient, mxResources } = mx;
 
 export class FontColorPanel extends BaseFormatPanel {
@@ -23,7 +23,7 @@ export class FontColorPanel extends BaseFormatPanel {
   }
 
   editFontColorOption() {
-    const { currentFontColor, graph, fontColorApply } = this;
+    const { currentFontColor, graph } = this;
     return this.createColorOption(
       mxResources.get("fontColor"),
       () => {
@@ -47,7 +47,7 @@ export class FontColorPanel extends BaseFormatPanel {
           document.execCommand(
             "forecolor",
             false,
-            color != mxConstants.NONE ? color : "transparent"
+            color != mxConstants.NONE ? color : "transparent",
           );
 
           // Finds the new or changed font element
@@ -89,7 +89,7 @@ export class FontColorPanel extends BaseFormatPanel {
           document.execCommand(
             "forecolor",
             false,
-            color != mxConstants.NONE ? color : "transparent"
+            color != mxConstants.NONE ? color : "transparent",
           );
         }
       },
@@ -103,7 +103,7 @@ export class FontColorPanel extends BaseFormatPanel {
         },
       },
       null,
-      true
+      true,
     );
   }
 
@@ -127,13 +127,13 @@ export class FontColorPanel extends BaseFormatPanel {
           graph.setCellStyles(
             mxConstants.STYLE_NOLABEL,
             "1",
-            graph.getSelectionCells()
+            graph.getSelectionCells(),
           );
         } else {
           graph.setCellStyles(
             mxConstants.STYLE_NOLABEL,
             null,
-            graph.getSelectionCells()
+            graph.getSelectionCells(),
           );
         }
 
@@ -141,7 +141,7 @@ export class FontColorPanel extends BaseFormatPanel {
           elt.removeAttribute("color");
           elt.style.color = null;
         });
-      }
+      },
     );
   }
 }

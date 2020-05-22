@@ -1,6 +1,6 @@
 import mx from "@mxgraph-app/mx";
 import { ChangePageSetup, PageSetupDialog } from "@mxgraph-app/dialogs";
-import { BaseFormatPanel } from "../BaseFormatPanel";
+import { BaseFormatPanel } from "../base/BaseFormatPanel";
 const {
   mxEventObject,
   mxResources,
