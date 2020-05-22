@@ -1,5 +1,4 @@
 import mx from "@mxgraph-app/mx";
-import resources from "@mxgraph-app/resources";
 import { Buttons } from "./Buttons";
 import { InputHandlerInstaller } from "./InputHandlerInstaller";
 import { Stepper } from "./Stepper";
@@ -8,8 +7,11 @@ import { FormatOption } from "./options/FormatOption";
 import { CellOption } from "./options/CellOption";
 import { CellColorOption } from "./options/CellColorOption";
 import { ColorOption } from "./options/ColorOption";
-const { mxEventObject, mxConstants, mxClient, mxEvent, mxUtils } = mx;
-const { IMAGE_PATH } = resources;
+import { Arrow } from "./Arrow";
+import { RelativeOption } from "./options/RelativeOption";
+import { UnitInput } from "./UnitInput";
+import { SelectionState } from "./SelectionState";
+const { mxEvent, mxUtils } = mx;
 
 /**
  * Base class for format panels.
@@ -33,27 +35,12 @@ export class BaseFormatPanel extends Base {
    * Adds the given color option.
    */
   getSelectionState() {
-    var graph = this.editorUi.editor.graph;
-    var cells = graph.getSelectionCells();
-    var shape = null;
+    return this.newSelectionState().getState();
+  }
 
-    for (var i = 0; i < cells.length; i++) {
-      var state = graph.view.getState(cells[i]);
-
-      if (state != null) {
-        var tmp = mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null);
-
-        if (tmp != null) {
-          if (shape == null) {
-            shape = tmp;
-          } else if (shape != tmp) {
-            return null;
-          }
-        }
-      }
-    }
-
-    return shape;
+  newSelectionState() {
+    const { editorUi, format, container } = this;
+    return new SelectionState(format, editorUi, container);
   }
 
   /**
@@ -87,17 +74,6 @@ export class BaseFormatPanel extends Base {
       this.editorUi,
       this.container,
     );
-  }
-
-  /**
-   * Adds the given option.
-   */
-  createPanel() {
-    var div = document.createElement("div");
-    div.className = "geFormatSection";
-    div.style.padding = "12px 0px 12px 18px";
-
-    return div;
   }
 
   /**
@@ -239,53 +215,7 @@ export class BaseFormatPanel extends Base {
    *
    */
   addArrow(elt, height?) {
-    height = height != null ? height : 10;
-
-    var arrow = document.createElement("div");
-    arrow.style.display = mxClient.IS_QUIRKS ? "inline" : "inline-block";
-    arrow.style.padding = "6px";
-    arrow.style.paddingRight = "4px";
-
-    var m = 10 - height;
-
-    if (m == 2) {
-      arrow.style.paddingTop = 6 + "px";
-    } else if (m > 0) {
-      arrow.style.paddingTop = 6 - m + "px";
-    } else {
-      arrow.style.marginTop = "-2px";
-    }
-
-    arrow.style.height = height + "px";
-    arrow.style.borderLeft = "1px solid #a0a0a0";
-    arrow.innerHTML = '<img border="0" src="' +
-      (mxClient.IS_SVG
-        ? "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHBJREFUeNpidHB2ZyAGsACxDRBPIKCuA6TwCBB/h2rABu4A8SYmKCcXiP/iUFgAxL9gCi8A8SwsirZCMQMTkmANEH9E4v+CmsaArvAdyNFI/FlQ92EoBIE+qCRIUz168DBgsU4OqhinQpgHMABAgAEALY4XLIsJ20oAAAAASUVORK5CYII="
-        : IMAGE_PATH + "/dropdown.png") +
-      '" style="margin-bottom:4px;">';
-    mxUtils.setOpacity(arrow, 70);
-
-    var symbol = elt.getElementsByTagName("div")[0];
-
-    if (symbol != null) {
-      symbol.style.paddingRight = "6px";
-      symbol.style.marginLeft = "4px";
-      symbol.style.marginTop = "-1px";
-      symbol.style.display = mxClient.IS_QUIRKS ? "inline" : "inline-block";
-      mxUtils.setOpacity(symbol, 60);
-    }
-
-    mxUtils.setOpacity(elt, 100);
-    elt.style.border = "1px solid #a0a0a0";
-    elt.style.backgroundColor = this.buttonBackgroundColor;
-    elt.style.backgroundImage = "none";
-    elt.style.width = "auto";
-    elt.className += " geColorBtn";
-    mxUtils.setPrefixedStyle(elt.style, "borderRadius", "3px");
-
-    elt.appendChild(arrow);
-
-    return symbol;
+    return new Arrow().add(elt, height);
   }
 
   /**
@@ -293,7 +223,7 @@ export class BaseFormatPanel extends Base {
    */
   addUnitInput(
     container,
-    _unit,
+    unit,
     right,
     width,
     update,
@@ -302,127 +232,34 @@ export class BaseFormatPanel extends Base {
     disableFocus?,
     isFloat?,
   ) {
-    marginTop = marginTop != null ? marginTop : 0;
-
-    var input = document.createElement("input");
-    input.style.position = "absolute";
-    input.style.textAlign = "right";
-    input.style.marginTop = "-2px";
-    input.style.right = right + 12 + "px";
-    input.style.width = width + "px";
-    container.appendChild(input);
-
-    var stepper = this.createStepper(
-      input,
+    return this.newUnitInput().add(
+      container,
+      unit,
+      right,
+      width,
       update,
       step,
-      null,
+      marginTop,
       disableFocus,
-      null,
       isFloat,
     );
-    stepper.style.marginTop = marginTop - 2 + "px";
-    stepper.style.right = right + "px";
-    container.appendChild(stepper);
+  }
 
-    return input;
+  newUnitInput() {
+    const { format, editorUi, container } = this;
+    return new UnitInput(format, editorUi, container);
   }
 
   /**
    *
    */
   createRelativeOption(label, key, width?, handler?, init?) {
-    width = width != null ? width : 44;
+    return this.newRelativeOption().create(label, key, width, handler, init);
+  }
 
-    var graph = this.editorUi.editor.graph;
-    var div = this.createPanel();
-    div.style.paddingTop = "10px";
-    div.style.paddingBottom = "10px";
-    mxUtils.write(div, label);
-    div.style.fontWeight = "bold";
-
-    var update = (evt) => {
-      if (handler != null) {
-        handler(input);
-      } else {
-        var value: any = parseInt(input.value);
-        value = Math.min(100, Math.max(0, isNaN(value) ? 100 : value));
-        var state = graph.view.getState(graph.getSelectionCell());
-
-        if (state != null && value != mxUtils.getValue(state.style, key, 100)) {
-          // Removes entry in style (assumes 100 is default for relative values)
-          if (value == 100) {
-            value = null;
-          }
-
-          graph.setCellStyles(key, value, graph.getSelectionCells());
-          this.editorUi.fireEvent(
-            new mxEventObject(
-              "styleChanged",
-              "keys",
-              [key],
-              "values",
-              [value],
-              "cells",
-              graph.getSelectionCells(),
-            ),
-          );
-        }
-
-        input.value = (value != null ? value : "100") + " %";
-      }
-
-      mxEvent.consume(evt);
-    };
-
-    var input = this.addUnitInput(
-      div,
-      "%",
-      20,
-      width,
-      update,
-      10,
-      -15,
-      handler != null,
-    );
-
-    if (key != null) {
-      var listener = (_sender?, _evt?, force?) => {
-        if (force || input != document.activeElement) {
-          var ss = this.format.getSelectionState();
-          var tmp = parseInt(mxUtils.getValue(ss.style, key, 100));
-          input.value = isNaN(tmp) ? "" : tmp + " %";
-        }
-      };
-
-      mxEvent.addListener(input, "keydown", (e) => {
-        if (e.keyCode == 13) {
-          graph.container.focus();
-          mxEvent.consume(e);
-        } else if (e.keyCode == 27) {
-          listener(null, null, true);
-          graph.container.focus();
-          mxEvent.consume(e);
-        }
-      });
-
-      graph.getModel().addListener(mxEvent.CHANGE, listener);
-      this.listeners.push({
-        destroy: function () {
-          graph.getModel().removeListener(listener);
-        },
-      });
-      listener();
-    }
-
-    mxEvent.addListener(input, "blur", update);
-    mxEvent.addListener(input, "change", update);
-
-    if (init != null) {
-      init(input);
-    }
-
-    return div;
+  newRelativeOption() {
+    const { format, editorUi, container } = this;
+    return new RelativeOption(format, editorUi, container);
   }
 
   /**

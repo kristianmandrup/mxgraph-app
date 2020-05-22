@@ -12,6 +12,17 @@ export class Base {
     this.listeners = [];
   }
 
+  /**
+   * Adds the given option.
+   */
+  createPanel() {
+    var div = document.createElement("div");
+    div.className = "geFormatSection";
+    div.style.padding = "12px 0px 12px 18px";
+
+    return div;
+  }
+
   get ui() {
     return this.editorUi;
   }
