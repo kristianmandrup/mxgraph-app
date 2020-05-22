@@ -56,7 +56,7 @@ export class BaseFormatPanel extends Base {
     textEditFallback?,
     isFloat?,
   ) {
-    this.createInputHandlerInstaller().install(
+    return this.createInputHandlerInstaller().install(
       input,
       key,
       defaultValue,
