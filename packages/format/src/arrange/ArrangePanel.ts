@@ -1,6 +1,6 @@
 import { BaseFormatPanel } from "../BaseFormatPanel";
 import mx from "@mxgraph-app/mx";
-import { StyleFormatPanel } from "../StyleFormatPanel";
+import { StyleFormatPanel } from "../style/StyleFormatPanel";
 import { GeometryManager } from "./GeometryManager";
 const { mxConstants, mxClient, mxResources, mxEvent, mxUtils } = mx;
 
@@ -124,7 +124,7 @@ export class ArrangePanel extends BaseFormatPanel {
             ui.handleError(e);
           }
         },
-        panel
+        panel,
       ),
       ui.toolbar.addButton(
         "geSprite-insertcolumnafter",
@@ -136,7 +136,7 @@ export class ArrangePanel extends BaseFormatPanel {
             ui.handleError(e);
           }
         },
-        panel
+        panel,
       ),
       ui.toolbar.addButton(
         "geSprite-deletecolumn",
@@ -148,7 +148,7 @@ export class ArrangePanel extends BaseFormatPanel {
             ui.handleError(e);
           }
         },
-        panel
+        panel,
       ),
       ui.toolbar.addButton(
         "geSprite-insertrowbefore",
@@ -160,7 +160,7 @@ export class ArrangePanel extends BaseFormatPanel {
             ui.handleError(e);
           }
         },
-        panel
+        panel,
       ),
       ui.toolbar.addButton(
         "geSprite-insertrowafter",
@@ -172,7 +172,7 @@ export class ArrangePanel extends BaseFormatPanel {
             ui.handleError(e);
           }
         },
-        panel
+        panel,
       ),
       ui.toolbar.addButton(
         "geSprite-deleterow",
@@ -184,7 +184,7 @@ export class ArrangePanel extends BaseFormatPanel {
             ui.handleError(e);
           }
         },
-        panel
+        panel,
       ),
     ];
     this.styleButtons(btns);
@@ -209,7 +209,7 @@ export class ArrangePanel extends BaseFormatPanel {
       mxResources.get("toFront") +
         " (" +
         this.editorUi.actions.get("toFront").shortcut +
-        ")"
+        ")",
     );
     btn.style.width = "100px";
     btn.style.marginRight = "2px";
@@ -224,7 +224,7 @@ export class ArrangePanel extends BaseFormatPanel {
       mxResources.get("toBack") +
         " (" +
         this.editorUi.actions.get("toBack").shortcut +
-        ")"
+        ")",
     );
     btn.style.width = "100px";
     div.appendChild(btn);
@@ -256,7 +256,7 @@ export class ArrangePanel extends BaseFormatPanel {
         mxResources.get("group") +
           " (" +
           this.editorUi.actions.get("group").shortcut +
-          ")"
+          ")",
       );
       btn.style.width = "202px";
       btn.style.marginBottom = "2px";
@@ -277,7 +277,7 @@ export class ArrangePanel extends BaseFormatPanel {
         mxResources.get("ungroup") +
           " (" +
           this.editorUi.actions.get("ungroup").shortcut +
-          ")"
+          ")",
       );
       btn.style.width = "202px";
       btn.style.marginBottom = "2px";
@@ -300,7 +300,7 @@ export class ArrangePanel extends BaseFormatPanel {
         mxResources.get("copySize") +
           " (" +
           this.editorUi.actions.get("copySize").shortcut +
-          ")"
+          ")",
       );
       btn.style.width = "202px";
       btn.style.marginBottom = "2px";
@@ -310,7 +310,7 @@ export class ArrangePanel extends BaseFormatPanel {
 
       if (ui.copiedSize != null) {
         var btn2 = mxUtils.button(mxResources.get("pasteSize"), function (
-          _evt
+          _evt,
         ) {
           ui.actions.get("pasteSize").funct();
         });
@@ -320,7 +320,7 @@ export class ArrangePanel extends BaseFormatPanel {
           mxResources.get("pasteSize") +
             " (" +
             this.editorUi.actions.get("pasteSize").shortcut +
-            ")"
+            ")",
         );
 
         div.appendChild(btn2);
@@ -365,7 +365,7 @@ export class ArrangePanel extends BaseFormatPanel {
         mxResources.get("clearWaypoints") +
           " (" +
           this.editorUi.actions.get("clearWaypoints").shortcut +
-          ")"
+          ")",
       );
       btn.style.width = "202px";
       btn.style.marginBottom = "2px";
@@ -388,7 +388,7 @@ export class ArrangePanel extends BaseFormatPanel {
         mxResources.get("editData") +
           " (" +
           this.editorUi.actions.get("editData").shortcut +
-          ")"
+          ")",
       );
       btn.style.width = "100px";
       btn.style.marginBottom = "2px";
@@ -439,7 +439,7 @@ export class ArrangePanel extends BaseFormatPanel {
       function () {
         graph.alignCells(mxConstants.ALIGN_LEFT);
       },
-      stylePanel
+      stylePanel,
     );
     var center = this.editorUi.toolbar.addButton(
       "geSprite-aligncenter",
@@ -447,7 +447,7 @@ export class ArrangePanel extends BaseFormatPanel {
       function () {
         graph.alignCells(mxConstants.ALIGN_CENTER);
       },
-      stylePanel
+      stylePanel,
     );
     var right = this.editorUi.toolbar.addButton(
       "geSprite-alignright",
@@ -455,7 +455,7 @@ export class ArrangePanel extends BaseFormatPanel {
       function () {
         graph.alignCells(mxConstants.ALIGN_RIGHT);
       },
-      stylePanel
+      stylePanel,
     );
 
     var top = this.editorUi.toolbar.addButton(
@@ -464,7 +464,7 @@ export class ArrangePanel extends BaseFormatPanel {
       function () {
         graph.alignCells(mxConstants.ALIGN_TOP);
       },
-      stylePanel
+      stylePanel,
     );
     var middle = this.editorUi.toolbar.addButton(
       "geSprite-alignmiddle",
@@ -472,7 +472,7 @@ export class ArrangePanel extends BaseFormatPanel {
       function () {
         graph.alignCells(mxConstants.ALIGN_MIDDLE);
       },
-      stylePanel
+      stylePanel,
     );
     var bottom = this.editorUi.toolbar.addButton(
       "geSprite-alignbottom",
@@ -480,7 +480,7 @@ export class ArrangePanel extends BaseFormatPanel {
       function () {
         graph.alignCells(mxConstants.ALIGN_BOTTOM);
       },
-      stylePanel
+      stylePanel,
     );
 
     this.styleButtons([left, center, right, top, middle, bottom]);
@@ -595,7 +595,7 @@ export class ArrangePanel extends BaseFormatPanel {
         null,
         null,
         null,
-        null
+        null,
       );
 
       mxUtils.br(div);
@@ -619,7 +619,7 @@ export class ArrangePanel extends BaseFormatPanel {
 
       btn.setAttribute(
         "title",
-        label + " (" + this.editorUi.actions.get("turn").shortcut + ")"
+        label + " (" + this.editorUi.actions.get("turn").shortcut + ")",
       );
       btn.style.width = "202px";
       div.appendChild(btn);
@@ -634,7 +634,7 @@ export class ArrangePanel extends BaseFormatPanel {
         if (force || document.activeElement != input) {
           ss = this.format.getSelectionState();
           var tmp = parseFloat(
-            mxUtils.getValue(ss.style, mxConstants.STYLE_ROTATION, 0)
+            mxUtils.getValue(ss.style, mxConstants.STYLE_ROTATION, 0),
           );
           input.value = isNaN(tmp) ? "" : tmp + "°";
         }
@@ -648,7 +648,7 @@ export class ArrangePanel extends BaseFormatPanel {
         360,
         "°",
         null,
-        true
+        true,
       );
       this.addKeyHandler(input, listener);
 

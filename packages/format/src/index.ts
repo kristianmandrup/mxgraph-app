@@ -4,4 +4,4 @@ export * from "./diagram-format";
 export * from "./refresher";
 export * from "./BaseFormatPanel";
 export * from "./Format";
-export * from "./StyleFormatPanel";
+export * from "./style/StyleFormatPanel";

@@ -27,8 +27,14 @@ export class DiagramFormatPanel {
   isFloatUnit: any;
   listeners: any[] = [];
   addKeyHandler: any;
+  format: any;
+  container: any;
 
-  constructor(x, y, z) {}
+  constructor(format, editorUi, container) {
+    this.format = format;
+    this.editorUi = editorUi;
+    this.container = container;
+  }
   /**
    * Adds the label menu items to the given menu and parent.
    */
@@ -47,7 +53,7 @@ export class DiagramFormatPanel {
           () => {
             return graph.connectionArrowsEnabled;
           },
-          (checked) => {
+          (_checked) => {
             ui.actions.get("connectionArrows").funct();
           },
           {
@@ -60,8 +66,8 @@ export class DiagramFormatPanel {
             destroy: () => {
               ui.removeListener(listener);
             },
-          }
-        )
+          },
+        ),
       );
 
       // Connection points
@@ -71,7 +77,7 @@ export class DiagramFormatPanel {
           () => {
             return graph.connectionHandler.isEnabled();
           },
-          (checked) => {
+          (_checked) => {
             ui.actions.get("connectionPoints").funct();
           },
           {
@@ -85,8 +91,8 @@ export class DiagramFormatPanel {
             destroy: () => {
               ui.removeListener(listener);
             },
-          }
-        )
+          },
+        ),
       );
 
       // Guides
@@ -96,7 +102,7 @@ export class DiagramFormatPanel {
           () => {
             return graph.graphHandler.guidesEnabled;
           },
-          (checked) => {
+          (_checked) => {
             ui.actions.get("guides").funct();
           },
           {
@@ -110,8 +116,8 @@ export class DiagramFormatPanel {
             destroy: () => {
               ui.removeListener(listener);
             },
-          }
-        )
+          },
+        ),
       );
     }
     return div;
@@ -138,7 +144,7 @@ export class DiagramFormatPanel {
       null,
       null,
       null,
-      this.isFloatUnit()
+      this.isFloatUnit(),
     );
     input.style.display = graph.isGridEnabled() ? "" : "none";
     stepper.style.display = input.style.display;
@@ -157,7 +163,7 @@ export class DiagramFormatPanel {
     mxEvent.addListener(input, "blur", this.update);
     mxEvent.addListener(input, "change", this.update);
 
-    var unitChangeListener = function (sender, evt) {
+    var unitChangeListener = function (_sender, _evt) {
       input.value = fPanel.inUnit(graph.getGridSize()) + " " + fPanel.getUnit();
       fPanel.format.refresh();
     };
@@ -212,7 +218,7 @@ export class DiagramFormatPanel {
           destroy: function () {
             ui.removeListener(this.listener);
           },
-        }
+        },
       );
 
       panel.appendChild(input);
@@ -256,8 +262,8 @@ export class DiagramFormatPanel {
             destroy: function () {
               ui.removeListener(this.listener);
             },
-          }
-        )
+          },
+        ),
       );
     }
   }
@@ -268,7 +274,7 @@ export class DiagramFormatPanel {
       ? parseFloat(input.value)
       : parseInt(input.value);
     value = fPanel.fromUnit(
-      Math.max(fPanel.inUnit(1), isNaN(value) ? fPanel.inUnit(10) : value)
+      Math.max(fPanel.inUnit(1), isNaN(value) ? fPanel.inUnit(10) : value),
     );
 
     if (value != graph.getGridSize()) {
@@ -284,10 +290,6 @@ export class DiagramFormatPanel {
    */
   addDocumentProperties(div) {
     // Hook for subclassers
-    var ui = this.editorUi;
-    var editor = ui.editor;
-    var graph = editor.graph;
-
     div.appendChild(this.createTitle(mxResources.get("options")));
 
     return div;
@@ -319,7 +321,7 @@ export class DiagramFormatPanel {
 
           graph.model.execute(change);
         }
-      }
+      },
     );
 
     this.addKeyHandler(accessor.widthInput, function () {
@@ -354,7 +356,7 @@ export class DiagramFormatPanel {
    * Adds the label menu items to the given menu and parent.
    */
   addStyleOps(div) {
-    var btn = mxUtils.button(mxResources.get("editData"), (evt) => {
+    var btn = mxUtils.button(mxResources.get("editData"), (_evt) => {
       this.editorUi.actions.get("editData").funct();
     });
 
@@ -363,7 +365,7 @@ export class DiagramFormatPanel {
       mxResources.get("editData") +
         " (" +
         this.editorUi.actions.get("editData").shortcut +
-        ")"
+        ")",
     );
     btn.style.width = "202px";
     btn.style.marginBottom = "2px";
@@ -371,7 +373,7 @@ export class DiagramFormatPanel {
 
     mxUtils.br(div);
 
-    btn = mxUtils.button(mxResources.get("clearDefaultStyle"), (evt) => {
+    btn = mxUtils.button(mxResources.get("clearDefaultStyle"), (_evt) => {
       this.editorUi.actions.get("clearDefaultStyle").funct();
     });
 
@@ -380,7 +382,7 @@ export class DiagramFormatPanel {
       mxResources.get("clearDefaultStyle") +
         " (" +
         this.editorUi.actions.get("clearDefaultStyle").shortcut +
-        ")"
+        ")",
     );
     btn.style.width = "202px";
     div.appendChild(btn);
