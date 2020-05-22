@@ -279,4 +279,60 @@ export class ToolbarFormatButtons {
     btns[2].style.marginRight = "9px";
     return this;
   }
+
+  addBtns4() {
+    var btns = [
+      this.editorUi.toolbar.addButton(
+        "geSprite-orderedlist",
+        mxResources.get("numberedList"),
+        function () {
+          document.execCommand("insertorderedlist", false);
+        },
+        tmp
+      ),
+      this.editorUi.toolbar.addButton(
+        "geSprite-unorderedlist",
+        mxResources.get("bulletedList"),
+        function () {
+          document.execCommand("insertunorderedlist", false);
+        },
+        tmp
+      ),
+      this.editorUi.toolbar.addButton(
+        "geSprite-outdent",
+        mxResources.get("decreaseIndent"),
+        function () {
+          document.execCommand("outdent", false);
+        },
+        tmp
+      ),
+      this.editorUi.toolbar.addButton(
+        "geSprite-indent",
+        mxResources.get("increaseIndent"),
+        function () {
+          document.execCommand("indent", false);
+        },
+        tmp
+      ),
+      this.editorUi.toolbar.addButton(
+        "geSprite-removeformat",
+        mxResources.get("removeFormat"),
+        function () {
+          document.execCommand("removeformat", false);
+        },
+        tmp
+      ),
+      this.editorUi.toolbar.addButton(
+        "geSprite-code",
+        mxResources.get("html"),
+        function () {
+          graph.cellEditor.toggleViewMode();
+        },
+        tmp
+      ),
+    ];
+    this.styleButtons(btns);
+    btns[btns.length - 2].style.marginLeft = "9px";
+    return this;
+  }
 }

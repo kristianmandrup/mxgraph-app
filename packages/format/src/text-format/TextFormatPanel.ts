@@ -6,7 +6,8 @@ import { FontColorPanel } from "./panels/FontColorPanel";
 import { ExtraPanel } from "./panels/ExtraPanel";
 import { InputHandler } from "./helpers/InputHandler";
 import { ContainerPanel } from "./panels/ContainerPanel";
-import { PositionChangeListener } from "./listener/PositionChangeListener";
+import { TextFormatListener, PositionChangeListener } from "./listener";
+import { ToolbarFormatButtons } from "./buttons";
 const { mxConstants, mxClient, mxResources, mxEvent, mxUtils } = mx;
 
 /**
@@ -20,14 +21,27 @@ export class TextFormatPanel extends BaseFormatPanel {
   protected _spacingPanel: any;
   protected _fontStyleItems: any;
   protected _bottomSpacing: any;
+  protected _stylePanel2: any;
+  protected _stylePanel3: any;
+
+  stylePanel: any;
+  input: any;
+  inputUpdate: any;
+  cssMenu: any;
+  cssPanel: any;
+  full: any;
+
   /**
    * Sets the default font family and size
    */
   defaultFont = "Helvetica";
   defaultFontSize = "12";
 
+  toolbarFormatButtons: ToolbarFormatButtons;
+
   constructor(format, editorUi, container) {
     super(format, editorUi, container);
+    this.toolbarFormatButtons = new ToolbarFormatButtons();
     this.init();
   }
 
@@ -39,334 +53,59 @@ export class TextFormatPanel extends BaseFormatPanel {
     this.addFont(this.container);
   }
 
+  listener = () => {
+    return new TextFormatListener().listener;
+  };
+
+  get editor() {
+    return this.editorUi.editor;
+  }
+
+  get graph() {
+    return this.editor.graph;
+  }
+
+  get ss() {
+    return this.format.getSelectionState();
+  }
+
   /**
    * Adds the label menu items to the given menu and parent.
    */
   addFont(container) {
-    var ui = this.editorUi;
-    var editor = ui.editor;
-    var graph = editor.graph;
-    var ss = this.format.getSelectionState();
-
-    var title = this.createTitle(mxResources.get("font"));
-    title.style.paddingLeft = "18px";
-    title.style.paddingTop = "10px";
-    title.style.paddingBottom = "6px";
+    var title = this.createContainerTitle();
     container.appendChild(title);
 
-    var stylePanel = this.createStylePanel();
+    this.stylePanel = this.createStylePanel();
+    container.appendChild(this.stylePanel);
 
-    if (mxClient.IS_QUIRKS) {
-      stylePanel.style.display = "block";
-    }
-
-    if (graph.cellEditor.isContentEditing()) {
-      var cssPanel = stylePanel.cloneNode();
-
-      var cssMenu = this.createCssMenu();
-
-      var arrow = cssMenu.getElementsByTagName("div")[0];
-      arrow.style.cssFloat = "right";
-      container.appendChild(cssPanel);
-    }
-
-    container.appendChild(stylePanel);
-
-    var colorPanel = this.createColorPanel();
-
-    var fontMenu = this.editorUi.toolbar.addMenu(
-      "Helvetica",
-      mxResources.get("fontFamily"),
-      true,
-      "fontFamily",
-      stylePanel,
-      null,
-      true
-    );
-    fontMenu.style.color = "rgb(112, 112, 112)";
-    fontMenu.style.whiteSpace = "nowrap";
-    fontMenu.style.overflow = "hidden";
-    fontMenu.style.margin = "0px";
-
-    this.addArrow(fontMenu);
-    fontMenu.style.width = "192px";
-    fontMenu.style.height = "15px";
-
-    var stylePanel2: any = stylePanel.cloneNode(false);
-    stylePanel2.style.marginLeft = "-3px";
-
-    var verticalItem = this.editorUi.toolbar.addItems(
-      ["vertical"],
-      stylePanel2,
-      true
-    )[0];
+    const colorPanel = this.createColorPanel();
+    const fontMenu = this.createFontMenu();
 
     if (mxClient.IS_QUIRKS) {
       mxUtils.br(container);
     }
+
+    const { graph, stylePanel2 } = this;
 
     container.appendChild(stylePanel2);
 
-    this.styleButtons(fontStyleItems);
-    this.styleButtons([verticalItem]);
-
-    var stylePanel3: any = stylePanel.cloneNode(false);
-    stylePanel3.style.marginLeft = "-3px";
-    stylePanel3.style.paddingBottom = "0px";
-
-    // Helper function to return a wrapper function does not pass any arguments
-    var callFn = (fn) => {
-      return fn();
-    };
-
-    var left = this.editorUi.toolbar.addButton(
-      "geSprite-left",
-      mxResources.get("left"),
-      graph.cellEditor.isContentEditing()
-        ? function (evt) {
-            graph.cellEditor.alignText(mxConstants.ALIGN_LEFT, evt);
-          }
-        : callFn(
-            this.editorUi.menus.createStyleChangeFunction(
-              [mxConstants.STYLE_ALIGN],
-              [mxConstants.ALIGN_LEFT]
-            )
-          ),
-      stylePanel3
-    );
-    var center = this.editorUi.toolbar.addButton(
-      "geSprite-center",
-      mxResources.get("center"),
-      graph.cellEditor.isContentEditing()
-        ? function (evt) {
-            graph.cellEditor.alignText(mxConstants.ALIGN_CENTER, evt);
-          }
-        : callFn(
-            this.editorUi.menus.createStyleChangeFunction(
-              [mxConstants.STYLE_ALIGN],
-              [mxConstants.ALIGN_CENTER]
-            )
-          ),
-      stylePanel3
-    );
-    var right = this.editorUi.toolbar.addButton(
-      "geSprite-right",
-      mxResources.get("right"),
-      graph.cellEditor.isContentEditing()
-        ? function (evt) {
-            graph.cellEditor.alignText(mxConstants.ALIGN_RIGHT, evt);
-          }
-        : callFn(
-            this.editorUi.menus.createStyleChangeFunction(
-              [mxConstants.STYLE_ALIGN],
-              [mxConstants.ALIGN_RIGHT]
-            )
-          ),
-      stylePanel3
-    );
-
-    this.styleButtons([left, center, right]);
-
-    // Quick hack for strikethrough
-    // TODO: Add translations and toggle state
-    if (graph.cellEditor.isContentEditing()) {
-      var strike = this.editorUi.toolbar.addButton(
-        "geSprite-removeformat",
-        mxResources.get("strikethrough"),
-        function () {
-          document.execCommand("strikeThrough", false);
-        },
-        stylePanel2
-      );
-      this.styleButtons([strike]);
-
-      strike.firstChild.style.background =
-        "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGRlZnM+PHBhdGggaWQ9ImEiIGQ9Ik0wIDBoMjR2MjRIMFYweiIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBjbGlwLXBhdGg9InVybCgjYikiIGZpbGw9IiMwMTAxMDEiIGQ9Ik03LjI0IDguNzVjLS4yNi0uNDgtLjM5LTEuMDMtLjM5LTEuNjcgMC0uNjEuMTMtMS4xNi40LTEuNjcuMjYtLjUuNjMtLjkzIDEuMTEtMS4yOS40OC0uMzUgMS4wNS0uNjMgMS43LS44My42Ni0uMTkgMS4zOS0uMjkgMi4xOC0uMjkuODEgMCAxLjU0LjExIDIuMjEuMzQuNjYuMjIgMS4yMy41NCAxLjY5Ljk0LjQ3LjQuODMuODggMS4wOCAxLjQzLjI1LjU1LjM4IDEuMTUuMzggMS44MWgtMy4wMWMwLS4zMS0uMDUtLjU5LS4xNS0uODUtLjA5LS4yNy0uMjQtLjQ5LS40NC0uNjgtLjItLjE5LS40NS0uMzMtLjc1LS40NC0uMy0uMS0uNjYtLjE2LTEuMDYtLjE2LS4zOSAwLS43NC4wNC0xLjAzLjEzLS4yOS4wOS0uNTMuMjEtLjcyLjM2LS4xOS4xNi0uMzQuMzQtLjQ0LjU1LS4xLjIxLS4xNS40My0uMTUuNjYgMCAuNDguMjUuODguNzQgMS4yMS4zOC4yNS43Ny40OCAxLjQxLjdINy4zOWMtLjA1LS4wOC0uMTEtLjE3LS4xNS0uMjV6TTIxIDEydi0ySDN2Mmg5LjYyYy4xOC4wNy40LjE0LjU1LjIuMzcuMTcuNjYuMzQuODcuNTEuMjEuMTcuMzUuMzYuNDMuNTcuMDcuMi4xMS40My4xMS42OSAwIC4yMy0uMDUuNDUtLjE0LjY2LS4wOS4yLS4yMy4zOC0uNDIuNTMtLjE5LjE1LS40Mi4yNi0uNzEuMzUtLjI5LjA4LS42My4xMy0xLjAxLjEzLS40MyAwLS44My0uMDQtMS4xOC0uMTNzLS42Ni0uMjMtLjkxLS40MmMtLjI1LS4xOS0uNDUtLjQ0LS41OS0uNzUtLjE0LS4zMS0uMjUtLjc2LS4yNS0xLjIxSDYuNGMwIC41NS4wOCAxLjEzLjI0IDEuNTguMTYuNDUuMzcuODUuNjUgMS4yMS4yOC4zNS42LjY2Ljk4LjkyLjM3LjI2Ljc4LjQ4IDEuMjIuNjUuNDQuMTcuOS4zIDEuMzguMzkuNDguMDguOTYuMTMgMS40NC4xMy44IDAgMS41My0uMDkgMi4xOC0uMjhzMS4yMS0uNDUgMS42Ny0uNzljLjQ2LS4zNC44Mi0uNzcgMS4wNy0xLjI3cy4zOC0xLjA3LjM4LTEuNzFjMC0uNi0uMS0xLjE0LS4zMS0xLjYxLS4wNS0uMTEtLjExLS4yMy0uMTctLjMzSDIxeiIvPjwvc3ZnPg==)";
-      strike.firstChild.style.backgroundPosition = "2px 2px";
-      strike.firstChild.style.backgroundSize = "18px 18px";
-
-      this.styleButtons([strike]);
-    }
-
-    var top = this.editorUi.toolbar.addButton(
-      "geSprite-top",
-      mxResources.get("top"),
-      callFn(
-        this.editorUi.menus.createStyleChangeFunction(
-          [mxConstants.STYLE_VERTICAL_ALIGN],
-          [mxConstants.ALIGN_TOP]
-        )
-      ),
-      stylePanel3
-    );
-    var middle = this.editorUi.toolbar.addButton(
-      "geSprite-middle",
-      mxResources.get("middle"),
-      callFn(
-        this.editorUi.menus.createStyleChangeFunction(
-          [mxConstants.STYLE_VERTICAL_ALIGN],
-          [mxConstants.ALIGN_MIDDLE]
-        )
-      ),
-      stylePanel3
-    );
-    var bottom = this.editorUi.toolbar.addButton(
-      "geSprite-bottom",
-      mxResources.get("bottom"),
-      callFn(
-        this.editorUi.menus.createStyleChangeFunction(
-          [mxConstants.STYLE_VERTICAL_ALIGN],
-          [mxConstants.ALIGN_BOTTOM]
-        )
-      ),
-      stylePanel3
-    );
-
-    this.styleButtons([top, middle, bottom]);
-
-    if (mxClient.IS_QUIRKS) {
-      mxUtils.br(container);
-    }
-
-    container.appendChild(stylePanel3);
+    this.appendStylePanel3();
 
     // Hack for updating UI state below based on current text selection
     // currentTable is the current selected DOM table updated below
-    var sub, sup, full, tableWrapper, currentTable, tableCell, tableRow;
-
-    if (graph.cellEditor.isContentEditing()) {
-      top.style.display = "none";
-      middle.style.display = "none";
-      bottom.style.display = "none";
-      verticalItem.style.display = "none";
-
-      full = this.editorUi.toolbar.addButton(
-        "geSprite-justifyfull",
-        mxResources.get("block"),
-        function () {
-          if (full.style.opacity == 1) {
-            document.execCommand("justifyfull", false, undefined);
-          }
-        },
-        stylePanel3
-      );
-      full.style.marginRight = "9px";
-      full.style.opacity = 1;
-
-      this.styleToolbarButtons();
-      sub.style.marginLeft = "9px";
-
-      var tmp = stylePanel3.cloneNode(false);
-      tmp.style.paddingTop = "4px";
-      var btns = [
-        this.editorUi.toolbar.addButton(
-          "geSprite-orderedlist",
-          mxResources.get("numberedList"),
-          function () {
-            document.execCommand("insertorderedlist", false);
-          },
-          tmp
-        ),
-        this.editorUi.toolbar.addButton(
-          "geSprite-unorderedlist",
-          mxResources.get("bulletedList"),
-          function () {
-            document.execCommand("insertunorderedlist", false);
-          },
-          tmp
-        ),
-        this.editorUi.toolbar.addButton(
-          "geSprite-outdent",
-          mxResources.get("decreaseIndent"),
-          function () {
-            document.execCommand("outdent", false);
-          },
-          tmp
-        ),
-        this.editorUi.toolbar.addButton(
-          "geSprite-indent",
-          mxResources.get("increaseIndent"),
-          function () {
-            document.execCommand("indent", false);
-          },
-          tmp
-        ),
-        this.editorUi.toolbar.addButton(
-          "geSprite-removeformat",
-          mxResources.get("removeFormat"),
-          function () {
-            document.execCommand("removeformat", false);
-          },
-          tmp
-        ),
-        this.editorUi.toolbar.addButton(
-          "geSprite-code",
-          mxResources.get("html"),
-          function () {
-            graph.cellEditor.toggleViewMode();
-          },
-          tmp
-        ),
-      ];
-      this.styleButtons(btns);
-      btns[btns.length - 2].style.marginLeft = "9px";
-
-      if (mxClient.IS_QUIRKS) {
-        mxUtils.br(container);
-        tmp.style.height = "40";
-      }
-
-      container.appendChild(tmp);
-    } else {
-      fontStyleItems[2].style.marginRight = "9px";
-      right.style.marginRight = "9px";
-    }
+    this.updateUiOnCurrentTextSelection();
 
     // Label position
-    var stylePanel4: any = stylePanel.cloneNode(false);
-    stylePanel4.style.marginLeft = "0px";
-    stylePanel4.style.paddingTop = "8px";
-    stylePanel4.style.paddingBottom = "4px";
-    stylePanel4.style.fontWeight = "normal";
-
-    mxUtils.write(stylePanel4, mxResources.get("position"));
+    var stylePanel4: any = this.createStylePanel4();
 
     // Adds label position options
-    var positionSelect = document.createElement("select");
-    positionSelect.style.position = "absolute";
-    positionSelect.style.right = "20px";
-    positionSelect.style.width = "97px";
-    positionSelect.style.marginTop = "-2px";
-
-    var directions = [
-      "topLeft",
-      "top",
-      "topRight",
-      "left",
-      "center",
-      "right",
-      "bottomLeft",
-      "bottom",
-      "bottomRight",
-    ];
-
-    for (var i = 0; i < directions.length; i++) {
-      var positionOption = document.createElement("option");
-      positionOption.setAttribute("value", directions[i]);
-      mxUtils.write(positionOption, mxResources.get(directions[i]));
-      positionSelect.appendChild(positionOption);
-    }
+    var positionSelect = this.createPositionSelect();
 
     stylePanel4.appendChild(positionSelect);
 
     // Writing direction
-    var stylePanel5: any = stylePanel.cloneNode(false);
-    stylePanel5.style.marginLeft = "0px";
-    stylePanel5.style.paddingTop = "4px";
-    stylePanel5.style.paddingBottom = "4px";
-    stylePanel5.style.fontWeight = "normal";
-
-    mxUtils.write(stylePanel5, mxResources.get("writingDirection"));
+    var stylePanel5: any = this.createStylePanel5();
 
     // Adds writing direction options
     // LATER: Handle reselect of same option in all selects (change event
@@ -412,14 +151,13 @@ export class TextFormatPanel extends BaseFormatPanel {
     }
 
     // Font size
-    var input = this.createFontSizeInput();
+    this.input = this.createFontSizeInput();
+    const { input } = this;
     stylePanel2.appendChild(input);
 
     // Workaround for font size 4 if no text is selected is update font size below
     // after first character was entered (as the font element is lazy created)
-    var pendingFontSize = null;
-
-    var inputUpdate = this.createInputHandler();
+    this.inputUpdate = this.createInputHandler();
 
     var stepper = this.createStyledStepper();
 
@@ -427,12 +165,6 @@ export class TextFormatPanel extends BaseFormatPanel {
 
     var arrow = fontMenu.getElementsByTagName("div")[0];
     arrow.style.cssFloat = "right";
-
-    var bgColorApply: any;
-    var currentBgColor: any = "#ffffff";
-
-    var fontColorApply: any;
-    var currentFontColor = "#000000";
 
     var bgPanel = this.createBgPanel();
 
@@ -456,21 +188,7 @@ export class TextFormatPanel extends BaseFormatPanel {
 
     this.createExtraPanel();
 
-    var span = this.createSpan();
-    mxUtils.write(span, mxResources.get("spacing"));
-    const { spacingPanel } = this;
-    spacingPanel.appendChild(span);
-
-    mxUtils.br(spacingPanel);
-    this.addLabel(spacingPanel, mxResources.get("top"), 91);
-    this.addLabel(spacingPanel, mxResources.get("global"), 20);
-    mxUtils.br(spacingPanel);
-    mxUtils.br(spacingPanel);
-
-    mxUtils.br(spacingPanel);
-    this.addLabel(spacingPanel, mxResources.get("left"), 162);
-    this.addLabel(spacingPanel, mxResources.get("bottom"), 91);
-    this.addLabel(spacingPanel, mxResources.get("right"), 20);
+    this.createSpacingSpanPanel();
 
     this.appendPanelToContainer();
 
@@ -490,8 +208,220 @@ export class TextFormatPanel extends BaseFormatPanel {
     }
     return container;
   }
+  createPositionSelect() {
+    const { directions } = this;
+    const positionSelect = document.createElement("select");
+    positionSelect.style.position = "absolute";
+    positionSelect.style.right = "20px";
+    positionSelect.style.width = "97px";
+    positionSelect.style.marginTop = "-2px";
+
+    for (var i = 0; i < directions.length; i++) {
+      var positionOption = document.createElement("option");
+      positionOption.setAttribute("value", directions[i]);
+      mxUtils.write(positionOption, mxResources.get(directions[i]));
+      positionSelect.appendChild(positionOption);
+    }
+    return positionSelect;
+  }
+
+  createStylePanel4() {
+    const stylePanel4 = this.stylePanel.cloneNode(false);
+    stylePanel4.style.marginLeft = "0px";
+    stylePanel4.style.paddingTop = "8px";
+    stylePanel4.style.paddingBottom = "4px";
+    stylePanel4.style.fontWeight = "normal";
+
+    mxUtils.write(stylePanel4, mxResources.get("position"));
+    return stylePanel4;
+  }
+
+  createStylePanel5() {
+    const stylePanel5 = this.stylePanel.cloneNode(false);
+    stylePanel5.style.marginLeft = "0px";
+    stylePanel5.style.paddingTop = "4px";
+    stylePanel5.style.paddingBottom = "4px";
+    stylePanel5.style.fontWeight = "normal";
+    mxUtils.write(stylePanel5, mxResources.get("writingDirection"));
+    return stylePanel5;
+  }
+
+  appendStylePanel3() {
+    const {
+      container,
+      fontStyleItems,
+      verticalItem,
+      left,
+      center,
+      right,
+      top,
+      middle,
+      bottom,
+      stylePanel3,
+    } = this;
+    this.styleButtons(fontStyleItems);
+    this.styleButtons([verticalItem]);
+
+    this.styleButtons([left, center, right]);
+
+    // Quick hack for strikethrough
+    // TODO: Add translations and toggle state
+    this.addStrikeThrough();
+
+    this.styleButtons([top, middle, bottom]);
+
+    if (mxClient.IS_QUIRKS) {
+      mxUtils.br(container);
+    }
+
+    container.appendChild(stylePanel3);
+  }
+
+  get top() {
+    const { callFn, stylePanel3 } = this;
+    return this.editorUi.toolbar.addButton(
+      "geSprite-top",
+      mxResources.get("top"),
+      callFn(
+        this.editorUi.menus.createStyleChangeFunction(
+          [mxConstants.STYLE_VERTICAL_ALIGN],
+          [mxConstants.ALIGN_TOP]
+        )
+      ),
+      stylePanel3
+    );
+  }
+
+  get middle() {
+    const { callFn, stylePanel3 } = this;
+    return this.editorUi.toolbar.addButton(
+      "geSprite-middle",
+      mxResources.get("middle"),
+      callFn(
+        this.editorUi.menus.createStyleChangeFunction(
+          [mxConstants.STYLE_VERTICAL_ALIGN],
+          [mxConstants.ALIGN_MIDDLE]
+        )
+      ),
+      stylePanel3
+    );
+  }
+
+  get bottom() {
+    const { callFn, stylePanel3 } = this;
+    return this.editorUi.toolbar.addButton(
+      "geSprite-bottom",
+      mxResources.get("bottom"),
+      callFn(
+        this.editorUi.menus.createStyleChangeFunction(
+          [mxConstants.STYLE_VERTICAL_ALIGN],
+          [mxConstants.ALIGN_BOTTOM]
+        )
+      ),
+      stylePanel3
+    );
+  }
+
+  get directions() {
+    return [
+      "topLeft",
+      "top",
+      "topRight",
+      "left",
+      "center",
+      "right",
+      "bottomLeft",
+      "bottom",
+      "bottomRight",
+    ];
+  }
+
+  createSpacingSpanPanel() {
+    var span = this.createSpan();
+    mxUtils.write(span, mxResources.get("spacing"));
+    const { spacingPanel } = this;
+    spacingPanel.appendChild(span);
+
+    mxUtils.br(spacingPanel);
+    this.addLabel(spacingPanel, mxResources.get("top"), 91);
+    this.addLabel(spacingPanel, mxResources.get("global"), 20);
+    mxUtils.br(spacingPanel);
+    mxUtils.br(spacingPanel);
+
+    mxUtils.br(spacingPanel);
+    this.addLabel(spacingPanel, mxResources.get("left"), 162);
+    this.addLabel(spacingPanel, mxResources.get("bottom"), 91);
+    this.addLabel(spacingPanel, mxResources.get("right"), 20);
+  }
+
+  updateUiOnCurrentTextSelection() {
+    const {
+      graph,
+      top,
+      middle,
+      bottom,
+      verticalItem,
+      stylePanel3,
+      container,
+      fontStyleItems,
+      right,
+    } = this;
+    var sub;
+    if (graph.cellEditor.isContentEditing()) {
+      top.style.display = "none";
+      middle.style.display = "none";
+      bottom.style.display = "none";
+      verticalItem.style.display = "none";
+
+      this.full = this.createFull();
+
+      this.styleToolbarButtons();
+      sub.style.marginLeft = "9px";
+
+      var tmp = stylePanel3.cloneNode(false);
+      tmp.style.paddingTop = "4px";
+      this.addBtns4();
+
+      if (mxClient.IS_QUIRKS) {
+        mxUtils.br(container);
+        tmp.style.height = "40";
+      }
+
+      container.appendChild(tmp);
+    } else {
+      fontStyleItems[2].style.marginRight = "9px";
+      right.style.marginRight = "9px";
+    }
+  }
+
+  addStrikeThrough() {
+    const { graph, stylePanel2 } = this;
+    if (graph.cellEditor.isContentEditing()) {
+      var strike = this.editorUi.toolbar.addButton(
+        "geSprite-removeformat",
+        mxResources.get("strikethrough"),
+        function () {
+          document.execCommand("strikeThrough", false);
+        },
+        stylePanel2
+      );
+      this.styleButtons([strike]);
+
+      strike.firstChild.style.background =
+        "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGRlZnM+PHBhdGggaWQ9ImEiIGQ9Ik0wIDBoMjR2MjRIMFYweiIvPjwvZGVmcz48Y2xpcFBhdGggaWQ9ImIiPjx1c2UgeGxpbms6aHJlZj0iI2EiIG92ZXJmbG93PSJ2aXNpYmxlIi8+PC9jbGlwUGF0aD48cGF0aCBjbGlwLXBhdGg9InVybCgjYikiIGZpbGw9IiMwMTAxMDEiIGQ9Ik03LjI0IDguNzVjLS4yNi0uNDgtLjM5LTEuMDMtLjM5LTEuNjcgMC0uNjEuMTMtMS4xNi40LTEuNjcuMjYtLjUuNjMtLjkzIDEuMTEtMS4yOS40OC0uMzUgMS4wNS0uNjMgMS43LS44My42Ni0uMTkgMS4zOS0uMjkgMi4xOC0uMjkuODEgMCAxLjU0LjExIDIuMjEuMzQuNjYuMjIgMS4yMy41NCAxLjY5Ljk0LjQ3LjQuODMuODggMS4wOCAxLjQzLjI1LjU1LjM4IDEuMTUuMzggMS44MWgtMy4wMWMwLS4zMS0uMDUtLjU5LS4xNS0uODUtLjA5LS4yNy0uMjQtLjQ5LS40NC0uNjgtLjItLjE5LS40NS0uMzMtLjc1LS40NC0uMy0uMS0uNjYtLjE2LTEuMDYtLjE2LS4zOSAwLS43NC4wNC0xLjAzLjEzLS4yOS4wOS0uNTMuMjEtLjcyLjM2LS4xOS4xNi0uMzQuMzQtLjQ0LjU1LS4xLjIxLS4xNS40My0uMTUuNjYgMCAuNDguMjUuODguNzQgMS4yMS4zOC4yNS43Ny40OCAxLjQxLjdINy4zOWMtLjA1LS4wOC0uMTEtLjE3LS4xNS0uMjV6TTIxIDEydi0ySDN2Mmg5LjYyYy4xOC4wNy40LjE0LjU1LjIuMzcuMTcuNjYuMzQuODcuNTEuMjEuMTcuMzUuMzYuNDMuNTcuMDcuMi4xMS40My4xMS42OSAwIC4yMy0uMDUuNDUtLjE0LjY2LS4wOS4yLS4yMy4zOC0uNDIuNTMtLjE5LjE1LS40Mi4yNi0uNzEuMzUtLjI5LjA4LS42My4xMy0xLjAxLjEzLS40MyAwLS44My0uMDQtMS4xOC0uMTNzLS42Ni0uMjMtLjkxLS40MmMtLjI1LS4xOS0uNDUtLjQ0LS41OS0uNzUtLjE0LS4zMS0uMjUtLjc2LS4yNS0xLjIxSDYuNGMwIC41NS4wOCAxLjEzLjI0IDEuNTguMTYuNDUuMzcuODUuNjUgMS4yMS4yOC4zNS42LjY2Ljk4LjkyLjM3LjI2Ljc4LjQ4IDEuMjIuNjUuNDQuMTcuOS4zIDEuMzguMzkuNDguMDguOTYuMTMgMS40NC4xMy44IDAgMS41My0uMDkgMi4xOC0uMjhzMS4yMS0uNDUgMS42Ny0uNzljLjQ2LS4zNC44Mi0uNzcgMS4wNy0xLjI3cy4zOC0xLjA3LjM4LTEuNzFjMC0uNi0uMS0xLjE0LS4zMS0xLjYxLS4wNS0uMTEtLjExLS4yMy0uMTctLjMzSDIxeiIvPjwvc3ZnPg==)";
+      strike.firstChild.style.backgroundPosition = "2px 2px";
+      strike.firstChild.style.backgroundSize = "18px 18px";
+
+      this.styleButtons([strike]);
+    }
+  }
+
+  addBtns4() {
+    this.toolbarFormatButtons.addBtns4();
+  }
 
   createStyledStepper() {
+    const { input, inputUpdate } = this;
     var stepper = this.createStepper(
       input,
       inputUpdate,
@@ -526,28 +456,43 @@ export class TextFormatPanel extends BaseFormatPanel {
     stylePanel.style.marginLeft = "-2px";
     stylePanel.style.borderWidth = "0px";
     stylePanel.className = "geToolbarContainer";
+    if (mxClient.IS_QUIRKS) {
+      stylePanel.style.display = "block";
+    }
+    const { container, graph } = this;
+
+    if (graph.cellEditor.isContentEditing()) {
+      this.cssPanel = stylePanel.cloneNode();
+      this.cssMenu = this.createCssMenu();
+      const { cssMenu, cssPanel } = this;
+
+      var arrow = cssMenu.getElementsByTagName("div")[0];
+      arrow.style.cssFloat = "right";
+      container.appendChild(cssPanel);
+    }
     return stylePanel;
   }
 
   styleToolbarButtons() {
+    const { full, stylePanel3 } = this;
     this.styleButtons([
       full,
-      (sub = this.editorUi.toolbar.addButton(
+      this.editorUi.toolbar.addButton(
         "geSprite-subscript",
         mxResources.get("subscript") + " (" + this.ctrlKey + "+,)",
         function () {
           document.execCommand("subscript", false);
         },
         stylePanel3
-      )),
-      (sup = this.editorUi.toolbar.addButton(
+      ),
+      this.editorUi.toolbar.addButton(
         "geSprite-superscript",
         mxResources.get("superscript") + " (" + this.ctrlKey + "+.)",
         function () {
           document.execCommand("superscript", false);
         },
         stylePanel3
-      )),
+      ),
     ]);
   }
 
@@ -577,6 +522,7 @@ export class TextFormatPanel extends BaseFormatPanel {
   }
 
   createCssMenu() {
+    const { cssPanel } = this;
     var cssMenu = this.editorUi.toolbar.addMenu(
       mxResources.get("style"),
       mxResources.get("style"),
@@ -602,6 +548,7 @@ export class TextFormatPanel extends BaseFormatPanel {
   }
 
   protected createFontStyleItems() {
+    const { stylePanel2 } = this;
     const fontStyleItems = this.editorUi.toolbar.addItems(
       ["bold", "italic", "underline"],
       stylePanel2,
@@ -681,158 +628,6 @@ export class TextFormatPanel extends BaseFormatPanel {
     return new ContainerPanel().append();
   }
 
-  listener = (_sender?, _evt?, force?) => {
-    const { setSelected, fontStyleItems } = this;
-    let ss = this.format.getSelectionState();
-    var fontStyle = mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSTYLE, 0);
-    setSelected(
-      fontStyleItems[0],
-      (fontStyle & mxConstants.FONT_BOLD) == mxConstants.FONT_BOLD
-    );
-    setSelected(
-      fontStyleItems[1],
-      (fontStyle & mxConstants.FONT_ITALIC) == mxConstants.FONT_ITALIC
-    );
-    setSelected(
-      fontStyleItems[2],
-      (fontStyle & mxConstants.FONT_UNDERLINE) == mxConstants.FONT_UNDERLINE
-    );
-    fontMenu.firstChild.nodeValue = mxUtils.getValue(
-      ss.style,
-      mxConstants.STYLE_FONTFAMILY,
-      this.defaultFont
-    );
-
-    setSelected(
-      verticalItem,
-      mxUtils.getValue(ss.style, mxConstants.STYLE_HORIZONTAL, "1") == "0"
-    );
-
-    if (force || document.activeElement != input) {
-      var tmp = parseFloat(
-        mxUtils.getValue(
-          ss.style,
-          mxConstants.STYLE_FONTSIZE,
-          this.defaultFontSize
-        )
-      );
-      input.value = isNaN(tmp) ? "" : tmp + " pt";
-    }
-
-    var align = mxUtils.getValue(
-      ss.style,
-      mxConstants.STYLE_ALIGN,
-      mxConstants.ALIGN_CENTER
-    );
-    setSelected(left, align == mxConstants.ALIGN_LEFT);
-    setSelected(center, align == mxConstants.ALIGN_CENTER);
-    setSelected(right, align == mxConstants.ALIGN_RIGHT);
-
-    var valign = mxUtils.getValue(
-      ss.style,
-      mxConstants.STYLE_VERTICAL_ALIGN,
-      mxConstants.ALIGN_MIDDLE
-    );
-    setSelected(top, valign == mxConstants.ALIGN_TOP);
-    setSelected(middle, valign == mxConstants.ALIGN_MIDDLE);
-    setSelected(bottom, valign == mxConstants.ALIGN_BOTTOM);
-
-    var pos = mxUtils.getValue(
-      ss.style,
-      mxConstants.STYLE_LABEL_POSITION,
-      mxConstants.ALIGN_CENTER
-    );
-    var vpos = mxUtils.getValue(
-      ss.style,
-      mxConstants.STYLE_VERTICAL_LABEL_POSITION,
-      mxConstants.ALIGN_MIDDLE
-    );
-
-    if (pos == mxConstants.ALIGN_LEFT && vpos == mxConstants.ALIGN_TOP) {
-      positionSelect.value = "topLeft";
-    } else if (
-      pos == mxConstants.ALIGN_CENTER &&
-      vpos == mxConstants.ALIGN_TOP
-    ) {
-      positionSelect.value = "top";
-    } else if (
-      pos == mxConstants.ALIGN_RIGHT &&
-      vpos == mxConstants.ALIGN_TOP
-    ) {
-      positionSelect.value = "topRight";
-    } else if (
-      pos == mxConstants.ALIGN_LEFT &&
-      vpos == mxConstants.ALIGN_BOTTOM
-    ) {
-      positionSelect.value = "bottomLeft";
-    } else if (
-      pos == mxConstants.ALIGN_CENTER &&
-      vpos == mxConstants.ALIGN_BOTTOM
-    ) {
-      positionSelect.value = "bottom";
-    } else if (
-      pos == mxConstants.ALIGN_RIGHT &&
-      vpos == mxConstants.ALIGN_BOTTOM
-    ) {
-      positionSelect.value = "bottomRight";
-    } else if (pos == mxConstants.ALIGN_LEFT) {
-      positionSelect.value = "left";
-    } else if (pos == mxConstants.ALIGN_RIGHT) {
-      positionSelect.value = "right";
-    } else {
-      positionSelect.value = "center";
-    }
-
-    var dir = mxUtils.getValue(
-      ss.style,
-      mxConstants.STYLE_TEXT_DIRECTION,
-      mxConstants.DEFAULT_TEXT_DIRECTION
-    );
-
-    if (dir == mxConstants.TEXT_DIRECTION_RTL) {
-      dirSelect.value = "rightToLeft";
-    } else if (dir == mxConstants.TEXT_DIRECTION_LTR) {
-      dirSelect.value = "leftToRight";
-    } else if (dir == mxConstants.TEXT_DIRECTION_AUTO) {
-      dirSelect.value = "automatic";
-    }
-
-    if (force || document.activeElement != globalSpacing) {
-      var tmp = parseFloat(
-        mxUtils.getValue(ss.style, mxConstants.STYLE_SPACING, 2)
-      );
-      globalSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
-    }
-
-    if (force || document.activeElement != topSpacing) {
-      var tmp = parseFloat(
-        mxUtils.getValue(ss.style, mxConstants.STYLE_SPACING_TOP, 0)
-      );
-      topSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
-    }
-
-    if (force || document.activeElement != rightSpacing) {
-      var tmp = parseFloat(
-        mxUtils.getValue(ss.style, mxConstants.STYLE_SPACING_RIGHT, 0)
-      );
-      rightSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
-    }
-
-    if (force || document.activeElement != bottomSpacing) {
-      var tmp = parseFloat(
-        mxUtils.getValue(ss.style, mxConstants.STYLE_SPACING_BOTTOM, 0)
-      );
-      bottomSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
-    }
-
-    if (force || document.activeElement != leftSpacing) {
-      var tmp = parseFloat(
-        mxUtils.getValue(ss.style, mxConstants.STYLE_SPACING_LEFT, 0)
-      );
-      leftSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
-    }
-  };
-
   get topSpacing() {
     return this.addUnitInput(
       this.spacingPanel,
@@ -856,6 +651,14 @@ export class TextFormatPanel extends BaseFormatPanel {
   get spacingPanel() {
     this._spacingPanel = this._spacingPanel || this.createSpacingPanel();
     return this._spacingPanel;
+  }
+
+  protected createContainerTitle() {
+    const title = this.createTitle(mxResources.get("font"));
+    title.style.paddingLeft = "18px";
+    title.style.paddingTop = "10px";
+    title.style.paddingBottom = "6px";
+    return title;
   }
 
   protected createSpacingPanel() {
@@ -956,7 +759,7 @@ export class TextFormatPanel extends BaseFormatPanel {
     );
   }
 
-  createColorPanel() {
+  protected createColorPanel() {
     const colorPanel = this.createPanel();
     colorPanel.style.marginTop = "8px";
     colorPanel.style.borderTop = "1px solid #c0c0c0";
@@ -964,4 +767,133 @@ export class TextFormatPanel extends BaseFormatPanel {
     colorPanel.style.paddingBottom = "6px";
     return colorPanel;
   }
+
+  protected createFontMenu() {
+    const { stylePanel } = this;
+    const fontMenu = this.editorUi.toolbar.addMenu(
+      "Helvetica",
+      mxResources.get("fontFamily"),
+      true,
+      "fontFamily",
+      stylePanel,
+      null,
+      true
+    );
+    fontMenu.style.color = "rgb(112, 112, 112)";
+    fontMenu.style.whiteSpace = "nowrap";
+    fontMenu.style.overflow = "hidden";
+    fontMenu.style.margin = "0px";
+
+    this.addArrow(fontMenu);
+    fontMenu.style.width = "192px";
+    fontMenu.style.height = "15px";
+    return fontMenu;
+  }
+
+  get stylePanel2(): any {
+    this._stylePanel2 = this._stylePanel2 || this.createStylePanel2();
+    return this._stylePanel2;
+  }
+
+  createStylePanel2() {
+    const { stylePanel } = this;
+    const stylePanel2: any = stylePanel.cloneNode(false);
+    stylePanel2.style.marginLeft = "-3px";
+    return stylePanel2;
+  }
+
+  get stylePanel3(): any {
+    this._stylePanel3 = this._stylePanel3 || this.createStylePanel3();
+    return this._stylePanel3;
+  }
+
+  protected createStylePanel3() {
+    const { stylePanel } = this;
+    const stylePanel3 = stylePanel.cloneNode(false);
+    stylePanel3.style.marginLeft = "-3px";
+    stylePanel3.style.paddingBottom = "0px";
+    return stylePanel3;
+  }
+
+  protected createFull() {
+    const { stylePanel3 } = this;
+    const full = this.editorUi.toolbar.addButton(
+      "geSprite-justifyfull",
+      mxResources.get("block"),
+      function () {
+        if (full.style.opacity == 1) {
+          document.execCommand("justifyfull", false, undefined);
+        }
+      },
+      stylePanel3
+    );
+    full.style.marginRight = "9px";
+    full.style.opacity = 1;
+    return full;
+  }
+
+  get verticalItem() {
+    const { stylePanel2 } = this;
+    return this.editorUi.toolbar.addItems(["vertical"], stylePanel2, true)[0];
+  }
+
+  get left() {
+    const { callFn, graph, stylePanel3 } = this;
+    return this.editorUi.toolbar.addButton(
+      "geSprite-left",
+      mxResources.get("left"),
+      graph.cellEditor.isContentEditing()
+        ? function (evt) {
+            graph.cellEditor.alignText(mxConstants.ALIGN_LEFT, evt);
+          }
+        : callFn(
+            this.editorUi.menus.createStyleChangeFunction(
+              [mxConstants.STYLE_ALIGN],
+              [mxConstants.ALIGN_LEFT]
+            )
+          ),
+      stylePanel3
+    );
+  }
+  get center() {
+    const { callFn, graph, stylePanel3 } = this;
+    return this.editorUi.toolbar.addButton(
+      "geSprite-center",
+      mxResources.get("center"),
+      graph.cellEditor.isContentEditing()
+        ? function (evt) {
+            graph.cellEditor.alignText(mxConstants.ALIGN_CENTER, evt);
+          }
+        : callFn(
+            this.editorUi.menus.createStyleChangeFunction(
+              [mxConstants.STYLE_ALIGN],
+              [mxConstants.ALIGN_CENTER]
+            )
+          ),
+      stylePanel3
+    );
+  }
+  get right() {
+    const { callFn, graph, stylePanel3 } = this;
+    return this.editorUi.toolbar.addButton(
+      "geSprite-right",
+      mxResources.get("right"),
+      graph.cellEditor.isContentEditing()
+        ? function (evt) {
+            graph.cellEditor.alignText(mxConstants.ALIGN_RIGHT, evt);
+          }
+        : callFn(
+            this.editorUi.menus.createStyleChangeFunction(
+              [mxConstants.STYLE_ALIGN],
+              [mxConstants.ALIGN_RIGHT]
+            )
+          ),
+      stylePanel3
+    );
+  }
+
+  // Helper function to return a wrapper function does not pass any arguments
+  callFn = (fn) => {
+    return fn();
+  };
 }
