@@ -198,7 +198,7 @@ export class BaseFormatPanel extends Base {
     callbackFn?,
     setStyleFn?,
   ) {
-    this.newCellColorOption().create(
+    return this.newCellColorOption().create(
       label,
       colorKey,
       defaultColor,

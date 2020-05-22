@@ -2,6 +2,10 @@ import mx from "@mxgraph-app/mx";
 import { BaseStyleFormat } from "../BaseStyleFormat";
 import { LineStart } from "./LineStart";
 import { LineEnd } from "./LineEnd";
+import { AltPattern } from "./AltPattern";
+import { Pattern } from "./Pattern";
+import { EdgeShape } from "./EdgeShape";
+import { EdgeStyle } from "./EdgeStyle";
 const { mxResources, mxEventObject, mxConstants, mxClient, mxEvent, mxUtils } =
   mx;
 
@@ -17,13 +21,12 @@ export class StrokeFormat extends BaseStyleFormat {
    * Adds the label menu items to the given menu and parent.
    */
   add() {
-    const { ui, graph, ss, container } = this;
+    const { graph, container, styleSelect, styles } = this;
     container.style.paddingTop = "4px";
     container.style.paddingBottom = "4px";
     container.style.whiteSpace = "normal";
 
     // Adds gradient direction option
-    var styles = ["sharp", "rounded", "curved"];
 
     for (var i = 0; i < styles.length; i++) {
       var styleOption = document.createElement("option");
@@ -32,46 +35,19 @@ export class StrokeFormat extends BaseStyleFormat {
       styleSelect.appendChild(styleOption);
     }
 
-    var strokeKey = ss.style.shape == "image"
-      ? mxConstants.STYLE_IMAGE_BORDER
-      : mxConstants.STYLE_STROKECOLOR;
-    var label = ss.style.shape == "image"
-      ? mxResources.get("border")
-      : mxResources.get("line");
-
-    const lineColor: any = this.createCellColorOption(
-      label,
-      strokeKey,
-      "#000000",
-    );
+    const { lineColor, colorPanel, stylePanel, update, altUpdate, altPattern } =
+      this;
     lineColor.appendChild(styleSelect);
     colorPanel.appendChild(lineColor);
 
-    // Used for mixed selection (vertices and edges)
-    var altStylePanel = stylePanel.cloneNode(false);
-
-    var stylePanel2 = stylePanel.cloneNode(false);
-
-    // Stroke width
-    var input = document.createElement("input");
-    input.style.textAlign = "right";
-    input.style.marginTop = "2px";
-    input.style.width = "41px";
-    input.setAttribute("title", mxResources.get("linewidth"));
+    const { input, altInput, stepper, altStepper, altStylePanel, stylePanel2 } =
+      this;
 
     stylePanel.appendChild(input);
-
-    var altInput: any = input.cloneNode(true);
     altStylePanel.appendChild(altInput);
 
-    var stepper = this.createStepper(input, update, 1, 9);
-    stepper.style.display = input.style.display;
-    stepper.style.marginTop = "2px";
     stylePanel.appendChild(stepper);
 
-    var altStepper = this.createStepper(altInput, altUpdate, 1, 9);
-    altStepper.style.display = altInput.style.display;
-    altStepper.style.marginTop = "2px";
     altStylePanel.appendChild(altStepper);
 
     this.configureInputs();
@@ -93,12 +69,12 @@ export class StrokeFormat extends BaseStyleFormat {
     altSymbol.className = "geIcon";
     altSymbol.style.width = "22px";
 
-    const { solid, altSolid } = this;
+    const { solid, altSolid, symbol, pattern } = this;
 
     symbol.appendChild(solid);
     altSymbol.appendChild(altSolid);
 
-    const { lineStart, lineEnd } = this;
+    const { lineStart, lineEnd, edgeShape, edgeStyle } = this;
 
     pattern.style.height = "15px";
     altPattern.style.height = "15px";
@@ -129,6 +105,82 @@ export class StrokeFormat extends BaseStyleFormat {
     listener();
 
     return container;
+  }
+
+  // Used for mixed selection (vertices and edges)
+  get altStylePanel() {
+    return this.stylePanel.cloneNode(false);
+  }
+
+  get stylePanel2() {
+    return this.stylePanel.cloneNode(false);
+  }
+
+  get altStepper() {
+    return this.createAltStepper();
+  }
+
+  createAltStepper() {
+    const { altInput, altUpdate } = this;
+    var altStepper = this.createStepper(altInput, altUpdate, 1, 9);
+    altStepper.style.display = altInput.style.display;
+    altStepper.style.marginTop = "2px";
+    return altStepper;
+  }
+
+  get stepper() {
+    return this.createStepr();
+  }
+
+  createStepr() {
+    const { input, update } = this;
+    var stepper = this.createStepper(input, update, 1, 9);
+    stepper.style.display = input.style.display;
+    stepper.style.marginTop = "2px";
+    return stepper;
+  }
+
+  get edgeStyle() {
+    return new EdgeStyle(this.format, this.editorUi, this.container).create();
+  }
+
+  get edgeShape() {
+    return new EdgeShape(this.format, this.editorUi, this.container).create();
+  }
+
+  get pattern() {
+    return new Pattern(this.format, this.editorUi, this.container).create();
+  }
+
+  get altPattern() {
+    return new AltPattern(this.format, this.editorUi, this.container).create();
+  }
+
+  get styles() {
+    return ["sharp", "rounded", "curved"];
+  }
+
+  get strokeKey() {
+    const { ss } = this;
+    return ss.style.shape == "image"
+      ? mxConstants.STYLE_IMAGE_BORDER
+      : mxConstants.STYLE_STROKECOLOR;
+  }
+
+  get label() {
+    const { ss } = this;
+    return ss.style.shape == "image"
+      ? mxResources.get("border")
+      : mxResources.get("line");
+  }
+
+  get lineColor(): any {
+    const { label, strokeKey } = this;
+    return this.createCellColorOption(
+      label,
+      strokeKey,
+      "#000000",
+    );
   }
 
   get colorPanel() {
@@ -173,6 +225,7 @@ export class StrokeFormat extends BaseStyleFormat {
   }
 
   changeListener() {
+    const { styleSelect, graph, ui } = this;
     mxEvent.addListener(styleSelect, "change", function (evt) {
       graph.getModel().beginUpdate();
       try {
@@ -210,10 +263,15 @@ export class StrokeFormat extends BaseStyleFormat {
   }
 
   clickListener() {
+    const { styleSelect } = this;
     // Stops events from bubbling to color option event handler
     mxEvent.addListener(styleSelect, "click", function (evt) {
       mxEvent.consume(evt);
     });
+  }
+
+  get altInput(): any {
+    return this.input.cloneNode(true);
   }
 
   get input() {
@@ -230,7 +288,7 @@ export class StrokeFormat extends BaseStyleFormat {
   }
 
   update = (evt) => {
-    const { input } = this;
+    const { input, graph, ui, ss } = this;
     // Maximum stroke width is 999
     var value = parseInt(input.value);
     value = Math.min(999, Math.max(1, isNaN(value) ? 1 : value));
@@ -314,6 +372,7 @@ export class StrokeFormat extends BaseStyleFormat {
   }
 
   createSymbol() {
+    const { pattern } = this;
     var symbol = this.addArrow(pattern, 9);
     symbol.className = "geIcon";
     symbol.style.width = "84px";
@@ -409,6 +468,7 @@ export class StrokeFormat extends BaseStyleFormat {
     altSolid.style.height = "1px";
     altSolid.style.borderBottom = "1px solid " + this.defaultStrokeColor;
     altSolid.style.marginBottom = "9px";
+    return altSolid;
   }
 
   appendPanelsToContainer() {
@@ -418,7 +478,7 @@ export class StrokeFormat extends BaseStyleFormat {
     container.appendChild(stylePanel);
   }
 
-  get arrowPanel() {
+  get arrowPanel(): any {
     return this.createArrowPanel();
   }
 
@@ -435,6 +495,7 @@ export class StrokeFormat extends BaseStyleFormat {
     arrowPanel.appendChild(span);
 
     mxUtils.br(arrowPanel);
+    return arrowPanel;
   }
 
   createSpanX() {
@@ -545,7 +606,8 @@ export class StrokeFormat extends BaseStyleFormat {
   }
 
   appendToContainer() {
-    const { stylePanel2, arrowPanel, perimeterPanel, container, graph } = this;
+    const { ss, stylePanel2, arrowPanel, perimeterPanel, container, graph } =
+      this;
     if (ss.edges.length == graph.getSelectionCount()) {
       container.appendChild(stylePanel2);
 
@@ -565,7 +627,7 @@ export class StrokeFormat extends BaseStyleFormat {
   }
 
   listener = (_sender?, _evt?, force?) => {
-    const { ss, input, altInput } = this;
+    const { ss, input, altInput, altSolid } = this;
     // var color = mxUtils.getValue(ss.style, strokeKey, null);
 
     if (force || document.activeElement != input) {
