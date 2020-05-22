@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { BaseStyleFormat } from "./BaseStyleFormat";
+import { BaseStyleFormat } from "../BaseStyleFormat";
 const { mxResources, mxEventObject, mxConstants, mxClient, mxEvent, mxUtils } =
   mx;
 
@@ -14,11 +14,8 @@ export class StrokeFormat extends BaseStyleFormat {
   /**
    * Adds the label menu items to the given menu and parent.
    */
-  addStroke(container) {
-    var ui = this.editorUi;
-    var graph = ui.editor.graph;
-    var ss = this.format.getSelectionState();
-
+  add() {
+    const { ui, graph, ss, container } = this;
     container.style.paddingTop = "4px";
     container.style.paddingBottom = "4px";
     container.style.whiteSpace = "normal";
@@ -89,7 +86,11 @@ export class StrokeFormat extends BaseStyleFormat {
       ? mxResources.get("border")
       : mxResources.get("line");
 
-    var lineColor = this.createCellColorOption(label, strokeKey, "#000000");
+    const lineColor: any = this.createCellColorOption(
+      label,
+      strokeKey,
+      "#000000",
+    );
     lineColor.appendChild(styleSelect);
     colorPanel.appendChild(lineColor);
 
@@ -1242,18 +1243,9 @@ export class StrokeFormat extends BaseStyleFormat {
     altSymbol.className = "geIcon";
     altSymbol.style.width = "22px";
 
-    var solid = document.createElement("div");
-    solid.style.width = "85px";
-    solid.style.height = "1px";
-    solid.style.borderBottom = "1px solid " + this.defaultStrokeColor;
-    solid.style.marginBottom = "9px";
     symbol.appendChild(solid);
 
-    var altSolid = document.createElement("div");
-    altSolid.style.width = "23px";
-    altSolid.style.height = "1px";
-    altSolid.style.borderBottom = "1px solid " + this.defaultStrokeColor;
-    altSolid.style.marginBottom = "9px";
+    const { solid, altSolid } = this;
     altSymbol.appendChild(altSolid);
 
     pattern.style.height = "15px";
@@ -1265,35 +1257,9 @@ export class StrokeFormat extends BaseStyleFormat {
     lineEnd.style.marginLeft = "3px";
     lineEnd.style.height = "17px";
 
-    container.appendChild(colorPanel);
-    container.appendChild(altStylePanel);
-    container.appendChild(stylePanel);
+    this.appendPanelsToContainer();
 
-    var arrowPanel: any = stylePanel.cloneNode(false);
-    arrowPanel.style.paddingBottom = "6px";
-    arrowPanel.style.paddingTop = "4px";
-    arrowPanel.style.fontWeight = "normal";
-
-    var span: any = document.createElement("div");
-    span.style.position = "absolute";
-    span.style.marginLeft = "3px";
-    span.style.marginBottom = "12px";
-    span.style.marginTop = "2px";
-    span.style.fontWeight = "normal";
-    span.style.width = "76px";
-
-    mxUtils.write(span, mxResources.get("lineend"));
-    arrowPanel.appendChild(span);
-
-    var endSpacingUpdate, endSizeUpdate;
-    var endSpacing = this.addUnitInput(arrowPanel, "pt", 74, 33, () => {
-      endSpacingUpdate.apply(this, arguments);
-    });
-    var endSize = this.addUnitInput(arrowPanel, "pt", 20, 33, () => {
-      endSizeUpdate.apply(this, arguments);
-    });
-
-    mxUtils.br(arrowPanel);
+    const { arrowPanel } = this;
 
     var spacer = document.createElement("div");
     spacer.style.height = "8px";
@@ -1303,28 +1269,145 @@ export class StrokeFormat extends BaseStyleFormat {
     mxUtils.write(span, mxResources.get("linestart"));
     arrowPanel.appendChild(span);
 
-    var startSpacingUpdate, startSizeUpdate;
-    var startSpacing = this.addUnitInput(arrowPanel, "pt", 74, 33, () => {
-      startSpacingUpdate.apply(this, []);
-    });
-    var startSize = this.addUnitInput(arrowPanel, "pt", 20, 33, () => {
-      startSizeUpdate.apply(this, []);
-    });
-
     mxUtils.br(arrowPanel);
     this.addLabel(arrowPanel, mxResources.get("spacing"), 74, 50);
     this.addLabel(arrowPanel, mxResources.get("size"), 20, 50);
     mxUtils.br(arrowPanel);
 
-    var perimeterPanel: any = colorPanel.cloneNode(false);
-    perimeterPanel.style.fontWeight = "normal";
-    perimeterPanel.style.position = "relative";
-    perimeterPanel.style.paddingLeft = "16px";
-    perimeterPanel.style.marginBottom = "2px";
-    perimeterPanel.style.marginTop = "6px";
-    perimeterPanel.style.borderWidth = "0px";
-    perimeterPanel.style.paddingBottom = "18px";
+    const { span } = this;
 
+    this.perimeterPanel.appendChild(span);
+
+    this.appendToContainer();
+
+    this.onActiveElement();
+
+    this.addKeyHandlers();
+
+    const { listener } = this;
+    graph.getModel().addListener(mxEvent.CHANGE, listener);
+    this.listeners.push({
+      destroy: function () {
+        graph.getModel().removeListener(listener);
+      },
+    });
+    listener();
+
+    return container;
+  }
+
+  get solid() {
+    return this.createSolid();
+  }
+
+  createSolid() {
+    var solid = document.createElement("div");
+    solid.style.width = "85px";
+    solid.style.height = "1px";
+    solid.style.borderBottom = "1px solid " + this.defaultStrokeColor;
+    solid.style.marginBottom = "9px";
+    return solid;
+  }
+
+  get altSolid() {
+    return this.createAltSolid();
+  }
+
+  createAltSolid() {
+    var altSolid = document.createElement("div");
+    altSolid.style.width = "23px";
+    altSolid.style.height = "1px";
+    altSolid.style.borderBottom = "1px solid " + this.defaultStrokeColor;
+    altSolid.style.marginBottom = "9px";
+  }
+
+  appendPanelsToContainer() {
+    const { container, colorPanel, altStylePanel, stylePanel } = this;
+    container.appendChild(colorPanel);
+    container.appendChild(altStylePanel);
+    container.appendChild(stylePanel);
+  }
+
+  createArrowPanel() {
+    const { stylePanel } = this;
+    var arrowPanel: any = stylePanel.cloneNode(false);
+    arrowPanel.style.paddingBottom = "6px";
+    arrowPanel.style.paddingTop = "4px";
+    arrowPanel.style.fontWeight = "normal";
+
+    let span = this.createSpanX();
+
+    mxUtils.write(span, mxResources.get("lineend"));
+    arrowPanel.appendChild(span);
+
+    mxUtils.br(arrowPanel);
+  }
+
+  createSpanX() {
+    var span: any = document.createElement("div");
+    span.style.position = "absolute";
+    span.style.marginLeft = "3px";
+    span.style.marginBottom = "12px";
+    span.style.marginTop = "2px";
+    span.style.fontWeight = "normal";
+    span.style.width = "76px";
+    return span;
+  }
+
+  get endSpacing() {
+    return this.createEndSpacing();
+  }
+
+  createEndSpacing() {
+    const { arrowPanel } = this;
+    var endSpacingUpdate;
+    return this.addUnitInput(arrowPanel, "pt", 74, 33, () => {
+      endSpacingUpdate.apply(this, arguments);
+    });
+  }
+
+  get endSize() {
+    return this.createEndSize();
+  }
+
+  createEndSize() {
+    const { arrowPanel } = this;
+    var endSizeUpdate;
+    return this.addUnitInput(arrowPanel, "pt", 20, 33, () => {
+      endSizeUpdate.apply(this, arguments);
+    });
+  }
+
+  get startSpacing() {
+    return this.createStartSpacing();
+  }
+
+  createStartSpacing() {
+    const { arrowPanel } = this;
+    var startSpacingUpdate;
+    return this.addUnitInput(arrowPanel, "pt", 74, 33, () => {
+      startSpacingUpdate.apply(this, []);
+    });
+  }
+
+  get startSize() {
+    return this.createStartSize();
+  }
+
+  createStartSize() {
+    const { arrowPanel } = this;
+    var startSizeUpdate;
+    var startSize = this.addUnitInput(arrowPanel, "pt", 20, 33, () => {
+      startSizeUpdate.apply(this, []);
+    });
+    return startSize;
+  }
+
+  get span() {
+    return this.createSpan();
+  }
+
+  createSpan() {
     var span: any = document.createElement("div");
     span.style.position = "absolute";
     span.style.marginLeft = "3px";
@@ -1333,10 +1416,30 @@ export class StrokeFormat extends BaseStyleFormat {
     span.style.fontWeight = "normal";
     span.style.width = "120px";
     mxUtils.write(span, mxResources.get("perimeter"));
-    perimeterPanel.appendChild(span);
+    return span;
+  }
 
-    var perimeterUpdate;
-    var perimeterSpacing = this.addUnitInput(
+  get perimeterPanel() {
+    return this.createPerimeterPanel();
+  }
+
+  createPerimeterPanel() {
+    const { colorPanel } = this;
+    var perimeterPanel: any = colorPanel.cloneNode(false);
+    perimeterPanel.style.fontWeight = "normal";
+    perimeterPanel.style.position = "relative";
+    perimeterPanel.style.paddingLeft = "16px";
+    perimeterPanel.style.marginBottom = "2px";
+    perimeterPanel.style.marginTop = "6px";
+    perimeterPanel.style.borderWidth = "0px";
+    perimeterPanel.style.paddingBottom = "18px";
+    return perimeterPanel;
+  }
+
+  get perimeterSpacing() {
+    const { perimeterPanel, perimeterUpdate } = this;
+
+    return this.addUnitInput(
       perimeterPanel,
       "pt",
       20,
@@ -1345,7 +1448,10 @@ export class StrokeFormat extends BaseStyleFormat {
         perimeterUpdate.apply(this, []);
       },
     );
+  }
 
+  appendToContainer() {
+    const { stylePanel2, arrowPanel, perimeterPanel, container, graph } = this;
     if (ss.edges.length == graph.getSelectionCount()) {
       container.appendChild(stylePanel2);
 
@@ -1362,222 +1468,293 @@ export class StrokeFormat extends BaseStyleFormat {
 
       container.appendChild(perimeterPanel);
     }
+  }
 
-    var listener = (_sender?, _evt?, force?) => {
-      ss = this.format.getSelectionState();
-      // var color = mxUtils.getValue(ss.style, strokeKey, null);
+  listener = (_sender?, _evt?, force?) => {
+    const { ss, input, altInput } = this;
+    // var color = mxUtils.getValue(ss.style, strokeKey, null);
 
-      if (force || document.activeElement != input) {
-        var tmp = parseInt(
-          mxUtils.getValue(ss.style, mxConstants.STYLE_STROKEWIDTH, 1),
-        );
-        input.value = isNaN(tmp) ? "" : tmp + " pt";
-      }
-
-      if (force || document.activeElement != altInput) {
-        var tmp = parseInt(
-          mxUtils.getValue(ss.style, mxConstants.STYLE_STROKEWIDTH, 1),
-        );
-        altInput.value = isNaN(tmp) ? "" : tmp + " pt";
-      }
-
-      styleSelect.style.visibility =
-        ss.style.shape == "connector" || ss.style.shape == "filledEdge"
-          ? ""
-          : "hidden";
-
-      if (mxUtils.getValue(ss.style, mxConstants.STYLE_CURVED, null) == "1") {
-        styleSelect.value = "curved";
-      } else if (
-        mxUtils.getValue(ss.style, mxConstants.STYLE_ROUNDED, null) == "1"
-      ) {
-        styleSelect.value = "rounded";
-      }
-
-      if (mxUtils.getValue(ss.style, mxConstants.STYLE_DASHED, null) == "1") {
-        if (
-          mxUtils.getValue(ss.style, mxConstants.STYLE_DASH_PATTERN, null) ==
-            null
-        ) {
-          solid.style.borderBottom = "1px dashed " + this.defaultStrokeColor;
-        } else {
-          solid.style.borderBottom = "1px dotted " + this.defaultStrokeColor;
-        }
-      } else {
-        solid.style.borderBottom = "1px solid " + this.defaultStrokeColor;
-      }
-
-      altSolid.style.borderBottom = solid.style.borderBottom;
-
-      // Updates toolbar icon for edge style
-      var edgeStyleDiv = edgeStyle.getElementsByTagName("div")[0];
-      var es = mxUtils.getValue(ss.style, mxConstants.STYLE_EDGE, null);
-
-      if (
-        mxUtils.getValue(ss.style, mxConstants.STYLE_NOEDGESTYLE, null) == "1"
-      ) {
-        es = null;
-      }
-
-      if (
-        es == "orthogonalEdgeStyle" &&
-        mxUtils.getValue(ss.style, mxConstants.STYLE_CURVED, null) == "1"
-      ) {
-        edgeStyleDiv.className = "geSprite geSprite-curved";
-      } else if (es == "straight" || es == "none" || es == null) {
-        edgeStyleDiv.className = "geSprite geSprite-straight";
-      } else if (es == "entityRelationEdgeStyle") {
-        edgeStyleDiv.className = "geSprite geSprite-entity";
-      } else if (es == "elbowEdgeStyle") {
-        edgeStyleDiv.className = "geSprite " +
-          (mxUtils.getValue(ss.style, mxConstants.STYLE_ELBOW, null) ==
-            "vertical"
-            ? "geSprite-verticalelbow"
-            : "geSprite-horizontalelbow");
-      } else if (es == "isometricEdgeStyle") {
-        edgeStyleDiv.className = "geSprite " +
-          (mxUtils.getValue(ss.style, mxConstants.STYLE_ELBOW, null) ==
-            "vertical"
-            ? "geSprite-verticalisometric"
-            : "geSprite-horizontalisometric");
-      } else {
-        edgeStyleDiv.className = "geSprite geSprite-orthogonal";
-      }
-
-      // Updates icon for edge shape
-      var edgeShapeDiv = edgeShape.getElementsByTagName("div")[0];
-
-      if (ss.style.shape == "link") {
-        edgeShapeDiv.className = "geSprite geSprite-linkedge";
-      } else if (ss.style.shape == "flexArrow") {
-        edgeShapeDiv.className = "geSprite geSprite-arrow";
-      } else if (ss.style.shape == "arrow") {
-        edgeShapeDiv.className = "geSprite geSprite-simplearrow";
-      } else {
-        edgeShapeDiv.className = "geSprite geSprite-connection";
-      }
-
-      if (ss.edges.length == graph.getSelectionCount()) {
-        altStylePanel.style.display = "";
-        stylePanel.style.display = "none";
-      } else {
-        altStylePanel.style.display = "none";
-        stylePanel.style.display = "";
-      }
-
-      const updateArrow = (marker, fill, elt, prefix) => {
-        var markerDiv = elt.getElementsByTagName("div")[0];
-
-        markerDiv.className = ui.getCssClassForMarker(
-          prefix,
-          ss.style.shape,
-          marker,
-          fill,
-        );
-
-        if (markerDiv.className == "geSprite geSprite-noarrow") {
-          markerDiv.innerHTML = mxUtils.htmlEntities(mxResources.get("none"));
-          markerDiv.style.backgroundImage = "none";
-          markerDiv.style.verticalAlign = "top";
-          markerDiv.style.marginTop = "5px";
-          markerDiv.style.fontSize = "10px";
-          markerDiv.style.filter = "none";
-          markerDiv.style.color = this.defaultStrokeColor;
-          markerDiv.nextSibling.style.marginTop = "0px";
-        }
-
-        return markerDiv;
-      };
-
-      var sourceDiv = updateArrow(
-        mxUtils.getValue(ss.style, mxConstants.STYLE_STARTARROW, null),
-        mxUtils.getValue(ss.style, "startFill", "1"),
-        lineStart,
-        "start",
+    if (force || document.activeElement != input) {
+      var tmp = parseInt(
+        mxUtils.getValue(ss.style, mxConstants.STYLE_STROKEWIDTH, 1),
       );
-      var targetDiv = updateArrow(
-        mxUtils.getValue(ss.style, mxConstants.STYLE_ENDARROW, null),
-        mxUtils.getValue(ss.style, "endFill", "1"),
-        lineEnd,
-        "end",
+      input.value = isNaN(tmp) ? "" : tmp + " pt";
+    }
+
+    if (force || document.activeElement != altInput) {
+      var tmp = parseInt(
+        mxUtils.getValue(ss.style, mxConstants.STYLE_STROKEWIDTH, 1),
       );
+      altInput.value = isNaN(tmp) ? "" : tmp + " pt";
+    }
 
-      // Special cases for markers
-      if (ss.style.shape == "arrow") {
-        sourceDiv.className = "geSprite geSprite-noarrow";
-        targetDiv.className = "geSprite geSprite-endblocktrans";
-      } else if (ss.style.shape == "link") {
-        sourceDiv.className = "geSprite geSprite-noarrow";
-        targetDiv.className = "geSprite geSprite-noarrow";
-      }
+    this.setStyleSelect();
 
-      mxUtils.setOpacity(edgeStyle, ss.style.shape == "arrow" ? 30 : 100);
+    this.setSolidStyle();
 
+    altSolid.style.borderBottom = solid.style.borderBottom;
+
+    // Updates toolbar icon for edge style
+    this.createEdgeStyleDiv();
+
+    if (ss.edges.length == graph.getSelectionCount()) {
+      altStylePanel.style.display = "";
+      stylePanel.style.display = "none";
+    } else {
+      altStylePanel.style.display = "none";
+      stylePanel.style.display = "";
+    }
+
+    this.setSpecialMarkerCases();
+
+    mxUtils.setOpacity(edgeStyle, ss.style.shape == "arrow" ? 30 : 100);
+
+    if (
+      ss.style.shape != "connector" &&
+      ss.style.shape != "flexArrow" &&
+      ss.style.shape != "filledEdge"
+    ) {
+      mxUtils.setOpacity(lineStart, 30);
+      mxUtils.setOpacity(lineEnd, 30);
+    } else {
+      mxUtils.setOpacity(lineStart, 100);
+      mxUtils.setOpacity(lineEnd, 100);
+    }
+  };
+
+  setStyleSelect() {
+    const { styleSelect } = this;
+    styleSelect.style.visibility =
+      ss.style.shape == "connector" || ss.style.shape == "filledEdge"
+        ? ""
+        : "hidden";
+
+    if (mxUtils.getValue(ss.style, mxConstants.STYLE_CURVED, null) == "1") {
+      styleSelect.value = "curved";
+    } else if (
+      mxUtils.getValue(ss.style, mxConstants.STYLE_ROUNDED, null) == "1"
+    ) {
+      styleSelect.value = "rounded";
+    }
+  }
+
+  setSolidStyle() {
+    if (mxUtils.getValue(ss.style, mxConstants.STYLE_DASHED, null) == "1") {
       if (
-        ss.style.shape != "connector" &&
-        ss.style.shape != "flexArrow" &&
-        ss.style.shape != "filledEdge"
+        mxUtils.getValue(ss.style, mxConstants.STYLE_DASH_PATTERN, null) ==
+          null
       ) {
-        mxUtils.setOpacity(lineStart, 30);
-        mxUtils.setOpacity(lineEnd, 30);
+        solid.style.borderBottom = "1px dashed " + this.defaultStrokeColor;
       } else {
-        mxUtils.setOpacity(lineStart, 100);
-        mxUtils.setOpacity(lineEnd, 100);
+        solid.style.borderBottom = "1px dotted " + this.defaultStrokeColor;
       }
+    } else {
+      solid.style.borderBottom = "1px solid " + this.defaultStrokeColor;
+    }
+  }
 
-      if (force || document.activeElement != startSize) {
-        var tmp = parseInt(
-          mxUtils.getValue(
-            ss.style,
-            mxConstants.STYLE_STARTSIZE,
-            mxConstants.DEFAULT_MARKERSIZE,
-          ),
-        );
-        startSize.value = isNaN(tmp) ? "" : tmp + " pt";
-      }
+  get edgeStyleDiv() {
+    return this.createEdgeStyleDiv();
+  }
 
-      if (force || document.activeElement != startSpacing) {
-        var tmp = parseInt(
-          mxUtils.getValue(
-            ss.style,
-            mxConstants.STYLE_SOURCE_PERIMETER_SPACING,
-            0,
-          ),
-        );
-        startSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
-      }
+  createEdgeStyleDiv() {
+    const { edgeStyle, ss } = this;
+    var edgeStyleDiv = edgeStyle.getElementsByTagName("div")[0];
+    var es = mxUtils.getValue(ss.style, mxConstants.STYLE_EDGE, null);
 
-      if (force || document.activeElement != endSize) {
-        var tmp = parseInt(
-          mxUtils.getValue(
-            ss.style,
-            mxConstants.STYLE_ENDSIZE,
-            mxConstants.DEFAULT_MARKERSIZE,
-          ),
-        );
-        endSize.value = isNaN(tmp) ? "" : tmp + " pt";
-      }
+    if (
+      mxUtils.getValue(ss.style, mxConstants.STYLE_NOEDGESTYLE, null) == "1"
+    ) {
+      es = null;
+    }
 
-      if (force || document.activeElement != startSpacing) {
-        var tmp = parseInt(
-          mxUtils.getValue(
-            ss.style,
-            mxConstants.STYLE_TARGET_PERIMETER_SPACING,
-            0,
-          ),
-        );
-        endSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
-      }
+    if (
+      es == "orthogonalEdgeStyle" &&
+      mxUtils.getValue(ss.style, mxConstants.STYLE_CURVED, null) == "1"
+    ) {
+      edgeStyleDiv.className = "geSprite geSprite-curved";
+    } else if (es == "straight" || es == "none" || es == null) {
+      edgeStyleDiv.className = "geSprite geSprite-straight";
+    } else if (es == "entityRelationEdgeStyle") {
+      edgeStyleDiv.className = "geSprite geSprite-entity";
+    } else if (es == "elbowEdgeStyle") {
+      edgeStyleDiv.className = "geSprite " +
+        (mxUtils.getValue(ss.style, mxConstants.STYLE_ELBOW, null) ==
+          "vertical"
+          ? "geSprite-verticalelbow"
+          : "geSprite-horizontalelbow");
+    } else if (es == "isometricEdgeStyle") {
+      edgeStyleDiv.className = "geSprite " +
+        (mxUtils.getValue(ss.style, mxConstants.STYLE_ELBOW, null) ==
+          "vertical"
+          ? "geSprite-verticalisometric"
+          : "geSprite-horizontalisometric");
+    } else {
+      edgeStyleDiv.className = "geSprite geSprite-orthogonal";
+    }
+    return edgeStyleDiv;
+  }
 
-      if (force || document.activeElement != perimeterSpacing) {
-        var tmp = parseInt(
-          mxUtils.getValue(ss.style, mxConstants.STYLE_PERIMETER_SPACING, 0),
-        );
-        perimeterSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
-      }
-    };
+  setSpecialMarkerCases() {
+    const { sourceDiv, targetDiv, ss } = this;
+    // Special cases for markers
+    if (ss.style.shape == "arrow") {
+      sourceDiv.className = "geSprite geSprite-noarrow";
+      targetDiv.className = "geSprite geSprite-endblocktrans";
+    } else if (ss.style.shape == "link") {
+      sourceDiv.className = "geSprite geSprite-noarrow";
+      targetDiv.className = "geSprite geSprite-noarrow";
+    }
+  }
 
-    startSizeUpdate = this.installInputHandler(
+  get sourceDiv() {
+    const { lineStart, updateArrow, ss } = this;
+    return updateArrow(
+      mxUtils.getValue(ss.style, mxConstants.STYLE_STARTARROW, null),
+      mxUtils.getValue(ss.style, "startFill", "1"),
+      lineStart,
+      "start",
+    );
+  }
+
+  get targetDiv() {
+    const { lineEnd, updateArrow, ss } = this;
+    return updateArrow(
+      mxUtils.getValue(ss.style, mxConstants.STYLE_ENDARROW, null),
+      mxUtils.getValue(ss.style, "endFill", "1"),
+      lineEnd,
+      "end",
+    );
+  }
+
+  // Updates icon for edge shape
+  get edgeShapeDiv() {
+    const { edgeShape, ss } = this;
+    var edgeShapeDiv = edgeShape.getElementsByTagName("div")[0];
+    if (ss.style.shape == "link") {
+      edgeShapeDiv.className = "geSprite geSprite-linkedge";
+    } else if (ss.style.shape == "flexArrow") {
+      edgeShapeDiv.className = "geSprite geSprite-arrow";
+    } else if (ss.style.shape == "arrow") {
+      edgeShapeDiv.className = "geSprite geSprite-simplearrow";
+    } else {
+      edgeShapeDiv.className = "geSprite geSprite-connection";
+    }
+    return edgeShapeDiv;
+  }
+
+  onActiveElement() {
+    const {
+      ss,
+      force,
+      startSize,
+      startSpacing,
+      endSpacing,
+      endSize,
+      perimeterSpacing,
+    } = this;
+
+    if (force || document.activeElement != startSize) {
+      var tmp = parseInt(
+        mxUtils.getValue(
+          ss.style,
+          mxConstants.STYLE_STARTSIZE,
+          mxConstants.DEFAULT_MARKERSIZE,
+        ),
+      );
+      startSize.value = isNaN(tmp) ? "" : tmp + " pt";
+    }
+
+    if (force || document.activeElement != startSpacing) {
+      var tmp = parseInt(
+        mxUtils.getValue(
+          ss.style,
+          mxConstants.STYLE_SOURCE_PERIMETER_SPACING,
+          0,
+        ),
+      );
+      startSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
+    }
+
+    if (force || document.activeElement != endSize) {
+      var tmp = parseInt(
+        mxUtils.getValue(
+          ss.style,
+          mxConstants.STYLE_ENDSIZE,
+          mxConstants.DEFAULT_MARKERSIZE,
+        ),
+      );
+      endSize.value = isNaN(tmp) ? "" : tmp + " pt";
+    }
+
+    if (force || document.activeElement != startSpacing) {
+      var tmp = parseInt(
+        mxUtils.getValue(
+          ss.style,
+          mxConstants.STYLE_TARGET_PERIMETER_SPACING,
+          0,
+        ),
+      );
+      endSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
+    }
+
+    if (force || document.activeElement != perimeterSpacing) {
+      var tmp = parseInt(
+        mxUtils.getValue(ss.style, mxConstants.STYLE_PERIMETER_SPACING, 0),
+      );
+      perimeterSpacing.value = isNaN(tmp) ? "" : tmp + " pt";
+    }
+  }
+
+  addKeyHandlers() {
+    const {
+      listener,
+      input,
+      startSize,
+      startSpacing,
+      endSize,
+      endSpacing,
+      perimeterSpacing,
+    } = this;
+    this.addKeyHandler(input, listener);
+    this.addKeyHandler(startSize, listener);
+    this.addKeyHandler(startSpacing, listener);
+    this.addKeyHandler(endSize, listener);
+    this.addKeyHandler(endSpacing, listener);
+    this.addKeyHandler(perimeterSpacing, listener);
+  }
+
+  updateArrow = (marker, fill, elt, prefix) => {
+    const { ui } = this;
+    var markerDiv = elt.getElementsByTagName("div")[0];
+
+    markerDiv.className = ui.getCssClassForMarker(
+      prefix,
+      ss.style.shape,
+      marker,
+      fill,
+    );
+
+    if (markerDiv.className == "geSprite geSprite-noarrow") {
+      markerDiv.innerHTML = mxUtils.htmlEntities(mxResources.get("none"));
+      markerDiv.style.backgroundImage = "none";
+      markerDiv.style.verticalAlign = "top";
+      markerDiv.style.marginTop = "5px";
+      markerDiv.style.fontSize = "10px";
+      markerDiv.style.filter = "none";
+      markerDiv.style.color = this.defaultStrokeColor;
+      markerDiv.nextSibling.style.marginTop = "0px";
+    }
+
+    return markerDiv;
+  };
+
+  /**
+  * Adds the label menu items to the given menu and parent.
+  */
+
+  get startSizeUpdate() {
+    return this.installInputHandler(
       startSize,
       mxConstants.STYLE_STARTSIZE,
       mxConstants.DEFAULT_MARKERSIZE,
@@ -1585,7 +1762,9 @@ export class StrokeFormat extends BaseStyleFormat {
       999,
       " pt",
     );
-    startSpacingUpdate = this.installInputHandler(
+  }
+  get startSpacingUpdate() {
+    return this.installInputHandler(
       startSpacing,
       mxConstants.STYLE_SOURCE_PERIMETER_SPACING,
       0,
@@ -1593,7 +1772,10 @@ export class StrokeFormat extends BaseStyleFormat {
       999,
       " pt",
     );
-    endSizeUpdate = this.installInputHandler(
+  }
+
+  get endSizeUpdate() {
+    return this.installInputHandler(
       endSize,
       mxConstants.STYLE_ENDSIZE,
       mxConstants.DEFAULT_MARKERSIZE,
@@ -1601,7 +1783,10 @@ export class StrokeFormat extends BaseStyleFormat {
       999,
       " pt",
     );
-    endSpacingUpdate = this.installInputHandler(
+  }
+
+  get endSpacingUpdate() {
+    return this.installInputHandler(
       endSpacing,
       mxConstants.STYLE_TARGET_PERIMETER_SPACING,
       0,
@@ -1609,7 +1794,10 @@ export class StrokeFormat extends BaseStyleFormat {
       999,
       " pt",
     );
-    perimeterUpdate = this.installInputHandler(
+  }
+
+  get perimeterUpdate() {
+    return this.installInputHandler(
       perimeterSpacing,
       mxConstants.STYLE_PERIMETER_SPACING,
       0,
@@ -1617,22 +1805,5 @@ export class StrokeFormat extends BaseStyleFormat {
       999,
       " pt",
     );
-
-    this.addKeyHandler(input, listener);
-    this.addKeyHandler(startSize, listener);
-    this.addKeyHandler(startSpacing, listener);
-    this.addKeyHandler(endSize, listener);
-    this.addKeyHandler(endSpacing, listener);
-    this.addKeyHandler(perimeterSpacing, listener);
-
-    graph.getModel().addListener(mxEvent.CHANGE, listener);
-    this.listeners.push({
-      destroy: function () {
-        graph.getModel().removeListener(listener);
-      },
-    });
-    listener();
-
-    return container;
   }
 }

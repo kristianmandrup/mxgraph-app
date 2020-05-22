@@ -1,7 +1,7 @@
 import mx from "@mxgraph-app/mx";
 import { Dialog } from "@mxgraph-app/dialogs";
-import { DiagramFormatPanel } from "../diagram-format/DiagramFormatPanel";
-import { TextFormatPanel } from "../text-format/TextFormatPanel";
+import { DiagramFormatPanel } from "../diagram/DiagramFormatPanel";
+import { TextFormatPanel } from "../text/TextFormatPanel";
 import { StyleFormatPanel } from "../style/StyleFormatPanel";
 import { ArrangePanel } from "../arrange/ArrangePanel";
 const { mxResources, mxClient, mxEvent, mxUtils } = mx;
