@@ -1,18 +1,121 @@
-import { Base } from "../../Base";
 import mx from "@mxgraph-app/mx";
+import { BaseManager } from "../BaseManager";
 const {
-  mxConstants,
   mxResources,
   mxEvent,
   mxUtils,
 } = mx;
 
-export class AbstractManager extends Base {
+export class AbstractManager extends BaseManager {
   get rect() {
     return this.format.getSelectionState();
   }
 
+  get leftUpdate(): any {
+    const { left, panel } = this;
+    return this.addGeometryHandler(left, (geo, value) => {
+      value = panel.fromUnit(value);
+
+      if (geo.relative) {
+        geo.offset.x = value;
+      } else {
+        geo.x = value;
+      }
+    });
+  }
+
+  get topUpdate(): any {
+    const { panel } = this;
+    return this.addGeometryHandler(top, (geo, value) => {
+      value = panel.fromUnit(value);
+
+      if (geo.relative) {
+        geo.offset.y = value;
+      } else {
+        geo.y = value;
+      }
+    });
+  }
+
+  setChangeListener() {
+    const { listener, graph } = this;
+    graph.getModel().addListener(mxEvent.CHANGE, listener);
+    this.listeners.push({
+      destroy: function () {
+        graph.getModel().removeListener(listener);
+      },
+    });
+    listener();
+  }
+
+  get span() {
+    var span = document.createElement("div");
+    span.style.position = "absolute";
+    span.style.width = "50px";
+    span.style.marginTop = "0px";
+    span.style.fontWeight = "bold";
+    mxUtils.write(span, mxResources.get("size"));
+    return span;
+  }
+
+  get span2() {
+    var span = document.createElement("div");
+    span.style.position = "absolute";
+    span.style.width = "70px";
+    span.style.marginTop = "0px";
+    span.style.fontWeight = "bold";
+    mxUtils.write(span, mxResources.get("position"));
+    return span;
+  }
+
+  get div2() {
+    var div2 = this.createPanel();
+    div2.style.paddingBottom = "30px";
+    return div2;
+  }
+
+  get left() {
+    const { div2, leftUpdate } = this;
+    return this.addUnitInput(
+      div2,
+      this.getUnit(),
+      84,
+      44,
+      () => {
+        leftUpdate();
+      },
+      this.getUnitStep(),
+      null,
+      null,
+      this.isFloatUnit(),
+    );
+  }
+
+  get top() {
+    const { div2, topUpdate } = this;
+    return this.addUnitInput(
+      div2,
+      this.getUnit(),
+      20,
+      44,
+      () => {
+        topUpdate();
+      },
+      this.getUnitStep(),
+      null,
+      null,
+      this.isFloatUnit(),
+    );
+  }
+
+  get div() {
+    var div = this.createPanel();
+    div.style.paddingBottom = "8px";
+    return div;
+  }
+
   get width() {
+    const { div, widthUpdate } = this;
     return this.addUnitInput(
       div,
       this.getUnit(),
@@ -29,6 +132,7 @@ export class AbstractManager extends Base {
   }
 
   get height() {
+    const { div, heightUpdate } = this;
     return this.addUnitInput(
       div,
       this.getUnit(),
@@ -79,6 +183,7 @@ export class AbstractManager extends Base {
   }
 
   get wrapper() {
+    const { opt } = this;
     var wrapper = document.createElement("div");
     wrapper.style.paddingTop = "8px";
     wrapper.style.paddingRight = "20px";
@@ -88,20 +193,8 @@ export class AbstractManager extends Base {
     return wrapper;
   }
 
-  get opt() {
-    var opt = this.createCellOption(
-      mxResources.get("constrainProportions"),
-      mxConstants.STYLE_ASPECT,
-      null,
-      "fixed",
-      "null",
-    );
-    opt.style.width = "100%";
-    return opt;
-  }
-
   listener = (_sender?, _evt?, force?) => {
-    rect = this.format.getSelectionState();
+    const { rect, graph, div, width, height, div2, left, top } = this;
 
     if (
       !rect.containsLabel &&
@@ -145,8 +238,8 @@ export class AbstractManager extends Base {
     }
   };
 
-  get widthUpdate() {
-    const { constrainCheckbox } = this;
+  get widthUpdate(): any {
+    const { constrainCheckbox, width, panel } = this;
     return this.addGeometryHandler(width, (geo, value) => {
       if (geo.width > 0) {
         value = Math.max(1, panel.fromUnit(value));
@@ -156,25 +249,6 @@ export class AbstractManager extends Base {
         }
 
         geo.width = value;
-      }
-    });
-  }
-
-  get constrainCheckbox() {
-    const { opt } = this;
-    return opt.getElementsByTagName("input")[0];
-  }
-
-  get heightUpdate() {
-    return this.addGeometryHandler(height, (geo, value) => {
-      if (geo.height > 0) {
-        value = Math.max(1, panel.fromUnit(value));
-
-        if (constrainCheckbox.checked) {
-          geo.width = Math.round((geo.width * value * 100) / geo.height) / 100;
-        }
-
-        geo.height = value;
       }
     });
   }

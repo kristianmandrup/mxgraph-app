@@ -7,55 +7,6 @@ const {
 } = mx;
 
 export class EdgeGeometryManager extends AbstractManager {
-  addEdgeGeometryHandler(input, fn) {
-    var ui = this.editorUi;
-    var graph = ui.editor.graph;
-    var initialValue: any;
-
-    const update = (evt) => {
-      if (input.value != "") {
-        var value = parseFloat(input.value);
-
-        if (isNaN(value)) {
-          input.value = initialValue + " pt";
-        } else if (value != initialValue) {
-          graph.getModel().beginUpdate();
-          try {
-            var cells = graph.getSelectionCells();
-
-            for (var i = 0; i < cells.length; i++) {
-              if (graph.getModel().isEdge(cells[i])) {
-                var geo = graph.getCellGeometry(cells[i]);
-
-                if (geo != null) {
-                  geo = geo.clone();
-                  fn(geo, value);
-
-                  graph.getModel().setGeometry(cells[i], geo);
-                }
-              }
-            }
-          } finally {
-            graph.getModel().endUpdate();
-          }
-
-          initialValue = value;
-          input.value = value + " pt";
-        }
-      }
-
-      mxEvent.consume(evt);
-    };
-
-    mxEvent.addListener(input, "blur", update);
-    mxEvent.addListener(input, "change", update);
-    mxEvent.addListener(input, "focus", function () {
-      initialValue = input.value;
-    });
-
-    return update;
-  }
-
   /**
    *
    */
@@ -65,13 +16,13 @@ export class EdgeGeometryManager extends AbstractManager {
 
     div.appendChild(span);
 
-    const { width1, listener, widthUpdate } = this;
+    const { width, listener, widthUpdate } = this;
 
     mxUtils.br(div);
-    this.addKeyHandler(width1, listener);
+    this.addKeyHandler(width, listener);
 
-    mxEvent.addListener(width1, "blur", widthUpdate);
-    mxEvent.addListener(width1, "change", widthUpdate);
+    mxEvent.addListener(width, "blur", widthUpdate);
+    mxEvent.addListener(width, "change", widthUpdate);
 
     container.appendChild(div);
 

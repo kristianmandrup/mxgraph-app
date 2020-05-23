@@ -1,16 +1,12 @@
-import { Base } from "../../Base";
 import mx from "@mxgraph-app/mx";
+import { EdgeListener } from "./EdgeListener";
+import { BaseManager } from "../BaseManager";
 const {
   mxResources,
-  mxEvent,
   mxUtils,
 } = mx;
 
-export class AbstractManager extends Base {
-  get rect() {
-    return this.format.getSelectionState();
-  }
-
+export class AbstractManager extends BaseManager {
   get div() {
     return this.createPanel();
   }
@@ -31,7 +27,7 @@ export class AbstractManager extends Base {
     return divs;
   }
 
-  get width1() {
+  get width() {
     const { div, widthUpdate } = this;
     return this.addUnitInput(div, "pt", 20, 44, (evt) => {
       widthUpdate(evt);
@@ -39,43 +35,11 @@ export class AbstractManager extends Base {
   }
 
   listener = (sender?, _evt?, force?) => {
-    return new Listener(this.editorUi, this.container).handler(
+    return new EdgeListener(this.editorUi, this.format, this.container).handler(
       sender,
       _evt,
       force,
     );
-  };
-
-  widthUpdate = (evt) => {
-    const { width, graph, ui, rect } = this;
-    // Maximum stroke width is 999
-    var value = parseInt(width.value);
-    value = Math.min(999, Math.max(1, isNaN(value) ? 1 : value));
-
-    if (
-      value !=
-        mxUtils.getValue(
-          rect.style,
-          "width",
-          mxCellRenderer.defaultShapes["flexArrow"].prototype.defaultWidth,
-        )
-    ) {
-      graph.setCellStyles("width", value, graph.getSelectionCells());
-      ui.fireEvent(
-        new mxEventObject(
-          "styleChanged",
-          "keys",
-          ["width"],
-          "values",
-          [value],
-          "cells",
-          graph.getSelectionCells(),
-        ),
-      );
-    }
-
-    width.value = value + " pt";
-    mxEvent.consume(evt);
   };
 
   get xs() {
@@ -168,7 +132,7 @@ export class AbstractManager extends Base {
       84,
       44,
       () => {
-        widthUpdate.apply(this, []);
+        widthUpdate();
       },
       this.getUnitStep(),
       null,
@@ -184,7 +148,7 @@ export class AbstractManager extends Base {
       20,
       44,
       () => {
-        heightUpdate.apply(this, []);
+        heightUpdate();
       },
       this.getUnitStep(),
       null,

@@ -5,10 +5,9 @@ const {
   mxUtils,
 } = mx;
 
-export class Listener extends AbstractManager {
+export class EdgeListener extends AbstractManager {
   handler = (_sender?, _evt?, force?) => {
-    const { div, rect, graph, width1, xs, ys, divs, divt, xt, yt } = this;
-    const width = width1;
+    const { div, rect, graph, width, xs, ys, divs, divt, xt, yt } = this;
     var cell = graph.getSelectionCell();
 
     if (rect.style.shape == "link" || rect.style.shape == "flexArrow") {

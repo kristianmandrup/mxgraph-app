@@ -1,7 +1,7 @@
 import { BaseFormatPanel } from "../base/BaseFormatPanel";
 import mx from "@mxgraph-app/mx";
 import { StyleFormatPanel } from "../style/StyleFormatPanel";
-import { GeometryManager } from "./GeometryManager";
+import { GeometryManager } from "./geometry/GeometryManager";
 import { Table } from "./Table";
 const { mxConstants, mxClient, mxResources, mxEvent, mxUtils } = mx;
 

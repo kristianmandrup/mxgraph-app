@@ -1,14 +1,14 @@
-export class Base {
+import { BaseFormatPanel } from "../base";
+
+export class BaseArrangeFormat extends BaseFormatPanel {
   format: any;
   editorUi: any;
   container: any;
   listeners: any[] = [];
   documentMode: any;
 
-  constructor(editorUi, format) {
-    this.editorUi = editorUi;
-    this.format = format;
-    this.listeners = [];
+  constructor(editorUi, format, container) {
+    super(format, editorUi, container);
   }
 
   get ui() {

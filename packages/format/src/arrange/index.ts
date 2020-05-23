@@ -1,2 +1,2 @@
 export * from "./ArrangePanel";
-export * from "./GeometryManager";
+export * from "./geometry/GeometryManager";

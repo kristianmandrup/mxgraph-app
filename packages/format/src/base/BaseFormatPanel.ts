@@ -9,9 +9,8 @@ import { CellColorOption } from "./options/CellColorOption";
 import { ColorOption } from "./options/ColorOption";
 import { Arrow } from "./Arrow";
 import { RelativeOption } from "./options/RelativeOption";
-import { UnitInput } from "./UnitInput";
 import { SelectionState } from "./SelectionState";
-const { mxEvent, mxUtils } = mx;
+const { mxUtils } = mx;
 
 /**
  * Base class for format panels.
@@ -221,38 +220,6 @@ export class BaseFormatPanel extends Base {
   /**
    *
    */
-  addUnitInput(
-    container,
-    unit,
-    right,
-    width,
-    update,
-    step?,
-    marginTop?,
-    disableFocus?,
-    isFloat?,
-  ) {
-    return this.newUnitInput().add(
-      container,
-      unit,
-      right,
-      width,
-      update,
-      step,
-      marginTop,
-      disableFocus,
-      isFloat,
-    );
-  }
-
-  newUnitInput() {
-    const { format, editorUi, container } = this;
-    return new UnitInput(format, editorUi, container);
-  }
-
-  /**
-   *
-   */
   createRelativeOption(label, key, width?, handler?, init?) {
     return this.newRelativeOption().create(label, key, width, handler, init);
   }
@@ -260,41 +227,6 @@ export class BaseFormatPanel extends Base {
   newRelativeOption() {
     const { format, editorUi, container } = this;
     return new RelativeOption(format, editorUi, container);
-  }
-
-  /**
-   *
-   */
-  addLabel(div, title, right, width?) {
-    width = width != null ? width : 61;
-
-    var label = document.createElement("div");
-    mxUtils.write(label, title);
-    label.style.position = "absolute";
-    label.style.right = right + "px";
-    label.style.width = width + "px";
-    label.style.marginTop = "6px";
-    label.style.textAlign = "center";
-    div.appendChild(label);
-  }
-
-  /**
-   *
-   */
-  addKeyHandler(input, listener) {
-    mxEvent.addListener(input, "keydown", (e) => {
-      if (e.keyCode == 13) {
-        this.editorUi.editor.graph.container.focus();
-        mxEvent.consume(e);
-      } else if (e.keyCode == 27) {
-        if (listener != null) {
-          listener(null, null, true);
-        }
-
-        this.editorUi.editor.graph.container.focus();
-        mxEvent.consume(e);
-      }
-    });
   }
 
   styleButtons(elts) {
