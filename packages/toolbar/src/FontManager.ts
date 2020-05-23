@@ -1,17 +1,15 @@
-import { Base } from "./Base";
+import { FormatMenu } from "./text/format/FormatMenu";
+import { AbstractToolbar } from "./AbstractToolbar";
+import { SizeMenu } from "./text/size/SizeMenu";
 
-export class FontManager extends Base {
-  /**
-   * Sets the current font name.
-   */
-  setFontName(value) {
-    if (this.fontMenu != null) {
-      this.fontMenu.innerHTML =
-        '<div style="width:60px;overflow:hidden;display:inline-block;">' +
-        mxUtils.htmlEntities(value) +
-        "</div>" +
-        this.dropdownImageHtml;
-    }
+export class FontManager extends AbstractToolbar {
+  fontMenu: any;
+  sizeMenu: any;
+
+  constructor(editorUi, container) {
+    super(editorUi, container);
+    this.fontMenu = new FormatMenu(editorUi, container).create();
+    this.sizeMenu = new SizeMenu(editorUi, container).create();
   }
 
   /**

@@ -2,8 +2,10 @@ import { ToolbarMenuAdder } from "../ToolbarMenuAdder";
 import mx from "@mxgraph-app/mx";
 import { defaults } from "@mxgraph-app/menus";
 import { FontManager } from "../FontManager";
-import { FormatMenu } from "./FormatMenu";
-import { AlignMenu } from "./AlignMenu";
+import { FormatMenu } from "./format/FormatMenu";
+import { AlignMenu } from "./align/AlignMenu";
+import { TableElement } from "../TableElement";
+import { InsertMenu } from "./insert/InsertMenu";
 const {
   mxResources,
   mxClient,
@@ -17,7 +19,6 @@ export class TextToolbar extends ToolbarMenuAdder {
   edgeShapeMenu: any;
   edgeStyleMenu: any;
   fontMenu: any;
-  sizeMenu: any;
   currentElt: any;
   gestureHandler: any;
   ctrlKey: any; // Editor.ctrlKey
@@ -63,54 +64,18 @@ export class TextToolbar extends ToolbarMenuAdder {
 
     this.addSeparator();
 
-    this.fontMenu = this.addMenu(
-      "",
-      mxResources.get("fontFamily"),
-      true,
-      "fontFamily",
-    );
-    this.fontMenu.style.position = "relative";
-    this.fontMenu.style.whiteSpace = "nowrap";
-    this.fontMenu.style.overflow = "hidden";
-    this.fontMenu.style.width = mxClient.IS_QUIRKS ? "80px" : "60px";
-
-    this.setFontName(font.family);
-
-    if (this.compactUi) {
-      this.fontMenu.style.paddingRight = "18px";
-      this.fontMenu.getElementsByTagName("img")[0].style.right = "1px";
-      this.fontMenu.getElementsByTagName("img")[0].style.top = "5px";
-    }
+    this.fontMenu;
 
     this.addSeparator();
 
-    this.sizeMenu = this.addMenu(
-      font.size,
-      mxResources.get("fontSize"),
-      true,
-      "fontSize",
-    );
-    this.sizeMenu.style.position = "relative";
-    this.sizeMenu.style.whiteSpace = "nowrap";
-    this.sizeMenu.style.overflow = "hidden";
-    this.sizeMenu.style.width = mxClient.IS_QUIRKS ? "44px" : "24px";
-
     this.setFontSize(font.size);
 
-    const { formatMenu, alignMenu } = this;
+    const { formatMenu, alignMenu, sizeMenu, insertMenu } = this;
 
-    if (this.compactUi) {
-      this.sizeMenu.style.paddingRight = "18px";
-      this.sizeMenu.getElementsByTagName("img")[0].style.right = "1px";
-      this.sizeMenu.getElementsByTagName("img")[0].style.top = "5px";
-    }
-
-    if (EditorUI.compactUi) {
-      formatMenu.getElementsByTagName("img")[0].style.left = "22px";
-      formatMenu.getElementsByTagName("img")[0].style.top = "5px";
-    }
-
-    this.elements.add();
+    formatMenu;
+    alignMenu;
+    sizeMenu;
+    insertMenu;
 
     this.addSeparator();
 
@@ -134,43 +99,37 @@ export class TextToolbar extends ToolbarMenuAdder {
 
     this.addSeparator();
 
-    // FIXME: Uses geButton here and geLabel in main menu
-    var insertMenu = this.addMenuFunction(
-      "",
-      mxResources.get("insert"),
-      true,
-      (menu) => {
-        menu.addItem(mxResources.get("insertLink"), null, () => {
-          this.editorUi.actions.get("link").funct();
-        });
-
-        menu.addItem(mxResources.get("insertImage"), null, () => {
-          this.editorUi.actions.get("image").funct();
-        });
-
-        menu.addItem(mxResources.get("insertHorizontalRule"), null, () => {
-          document.execCommand("inserthorizontalrule", false, undefined);
-        });
-      },
-    );
-
-    insertMenu.style.whiteSpace = "nowrap";
-    insertMenu.style.overflow = "hidden";
-    insertMenu.style.position = "relative";
-    insertMenu.innerHTML =
-      '<div class="geSprite geSprite-plus" style="margin-left:-4px;margin-top:-3px;"></div>' +
-      this.dropdownImageHtml;
-    insertMenu.style.width = mxClient.IS_QUIRKS ? "36px" : "16px";
-
-    // Fix for item size in kennedy theme
-    if (EditorUI.compactUi) {
-      insertMenu.getElementsByTagName("img")[0].style.left = "24px";
-      insertMenu.getElementsByTagName("img")[0].style.top = "5px";
-      insertMenu.style.width = mxClient.IS_QUIRKS ? "50px" : "30px";
-    }
-
     this.addSeparator();
-    new TableElement.create();
+    this.createTableElement();
+  }
+
+  get insertMenu() {
+    return new InsertMenu(this.editorUi, this.container).create();
+  }
+
+  get sizeMenu() {
+    const { font } = this;
+    const sizeMenu = this.addMenu(
+      font.size,
+      mxResources.get("fontSize"),
+      true,
+      "fontSize",
+    );
+    sizeMenu.style.position = "relative";
+    sizeMenu.style.whiteSpace = "nowrap";
+    sizeMenu.style.overflow = "hidden";
+    sizeMenu.style.width = mxClient.IS_QUIRKS ? "44px" : "24px";
+
+    if (this.compactUi) {
+      sizeMenu.style.paddingRight = "18px";
+      sizeMenu.getElementsByTagName("img")[0].style.right = "1px";
+      sizeMenu.getElementsByTagName("img")[0].style.top = "5px";
+    }
+    return sizeMenu;
+  }
+
+  createTableElement() {
+    return new TableElement(this.editorUi, this.container).create();
   }
 
   get formatMenu() {
@@ -178,13 +137,14 @@ export class TextToolbar extends ToolbarMenuAdder {
   }
 
   createFormatMenu() {
-    return new FormatMenu().create();
+    return new FormatMenu(this.editorUi, this.container).create();
   }
 
   get alignMenu() {
+    return this.createAlignMenu();
   }
 
-  createFormatMenu() {
-    return new AlignMenu().create();
+  createAlignMenu() {
+    return new AlignMenu(this.editorUi, this.container).create();
   }
 }

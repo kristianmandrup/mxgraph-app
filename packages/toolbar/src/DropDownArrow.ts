@@ -1,7 +1,12 @@
+import mx from "@mxgraph-app/mx";
 import { Base } from "./Base";
+const {
+  mxClient,
+} = mx;
 
 export class DropdownArrow extends Base {
   compactUi: any; // EditorUI.compactUi
+  dropdownImageHtml: any;
 
   add(
     menu,
@@ -32,11 +37,11 @@ export class DropdownArrow extends Base {
       : atlasWidth - atlasDelta + "px";
 
     if (mxClient.IS_QUIRKS) {
-      menu.style.height = EditorUI.compactUi ? "24px" : "26px";
+      menu.style.height = this.compactUi ? "24px" : "26px";
     }
 
     // Fix for item size in kennedy theme
-    if (EditorUI.compactUi) {
+    if (this.compactUi) {
       menu.getElementsByTagName("img")[0].style.left = "24px";
       menu.getElementsByTagName("img")[0].style.top = "5px";
       menu.style.width = mxClient.IS_QUIRKS ? width + "px" : width - 10 + "px";

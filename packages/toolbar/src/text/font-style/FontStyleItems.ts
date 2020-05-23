@@ -1,4 +1,10 @@
-export class FontStyleItems {
+import mx from "@mxgraph-app/mx";
+import { ToolbarMenuAdder } from "../../ToolbarMenuAdder";
+const {
+  mxResources,
+} = mx;
+
+export class FontStyleItems extends ToolbarMenuAdder {
   add() {
     const elts = this.addItems([
       "-",

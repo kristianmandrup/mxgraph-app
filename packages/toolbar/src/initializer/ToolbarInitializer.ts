@@ -2,7 +2,7 @@ import mx from "@mxgraph-app/mx";
 import resources from "@mxgraph-app/resources";
 import { AbstractInitializer } from "./AbstractInitializer";
 import { ToolbarSetup } from "./ToolbarSetup";
-import { TableElement } from "./TableElement";
+import { InitTableElement } from "./InitTableElement";
 // import { EditorUI } from "ui/EditorUI";
 const { urlParams } = resources;
 const { mxEvent } = mx;
@@ -13,7 +13,7 @@ export class ToolbarInitializer extends AbstractInitializer {
   container: any;
   editorUi: any;
   staticElements = [];
-  updateZoom: any;
+  // updateZoom: any;
   edgeShapeMenu: any;
   edgeStyleMenu: any;
   fontMenu: any;
@@ -30,7 +30,31 @@ export class ToolbarInitializer extends AbstractInitializer {
   addMenuFunction: any; // fn
 
   init() {
-    const { sw, formatMenu, viewMenu } = this;
+    this.initialPageSetup();
+
+    this.addListeners();
+
+    this.zoomElts;
+    this.undoElts;
+
+    this.createToolbarSetup().configureItems();
+
+    this.addSeparator();
+    this.insertMenu;
+
+    this.createTableElement();
+
+    if (urlParams["dev"] == "1") {
+      this.addSeparator();
+    }
+  }
+
+  createTableElement() {
+    return new InitTableElement(this.editorUi, this.container).create();
+  }
+
+  initialPageSetup() {
+    const { sw, formatMenu } = this;
     if (sw >= 700) {
       this.addDropDownArrow(
         formatMenu,
@@ -44,39 +68,31 @@ export class ToolbarInitializer extends AbstractInitializer {
       );
       this.addSeparator();
     }
-
     if (sw >= 420) {
       this.addSeparator();
     }
+  }
 
-    // Updates the label if the scale changes
-    this.updateZoom = () => {
-      viewMenu.innerHTML =
-        Math.round(this.editorUi.editor.graph.view.scale * 100) +
-        "%" +
-        this.dropdownImageHtml;
-
-      if (EditorUI.compactUi) {
-        viewMenu.getElementsByTagName("img")[0].style.right = "1px";
-        viewMenu.getElementsByTagName("img")[0].style.top = "5px";
-      }
-    };
-
+  addListeners() {
     this.editorUi.editor.graph.view.addListener(mxEvent.SCALE, this.updateZoom);
     this.editorUi.editor.addListener("resetGraphView", this.updateZoom);
+  }
 
-    this.zoomElts;
-    this.undoElts;
+  // Updates the label if the scale changes
+  updateZoom = () => {
+    const { viewMenu } = this;
+    viewMenu.innerHTML =
+      Math.round(this.editorUi.editor.graph.view.scale * 100) +
+      "%" +
+      this.dropdownImageHtml;
 
-    new ToolbarSetup().configureItems();
-
-    this.addSeparator();
-    this.insertMenu;
-
-    if (urlParams["dev"] == "1") {
-      this.addSeparator();
-
-      new TableElement().create();
+    if (EditorUI.compactUi) {
+      viewMenu.getElementsByTagName("img")[0].style.right = "1px";
+      viewMenu.getElementsByTagName("img")[0].style.top = "5px";
     }
+  };
+
+  createToolbarSetup() {
+    return new ToolbarSetup(this.editorUi, this.container);
   }
 }

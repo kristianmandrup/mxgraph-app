@@ -4,6 +4,7 @@ export class Base {
   container: any;
   listeners: any[] = [];
   documentMode: any;
+  compactUi: any;
 
   constructor(editorUi, container?) {
     this.editorUi = editorUi;

@@ -1,4 +1,10 @@
-export class UndoItems {
+import mx from "@mxgraph-app/mx";
+import { ToolbarMenuAdder } from "../../ToolbarMenuAdder";
+const {
+  mxResources,
+} = mx;
+
+export class UndoItems extends ToolbarMenuAdder {
   add() {
     var elts = this.addItems([
       "-",

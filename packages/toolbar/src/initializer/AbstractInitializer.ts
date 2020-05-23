@@ -1,8 +1,8 @@
-import { Base } from "../Base";
 import mx from "@mxgraph-app/mx";
-const { mxResources } = mx;
+import { ToolbarMenuAdder } from "../ToolbarMenuAdder";
+const { mxClient, mxResources } = mx;
 
-export class AbstractInitializer extends Base {
+export class AbstractInitializer extends ToolbarMenuAdder {
   get insertMenu() {
     var insertMenu = this.addMenu(
       "",
@@ -82,7 +82,7 @@ export class AbstractInitializer extends Base {
     viewMenu.style.position = "relative";
     viewMenu.style.overflow = "hidden";
 
-    if (EditorUI.compactUi) {
+    if (this.compactUi) {
       viewMenu.style.width = mxClient.IS_QUIRKS ? "58px" : "50px";
     } else {
       viewMenu.style.width = mxClient.IS_QUIRKS ? "62px" : "36px";

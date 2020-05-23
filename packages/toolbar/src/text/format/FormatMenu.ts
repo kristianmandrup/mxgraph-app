@@ -1,6 +1,13 @@
-import { ToolbarMenuAdder } from "../ToolbarMenuAdder";
+import { ToolbarMenuAdder } from "../../ToolbarMenuAdder";
+import mx from "@mxgraph-app/mx";
+const {
+  mxResources,
+  mxClient,
+} = mx;
 
 export class FormatMenu extends ToolbarMenuAdder {
+  ctrlKey: any;
+
   create() {
     var formatMenu = this.addMenuFunction(
       "",
@@ -70,6 +77,12 @@ export class FormatMenu extends ToolbarMenuAdder {
       '<div class="geSprite geSprite-dots" style="margin-left:-2px;"></div>' +
       this.dropdownImageHtml;
     formatMenu.style.width = mxClient.IS_QUIRKS ? "50px" : "30px";
+
+    if (this.compactUi) {
+      formatMenu.getElementsByTagName("img")[0].style.left = "22px";
+      formatMenu.getElementsByTagName("img")[0].style.top = "5px";
+    }
+
     return formatMenu;
   }
 }

@@ -13,5 +13,5 @@ export const defaults = {
     "Georgia",
     "Lucida Console",
     "Tahoma",
-  ];
+  ],
 };

@@ -1,8 +1,8 @@
 import mx from "@mxgraph-app/mx";
-// import resources from "@mxgraph-app/resources";
 import { Base } from "./Base";
-import { ToolbarItemAdder } from "./ToolbarItemAdder";
-// const { IMAGE_PATH } = resources;
+import { DropdownArrow } from "./DropDownArrow";
+import { defaults } from "@mxgraph-app/menus";
+import { FontManager } from "./FontManager";
 const {
   mxPopupMenu,
   mxUtils,
@@ -13,11 +13,196 @@ const {
 export class ToolbarMenuAdder extends Base {
   itemAdder: any;
   dropdownImageHtml: any;
+  currentElt: any;
   compactUi: any; // EditorUI.compactUi
+  font = defaults.font;
+  dropdownArrow: any;
+  fontManager: any;
 
   constructor(editorUi, container) {
     super(editorUi, container);
-    this.itemAdder = new ToolbarItemAdder(editorUi, container);
+    this.dropdownArrow = new DropdownArrow(this.editorUi, this.container);
+    this.fontManager = new FontManager(editorUi, container);
+  }
+
+  setFontName(value) {
+    this.fontManager.setFontName(value);
+  }
+
+  setFontSize(value) {
+    this.fontManager.setFontSize(value);
+  }
+
+  /**
+   * Initializes the given toolbar element.
+   */
+  initElement(elt, tooltip) {
+    // Adds tooltip
+    if (tooltip != null) {
+      elt.setAttribute("title", tooltip);
+    }
+
+    this.addEnabledState(elt);
+  }
+
+  /**
+   * Adds given action item
+   */
+  addItems(keys, c?, ignoreDisabled?) {
+    var items: any[] = [];
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+
+      if (key == "-") {
+        items.push(this.addSeparator(c));
+      } else {
+        items.push(
+          this.addItem("geSprite-" + key.toLowerCase(), key, c, ignoreDisabled),
+        );
+      }
+    }
+
+    return items;
+  }
+
+  /**
+   * Adds given action item
+   */
+  addItem(sprite, key, c, ignoreDisabled) {
+    var action = this.editorUi.actions.get(key);
+    var elt: any;
+
+    if (action != null) {
+      var tooltip = action.label;
+
+      if (action.shortcut != null) {
+        tooltip += " (" + action.shortcut + ")";
+      }
+
+      elt = this.addButton(sprite, tooltip, action.funct, c);
+
+      if (!ignoreDisabled) {
+        elt.setEnabled(action.enabled);
+
+        action.addListener("stateChanged", function () {
+          elt.setEnabled(action.enabled);
+        });
+      }
+    }
+
+    return elt;
+  }
+
+  /**
+   * Adds the toolbar elements.
+   */
+  addDropDownArrow(
+    menu,
+    sprite,
+    width,
+    atlasWidth,
+    left,
+    top,
+    atlasDelta,
+    atlasLeft,
+  ) {
+    this.dropdownArrow.add(
+      menu,
+      sprite,
+      width,
+      atlasWidth,
+      left,
+      top,
+      atlasDelta,
+      atlasLeft,
+    );
+  }
+
+  /**
+   * Adds enabled state with setter to DOM node (avoids JS wrapper).
+   */
+  addEnabledState(elt) {
+    var classname = elt.className;
+
+    elt.setEnabled = (value) => {
+      elt.enabled = value;
+
+      if (value) {
+        elt.className = classname;
+      } else {
+        elt.className = classname + " mxDisabled";
+      }
+    };
+
+    elt.setEnabled(true);
+  }
+
+  /**
+   * Adds a button to the toolbar.
+   */
+  addButton(classname, tooltip, funct, c?) {
+    var elt = this.createButton(classname);
+    c = c != null ? c : this.container;
+
+    this.initElement(elt, tooltip);
+    this.addClickHandler(elt, funct);
+    c.appendChild(elt);
+
+    return elt;
+  }
+
+  /**
+   * Adds enabled state with setter to DOM node (avoids JS wrapper).
+   */
+  addClickHandler(elt, funct) {
+    if (funct != null) {
+      mxEvent.addListener(elt, "click", function (evt) {
+        if (elt.enabled) {
+          funct(evt);
+        }
+
+        mxEvent.consume(evt);
+      });
+
+      // Prevents focus
+      mxEvent.addListener(
+        elt,
+        mxClient.IS_POINTER ? "pointerdown" : "mousedown",
+        (evt) => {
+          evt.preventDefault();
+        },
+      );
+    }
+  }
+
+  /**
+   * Creates and returns a new button.
+   */
+  createButton(classname) {
+    var elt = document.createElement("a");
+    elt.className = "geButton";
+
+    var inner = document.createElement("div");
+
+    if (classname != null) {
+      inner.className = "geSprite " + classname;
+    }
+
+    elt.appendChild(inner);
+
+    return elt;
+  }
+
+  /**
+   * Creates and returns a new button.
+   */
+  createLabel(label, _tooltip?) {
+    var elt = document.createElement("a");
+    elt.className = "geLabel";
+    mxUtils.write(elt, label);
+
+    return elt;
   }
 
   /**
@@ -43,10 +228,6 @@ export class ToolbarMenuAdder extends Base {
     }
 
     return elt;
-  }
-
-  addItems(keys, c?, ignoreDisabled?) {
-    this.itemAdder.addItems(keys, c, ignoreDisabled);
   }
 
   /**

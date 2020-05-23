@@ -1,6 +1,8 @@
 import { Base } from "./Base";
 import mx from "@mxgraph-app/mx";
-const { mxEvent, mxConstants, mxResources } = mx;
+const { mxEvent, mxClient } = mx;
+import resources from "@mxgraph-app/resources";
+const { IMAGE_PATH } = resources;
 
 export class AbstractToolbar extends Base {
   // Global handler to hide the current menu
@@ -12,6 +14,13 @@ export class AbstractToolbar extends Base {
       this.hideMenu();
     }
   };
+
+  /**
+   * Hides the current menu.
+   */
+  hideMenu() {
+    this.editorUi.hideCurrentMenu();
+  }
 
   /**
    * Image for the dropdown arrow.
@@ -26,7 +35,7 @@ export class AbstractToolbar extends Base {
    */
   dropdownImageHtml =
     '<img border="0" style="position:absolute;right:4px;top:' +
-    (!EditorUI.compactUi ? 8 : 6) +
+    (!this.compactUi ? 8 : 6) +
     'px;" src="' +
     this.dropdownImage +
     '" valign="middle"/>';

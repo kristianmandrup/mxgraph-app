@@ -1,7 +1,8 @@
 import mx from "@mxgraph-app/mx";
+import { ToolbarMenuAdder } from "../ToolbarMenuAdder";
 const { mxEvent, mxResources, mxClient } = mx;
 
-export class TableElement {
+export class InitTableElement extends ToolbarMenuAdder {
   create() {
     // KNOWN: All table stuff does not work with undo/redo
     // KNOWN: Lost focus after click on submenu with text (not icon) in quirks and IE8. This is because the TD seems
@@ -140,7 +141,7 @@ export class TableElement {
     elt.style.width = mxClient.IS_QUIRKS ? "50px" : "30px";
 
     // Fix for item size in kennedy theme
-    if (EditorUI.compactUi) {
+    if (this.compactUi) {
       elt.getElementsByTagName("img")[0].style.left = "22px";
       elt.getElementsByTagName("img")[0].style.top = "5px";
     }
