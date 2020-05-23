@@ -1,6 +1,15 @@
 import { FilenameDialog } from "@mxgraph-app/dialogs";
-export class TableElement {
+import { ToolbarMenuAdder } from "./ToolbarMenuAdder";
+import mx from "@mxgraph-app/mx";
+const {
+  mxConstants,
+  mxResources,
+  mxClient,
+} = mx;
+
+export class TableElement extends ToolbarMenuAdder {
   create() {
+    const { graph } = this;
     // KNOWN: All table stuff does not work with undo/redo
     // KNOWN: Lost focus after click on submenu with text (not icon) in quirks and IE8. This is because the TD seems
     // to catch the focus on click in these browsers. NOTE: Workaround in mxPopupMenu for icon items (without text).
@@ -279,7 +288,7 @@ export class TableElement {
     elt.style.width = mxClient.IS_QUIRKS ? "50px" : "30px";
 
     // Fix for item size in kennedy theme
-    if (EditorUI.compactUi) {
+    if (this.compactUi) {
       elt.getElementsByTagName("img")[0].style.left = "22px";
       elt.getElementsByTagName("img")[0].style.top = "5px";
     }

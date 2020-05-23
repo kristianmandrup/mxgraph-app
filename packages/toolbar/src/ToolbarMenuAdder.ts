@@ -12,6 +12,8 @@ const {
 
 export class ToolbarMenuAdder extends Base {
   itemAdder: any;
+  dropdownImageHtml: any;
+  compactUi: any; // EditorUI.compactUi
 
   constructor(editorUi, container) {
     super(editorUi, container);
