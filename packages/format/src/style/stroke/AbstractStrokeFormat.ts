@@ -538,7 +538,7 @@ export class AbstractStrokeFormat extends BaseStyleFormat {
     }
   }
 
-  listener = (sender, evt, force) => {
+  listener = (sender?, evt?, force?) => {
     return new Listener(this.format, this.editorUi, this.container).handler(
       sender,
       evt,

@@ -14,7 +14,7 @@ export class StrokeFormat extends AbstractStrokeFormat {
    * Adds the label menu items to the given menu and parent.
    */
   add() {
-    const { graph, container, styleSelect, styles } = this;
+    const { graph, container, styleSelect, styles, listener } = this;
     container.style.paddingTop = "4px";
     container.style.paddingBottom = "4px";
     container.style.whiteSpace = "normal";
@@ -86,7 +86,6 @@ export class StrokeFormat extends AbstractStrokeFormat {
 
     this.addKeyHandlers();
 
-    const { listener } = this;
     graph.getModel().addListener(mxEvent.CHANGE, listener);
     this.listeners.push({
       destroy: function () {

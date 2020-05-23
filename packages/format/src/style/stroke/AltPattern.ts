@@ -1,10 +1,10 @@
-import { BaseStyleFormat } from "../BaseStyleFormat";
 import mx from "@mxgraph-app/mx";
+import { AbstractStrokeFormat } from "./AbstractStrokeFormat";
 const { mxResources, mxConstants } = mx;
 
-export class AltPattern extends BaseStyleFormat {
+export class AltPattern extends AbstractStrokeFormat {
   create() {
-    const { altStylePanel } = this;
+    const { altStylePanel, addItem } = this;
     return this.editorUi.toolbar.addMenuFunctionInContainer(
       altStylePanel,
       "geSprite-orthogonal",

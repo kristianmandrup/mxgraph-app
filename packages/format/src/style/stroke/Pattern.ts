@@ -1,8 +1,8 @@
-import { BaseStyleFormat } from "../BaseStyleFormat";
 import mx from "@mxgraph-app/mx";
+import { AbstractStrokeFormat } from "./AbstractStrokeFormat";
 const { mxResources, mxConstants } = mx;
 
-export class Pattern extends BaseStyleFormat {
+export class Pattern extends AbstractStrokeFormat {
   create() {
     const { stylePanel, addItem } = this;
     return this.editorUi.toolbar.addMenuFunctionInContainer(
