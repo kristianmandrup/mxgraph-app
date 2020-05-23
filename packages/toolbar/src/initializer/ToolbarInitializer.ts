@@ -1,7 +1,7 @@
 import mx from "@mxgraph-app/mx";
 import resources from "@mxgraph-app/resources";
 import { AbstractInitializer } from "./AbstractInitializer";
-import { ToolbarSetup } from "./ToolbarSetup";
+import { ToolbarSetup } from "./setup/ToolbarSetup";
 import { InitTableElement } from "./InitTableElement";
 // import { EditorUI } from "ui/EditorUI";
 const { urlParams } = resources;
