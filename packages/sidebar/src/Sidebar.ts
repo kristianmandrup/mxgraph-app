@@ -2,9 +2,9 @@ import mx from "@mxgraph-app/mx";
 import resources from "@mxgraph-app/resources";
 import { ShapeUpdater } from "./shapes/ShapeUpdater";
 import { Thumbnail } from "./Thumbnail";
-import { DropCheck } from "./drag-drop/drop/DropCheck";
+import { SidebarInitializer } from "./SidebarInitializer";
 // import { HoverIcons } from "";
-const { mxResources, mxRectangle, mxPoint, mxClient, mxUtils, mxEvent } = mx;
+const { mxResources, mxRectangle, mxClient, mxUtils, mxEvent } = mx;
 const { STENCIL_PATH, IMAGE_PATH } = resources;
 /**
  * Copyright (c) 2006-2012, JGraph Ltd
@@ -30,7 +30,7 @@ export class Sidebar {
   triangleDown: any;
   currentSearch: any;
   entries: any;
-  shapeUpdater: ShapeUpdater;
+  shapeUpdater: any;
   thumbnail: any;
 
   /**
@@ -167,86 +167,15 @@ export class Sidebar {
     this.thumbnail = new Thumbnail();
     this.editorUi = editorUi;
     this.container = container;
-    this.graph = editorUi.createTemporaryGraph(
-      this.editorUi.editor.graph.getStylesheet()
-    );
-    this.graph.cellRenderer.minSvgStrokeWidth = this.minThumbStrokeWidth;
-    this.graph.cellRenderer.antiAlias = this.thumbAntiAlias;
-    this.graph.container.style.visibility = "hidden";
-    this.graph.foldingEnabled = false;
-
-    this.shapeUpdater = new ShapeUpdater();
-    this.dropCheck = new DropCheck(editorUi);
-
-    document.body.appendChild(this.graph.container);
-
-    this.pointerUpHandler = () => {
-      this.showTooltips = true;
-    };
-
-    mxEvent.addListener(
-      document,
-      mxClient.IS_POINTER ? "pointerup" : "mouseup",
-      this.pointerUpHandler
-    );
-
-    this.pointerDownHandler = () => {
-      this.showTooltips = false;
-      this.hideTooltip();
-    };
-
-    mxEvent.addListener(
-      document,
-      mxClient.IS_POINTER ? "pointerdown" : "mousedown",
-      this.pointerDownHandler
-    );
-
-    this.pointerMoveHandler = (evt) => {
-      var src = mxEvent.getSource(evt);
-
-      while (src != null) {
-        if (src == this.currentElt) {
-          return;
-        }
-
-        src = src.parentNode;
-      }
-
-      this.hideTooltip();
-    };
-
-    mxEvent.addListener(
-      document,
-      mxClient.IS_POINTER ? "pointermove" : "mousemove",
-      this.pointerMoveHandler
-    );
-
-    // Handles mouse leaving the window
-    this.pointerOutHandler = (evt) => {
-      if (evt.toElement == null && evt.relatedTarget == null) {
-        this.hideTooltip();
-      }
-    };
-
-    mxEvent.addListener(
-      document,
-      mxClient.IS_POINTER ? "pointerout" : "mouseout",
-      this.pointerOutHandler
-    );
-
-    // Enables tooltips after scroll
-    mxEvent.addListener(container, "scroll", () => {
-      this.showTooltips = true;
-      this.hideTooltip();
-    });
-
     this.init();
   }
 
   /**
    * Adds all palettes to the sidebar.
    */
-  init() {}
+  init() {
+    new SidebarInitializer(this).initialize();
+  }
 
   configure() {}
 
@@ -254,18 +183,22 @@ export class Sidebar {
    * Adds all palettes to the sidebar.
    */
   getTooltipOffset() {
-    return new mxPoint(0, 0);
+    return this.tooltip.getTooltipOffset();
   }
 
   /**
    * Adds all palettes to the sidebar.
    */
-  showTooltip(elt, cells, w, h, title, showLabel?: boolean) {}
+  showTooltip(elt, cells, w, h, title, showLabel?: boolean) {
+    this.tooltip.showTooltip(elt, cells, w, h, title, showLabel);
+  }
 
   /**
    * Hides the current tooltip.
    */
-  hideTooltip() {}
+  hideTooltip() {
+    this.tooltip.hideTooltip();
+  }
 
   /**
    * Adds shape search UI.

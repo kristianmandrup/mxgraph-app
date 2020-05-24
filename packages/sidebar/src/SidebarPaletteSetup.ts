@@ -2,7 +2,7 @@ import resources from "@mxgraph-app/resources";
 import { Palettes } from "./palette";
 const { urlParams } = resources;
 
-export class SidebarInitializer {
+export class SidebarPaletteSetup {
   editorUi: any;
   graph: any;
   container: any;
