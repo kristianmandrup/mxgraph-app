@@ -1,7 +1,7 @@
 {
-  "name": "@mxgraph-app/resources",
+  "name": "@mxgraph-app/sidebar",
   "version": "0.0.1",
-  "description": "mxgraph app resources",
+  "description": "mxgraph app sidebar",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "repository": "",
@@ -13,15 +13,20 @@
   "files": [
     "lib"
   ],
-  "scripts": {
-    "start": "tsc -w --preserveWatchOutput"
+  "dependencies": {
+    "Base64": "^1.1.0",
+    "jscolor": "^0.3.0",
+    "pako": "^1.0.11",
+    "sanitize-html": "^1.23.0"
   },
   "peerDependencies": {
     "@mxgraph-app/mx": "0.0.1",
+    "@mxgraph-app/resources": "0.0.1",
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
   },
-  "devDependencies": {
-    "@mxgraph-app/mx": "*"
+  "devDependencies": {},
+  "scripts": {
+    "start": "tsc -w --preserveWatchOutput"
   }
 }

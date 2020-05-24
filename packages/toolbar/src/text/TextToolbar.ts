@@ -4,7 +4,7 @@ import { defaults } from "@mxgraph-app/menus";
 import { FontManager } from "../FontManager";
 import { FormatMenu } from "./format/FormatMenu";
 import { AlignMenu } from "./align/AlignMenu";
-import { TableElement } from "../TableElement";
+import { TableElement } from "../table/TableElement";
 import { InsertMenu } from "./insert/InsertMenu";
 const {
   mxResources,
