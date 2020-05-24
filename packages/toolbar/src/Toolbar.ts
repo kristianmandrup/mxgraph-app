@@ -1,5 +1,6 @@
 import mx from "@mxgraph-app/mx";
 import { TextToolbar } from "./text/TextToolbar";
+import { ToolbarMenuAdder } from "./ToolbarMenuAdder";
 const {
   mxEvent,
 } = mx;
@@ -10,7 +11,7 @@ const {
 /**
  * Construcs a new toolbar for the given editor.
  */
-export class Toolbar {
+export class Toolbar extends ToolbarMenuAdder {
   container: any;
   editorUi: any;
   staticElements = [];
@@ -27,8 +28,7 @@ export class Toolbar {
   dropdownArrow: any;
 
   constructor(editorUi, container) {
-    this.editorUi = editorUi;
-    this.container = container;
+    super(editorUi, container);
     this.init();
 
     mxEvent.addGestureListeners(document, this.gestureHandler, null, null);
