@@ -1,12 +1,42 @@
-export class DropTargetEnabler {
+import mx from "@mxgraph-app/mx";
+import { DropBase } from "./DropBase";
+const { mxPoint, mxUtils, mxRectangle, mxEvent } = mx;
+
+export class DropTargetEnabler extends DropBase {
+  currentStyleTarget: any;
+  timeOnTarget: any;
+  evt: any;
+  x: any;
+  y: any;
+  styleTargetParent: any;
+  styleTarget: any;
+  dragArrow: any;
+  dropArrow: any;
+  refreshTarget: any;
+
   enable() {
+    const {
+      refreshTarget,
+      evt,
+      x,
+      y,
+      timeOnTarget,
+      currentStyleTarget,
+      styleTargetParent,
+      styleTarget,
+      dragArrow,
+      graph,
+      dropArrow,
+    } = this;
+    const { checkArrow } = dropArrow;
+
     // Does not reset on ignored edges
     if (
       currentStyleTarget == null ||
       !mxUtils.contains(currentStyleTarget, x, y) ||
       (timeOnTarget > 1500 && !mxEvent.isShiftDown(evt))
     ) {
-      currentStyleTarget = null;
+      this.currentStyleTarget = null;
 
       if (styleTargetParent != null) {
         styleTarget.parentNode.removeChild(styleTarget);
@@ -21,10 +51,10 @@ export class DropTargetEnabler {
             currentStyleTarget.getCenterY()
           );
       tmp = new mxRectangle(
-        tmp.x - this.refreshTarget.width / 2,
-        tmp.y - this.refreshTarget.height / 2,
-        this.refreshTarget.width,
-        this.refreshTarget.height
+        tmp.x - refreshTarget.width / 2,
+        tmp.y - refreshTarget.height / 2,
+        refreshTarget.width,
+        refreshTarget.height
       );
       checkArrow(x, y, tmp, styleTarget);
     }

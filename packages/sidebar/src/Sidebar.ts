@@ -2,16 +2,9 @@ import mx from "@mxgraph-app/mx";
 import resources from "@mxgraph-app/resources";
 import { ShapeUpdater } from "./shapes/ShapeUpdater";
 import { Thumbnail } from "./Thumbnail";
+import { DropCheck } from "./drag-drop/drop/DropCheck";
 // import { HoverIcons } from "";
-const {
-  mxResources,
-  mxConstants,
-  mxRectangle,
-  mxPoint,
-  mxClient,
-  mxUtils,
-  mxEvent,
-} = mx;
+const { mxResources, mxRectangle, mxPoint, mxClient, mxUtils, mxEvent } = mx;
 const { STENCIL_PATH, IMAGE_PATH } = resources;
 /**
  * Copyright (c) 2006-2012, JGraph Ltd
@@ -168,6 +161,8 @@ export class Sidebar {
   pointerMoveHandler: any;
   pointerOutHandler: any;
 
+  dropCheck: any;
+
   constructor(editorUi, container) {
     this.thumbnail = new Thumbnail();
     this.editorUi = editorUi;
@@ -181,6 +176,7 @@ export class Sidebar {
     this.graph.foldingEnabled = false;
 
     this.shapeUpdater = new ShapeUpdater();
+    this.dropCheck = new DropCheck(editorUi);
 
     document.body.appendChild(this.graph.container);
 
@@ -495,34 +491,14 @@ export class Sidebar {
    * Limits drop style to non-transparent source shapes.
    */
   isDropStyleEnabled(cells, firstVertex) {
-    var result = true;
-
-    if (firstVertex != null && cells.length == 1) {
-      var vstyle = this.graph.getCellStyle(cells[firstVertex]);
-
-      if (vstyle != null) {
-        result =
-          mxUtils.getValue(
-            vstyle,
-            mxConstants.STYLE_STROKECOLOR,
-            mxConstants.NONE
-          ) != mxConstants.NONE ||
-          mxUtils.getValue(
-            vstyle,
-            mxConstants.STYLE_FILLCOLOR,
-            mxConstants.NONE
-          ) != mxConstants.NONE;
-      }
-    }
-
-    return result;
+    this.dropCheck.isDropStyleEnabled(cells, firstVertex);
   }
 
   /**
    * Ignores swimlanes as drop style targets.
    */
   isDropStyleTargetIgnored(state) {
-    return this.graph.isSwimlane(state.cell);
+    this.dropCheck.isDropStyleTargetIgnored(state);
   }
 
   /**

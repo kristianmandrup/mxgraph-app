@@ -2,23 +2,14 @@ import mx from "@mxgraph-app/mx";
 import { DragSourceCreator } from "./DragSourceCreator";
 import { DragArrow } from "./DragArrow";
 import { DropTarget } from "./drop-target/DropTarget";
-// import { HoverIcons } from "ui/graph/HoverIcons";
-// const HoverIcons: any = {};
+import { DropCheck } from "../drop/DropCheck";
 
-const {
-  mxRectangle,
-  mxDragSource,
-  mxClient,
-  mxUtils,
-  mxConstants,
-  mxPoint,
-  mxEvent,
-} = mx;
+const { mxDragSource, mxClient, mxEvent } = mx;
 
 export class DragSource {
   editorUi: any;
   updateThread: any;
-  isDropStyleEnabled: any;
+  dropStyleEnabled: any;
   triangleUp: any;
   triangleDown: any;
   triangleLeft: any;
@@ -39,10 +30,16 @@ export class DragSource {
 
   dragArrow: any;
   dropTarget: any;
+  dropCheck: any;
 
   constructor(editorUi) {
     this.editorUi = editorUi;
     this.dropTarget = new DropTarget(editorUi);
+    this.dropCheck = new DropCheck(editorUi);
+  }
+
+  isDropStyleEnabled(cells, firstVertex) {
+    return this.dropCheck.isDropStyleEnabled(cells, firstVertex);
   }
 
   get ui() {
@@ -87,7 +84,7 @@ export class DragSource {
       cells,
     });
 
-    var dropStyleEnabled = this.isDropStyleEnabled(cells, firstVertex);
+    this.dropStyleEnabled = this.isDropStyleEnabled(cells, firstVertex);
 
     // Stops dragging if cancel is pressed
     graph.addListener(mxEvent.ESCAPE, (_sender, _evt) => {
@@ -109,7 +106,6 @@ export class DragSource {
     var currentTargetState: any;
     var currentStateHandle: any;
     var currentStyleTarget: any;
-    var activeTarget = false;
 
     const dragArrow = new DragArrow();
     this.dragArrow = dragArrow;

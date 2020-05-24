@@ -1,11 +1,40 @@
-export class DisplayDropArrows {
-  displayDropArrows() {
-    activeTarget = false;
-    currentTargetState =
-      (timeOnTarget < 5000 && timeOnTarget > this.dropTargetDelay) ||
-      graph.model.isEdge(cell)
-        ? state
-        : null;
+import mx from "@mxgraph-app/mx";
+import { DropBase } from "./DropBase";
+const { mxUtils, mxRectangle } = mx;
+
+export class DropArrows extends DropBase {
+  activeTarget: any;
+  timeOnTarget: any;
+  currentTargetState: any;
+  validTarget: any;
+  dropArrow: any;
+  cell: any;
+  state: any;
+  currentStateHandle: any;
+  bbox: any;
+  dropTargetDelay: any;
+  // arrowSpacing: any // HoverIcons.prototype
+
+  display(pos) {
+    if (!this.shouldDisplayDropArrows(pos)) return;
+    const { validTarget, dropArrow } = this;
+    this.activeTarget = false;
+    this.currentTargetState = this.getCurrentTargetState();
+    const { currentStateHandle, currentTargetState, graph, cell, state } = this;
+
+    const {
+      arrowSpacing,
+      triangleUp,
+      triangleRight,
+      triangleLeft,
+      roundDrop,
+      roundSource,
+      roundTarget,
+      arrowUp,
+      arrowRight,
+      arrowDown,
+      arrowLeft,
+    } = dropArrow;
 
     if (currentTargetState != null && validTarget) {
       var elts: any[] = [
@@ -33,14 +62,14 @@ export class DisplayDropArrows {
           // var box = new mxRectangle(x - tol, y - tol, 2 * tol, 2 * tol);
 
           roundSource.style.left =
-            Math.floor(p0.x - this.roundDrop.width / 2) + "px";
+            Math.floor(p0.x - roundDrop.width / 2) + "px";
           roundSource.style.top =
-            Math.floor(p0.y - this.roundDrop.height / 2) + "px";
+            Math.floor(p0.y - roundDrop.height / 2) + "px";
 
           roundTarget.style.left =
-            Math.floor(pe.x - this.roundDrop.width / 2) + "px";
+            Math.floor(pe.x - roundDrop.width / 2) + "px";
           roundTarget.style.top =
-            Math.floor(pe.y - this.roundDrop.height / 2) + "px";
+            Math.floor(pe.y - roundDrop.height / 2) + "px";
 
           if (graph.model.getTerminal(cell, true) == null) {
             graph.container.appendChild(roundSource);
@@ -58,8 +87,8 @@ export class DisplayDropArrows {
           bds = mxRectangle.fromRectangle(state.shape.boundingBox);
         }
 
-        bds.grow(this.graph.tolerance);
-        bds.grow(HoverIcons.prototype.arrowSpacing);
+        bds.grow(graph.tolerance);
+        bds.grow(arrowSpacing);
 
         var handler = this.graph.selectionCellsHandler.getHandler(state.cell);
 
@@ -82,18 +111,17 @@ export class DisplayDropArrows {
         }
 
         arrowUp.style.left =
-          Math.floor(state.getCenterX() - this.triangleUp.width / 2) + "px";
-        arrowUp.style.top = Math.floor(bds.y - this.triangleUp.height) + "px";
+          Math.floor(state.getCenterX() - triangleUp.width / 2) + "px";
+        arrowUp.style.top = Math.floor(bds.y - triangleUp.height) + "px";
 
         arrowRight.style.left = Math.floor(bds.x + bds.width) + "px";
         arrowRight.style.top =
-          Math.floor(state.getCenterY() - this.triangleRight.height / 2) + "px";
+          Math.floor(state.getCenterY() - triangleRight.height / 2) + "px";
 
         arrowDown.style.left = arrowUp.style.left;
         arrowDown.style.top = Math.floor(bds.y + bds.height) + "px";
 
-        arrowLeft.style.left =
-          Math.floor(bds.x - this.triangleLeft.width) + "px";
+        arrowLeft.style.left = Math.floor(bds.x - triangleLeft.width) + "px";
         arrowLeft.style.top = arrowRight.style.top;
 
         if (state.style["portConstraint"] != "eastwest") {
@@ -107,7 +135,9 @@ export class DisplayDropArrows {
 
       // Hides handle for cell under mouse
       if (state != null) {
-        currentStateHandle = graph.selectionCellsHandler.getHandler(state.cell);
+        this.currentStateHandle = graph.selectionCellsHandler.getHandler(
+          state.cell
+        );
 
         if (
           currentStateHandle != null &&
@@ -117,7 +147,7 @@ export class DisplayDropArrows {
         }
       }
 
-      activeTarget = true;
+      this.activeTarget = true;
     } else {
       var elts = [
         roundSource,
@@ -136,8 +166,16 @@ export class DisplayDropArrows {
     }
   }
 
-  shouldDisplayDropArrows() {
-    const { currentTargetState } = this;
+  shouldDisplayDropArrows({ x, y }) {
+    const {
+      dropArrow,
+      currentTargetState,
+      timeOnTarget,
+      state,
+      bbox,
+      validTarget,
+    } = this;
+    const { activeArrow } = dropArrow;
     return (
       (currentTargetState != null && timeOnTarget >= 5000) ||
       (currentTargetState != state &&
@@ -145,5 +183,13 @@ export class DisplayDropArrows {
           !mxUtils.contains(bbox, x, y) ||
           (timeOnTarget > 500 && activeArrow == null && validTarget)))
     );
+  }
+
+  getCurrentTargetState() {
+    const { timeOnTarget, dropTargetDelay, graph, state, cell } = this;
+    return (timeOnTarget < 5000 && timeOnTarget > dropTargetDelay) ||
+      graph.model.isEdge(cell)
+      ? state
+      : null;
   }
 }

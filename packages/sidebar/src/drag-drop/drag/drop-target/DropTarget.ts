@@ -1,46 +1,48 @@
 import mx from "@mxgraph-app/mx";
-const { mxRectangle, mxPoint, mxEvent, mxConstants, mxUtils } = mx;
+import { DropBase } from "./DropBase";
+import { DropArrows } from "./DropArrows";
+const { mxDragSource, mxEvent, mxConstants } = mx;
 
-export class DropTarget {
+export class DropTarget extends DropBase {
   editorUi: any;
   cells: any;
   updateThread: any;
   dropTargetDelay: any;
   dropStyleEnabled: any;
   dragSource: any;
+  dragArrow: any;
+  currentStyleTarget: any;
+  firstVertex: any;
+  activeTarget: any;
+  activeArrow: any;
+  styleTarget: any;
+  currentStateHandle: any;
+  dropArrows: any;
 
   constructor(editorUi) {
-    this.editorUi = editorUi;
+    super(editorUi);
+    this.dropArrows = new DropArrows(editorUi);
   }
 
   // Allows drop into cell only if target is a valid root
   getDropTarget = (graph, x, y, evt) => {
-    const { cells, updateThread, dropTargetDelay, dragSource } = this;
-    // Alt means no targets at all
-    // LATER: Show preview where result will go
-    var cell =
-      !mxEvent.isAltDown(evt) && cells != null ? graph.getCellAt(x, y) : null;
+    const {
+      dragArrow,
+      updateThread,
+      dropTargetDelay,
+      dragSource,
+      currentStyleTarget,
+      activeTarget,
+      styleTarget,
+      currentStateHandle,
+    } = this;
 
-    // Uses connectable parent vertex if one exists
-    if (cell != null && !graph.isCellConnectable(cell)) {
-      var parent = graph.getModel().getParent(cell);
-
-      if (
-        graph.getModel().isVertex(parent) &&
-        graph.isCellConnectable(parent)
-      ) {
-        cell = parent;
-      }
-    }
-
-    // Ignores locked cells
-    if (graph.isCellLocked(cell)) {
-      cell = null;
-    }
+    const { arrowLeft, arrowDown, arrowRight, roundTarget } = dragArrow;
+    const pos = { x, y };
+    const cell = this.createCell(evt, pos);
 
     var state = graph.view.getState(cell);
     var activeArrow: any;
-    var bbox: any;
     var startTime = new Date().getTime();
     var timeOnTarget = 0;
     var prev = null;
@@ -81,189 +83,104 @@ export class DropTarget {
       state = currentStyleTarget;
     }
 
-    var validTarget =
-      (firstVertex == null || graph.isCellConnectable(cells[firstVertex])) &&
-      ((graph.model.isEdge(cell) && firstVertex != null) ||
-        (graph.model.isVertex(cell) && graph.isCellConnectable(cell)));
+    this.createValidTarget(cell);
 
     // Drop arrows shown after this.dropTargetDelay, hidden after 5 secs, switches arrows after 500ms
-    if (this.shouldDisplayDropArrows()) {
-      activeTarget = false;
-      currentTargetState =
-        (timeOnTarget < 5000 && timeOnTarget > this.dropTargetDelay) ||
-        graph.model.isEdge(cell)
-          ? state
-          : null;
-
-      if (currentTargetState != null && validTarget) {
-        var elts: any[] = [
-          roundSource,
-          roundTarget,
-          arrowUp,
-          arrowRight,
-          arrowDown,
-          arrowLeft,
-        ];
-
-        for (var i = 0; i < elts.length; i++) {
-          if (elts[i].parentNode != null) {
-            elts[i].parentNode.removeChild(elts[i]);
-          }
-        }
-
-        if (graph.model.isEdge(cell)) {
-          var pts = state.absolutePoints;
-
-          if (pts != null) {
-            var p0 = pts[0];
-            var pe = pts[pts.length - 1];
-            // var tol = graph.tolerance;
-            // var box = new mxRectangle(x - tol, y - tol, 2 * tol, 2 * tol);
-
-            roundSource.style.left =
-              Math.floor(p0.x - this.roundDrop.width / 2) + "px";
-            roundSource.style.top =
-              Math.floor(p0.y - this.roundDrop.height / 2) + "px";
-
-            roundTarget.style.left =
-              Math.floor(pe.x - this.roundDrop.width / 2) + "px";
-            roundTarget.style.top =
-              Math.floor(pe.y - this.roundDrop.height / 2) + "px";
-
-            if (graph.model.getTerminal(cell, true) == null) {
-              graph.container.appendChild(roundSource);
-            }
-
-            if (graph.model.getTerminal(cell, false) == null) {
-              graph.container.appendChild(roundTarget);
-            }
-          }
-        } else {
-          var bds = mxRectangle.fromRectangle(state);
-
-          // Uses outer bounding box to take rotation into account
-          if (state.shape != null && state.shape.boundingBox != null) {
-            bds = mxRectangle.fromRectangle(state.shape.boundingBox);
-          }
-
-          bds.grow(this.graph.tolerance);
-          bds.grow(HoverIcons.prototype.arrowSpacing);
-
-          var handler = this.graph.selectionCellsHandler.getHandler(state.cell);
-
-          if (handler != null) {
-            bds.x -= handler.horizontalOffset / 2;
-            bds.y -= handler.verticalOffset / 2;
-            bds.width += handler.horizontalOffset;
-            bds.height += handler.verticalOffset;
-
-            // Adds bounding box of rotation handle to avoid overlap
-            if (
-              handler.rotationShape != null &&
-              handler.rotationShape.node != null &&
-              handler.rotationShape.node.style.visibility != "hidden" &&
-              handler.rotationShape.node.style.display != "none" &&
-              handler.rotationShape.boundingBox != null
-            ) {
-              bds.add(handler.rotationShape.boundingBox);
-            }
-          }
-
-          arrowUp.style.left =
-            Math.floor(state.getCenterX() - this.triangleUp.width / 2) + "px";
-          arrowUp.style.top = Math.floor(bds.y - this.triangleUp.height) + "px";
-
-          arrowRight.style.left = Math.floor(bds.x + bds.width) + "px";
-          arrowRight.style.top =
-            Math.floor(state.getCenterY() - this.triangleRight.height / 2) +
-            "px";
-
-          arrowDown.style.left = arrowUp.style.left;
-          arrowDown.style.top = Math.floor(bds.y + bds.height) + "px";
-
-          arrowLeft.style.left =
-            Math.floor(bds.x - this.triangleLeft.width) + "px";
-          arrowLeft.style.top = arrowRight.style.top;
-
-          if (state.style["portConstraint"] != "eastwest") {
-            graph.container.appendChild(arrowUp);
-            graph.container.appendChild(arrowDown);
-          }
-
-          graph.container.appendChild(arrowRight);
-          graph.container.appendChild(arrowLeft);
-        }
-
-        // Hides handle for cell under mouse
-        if (state != null) {
-          currentStateHandle = graph.selectionCellsHandler.getHandler(
-            state.cell
-          );
-
-          if (
-            currentStateHandle != null &&
-            currentStateHandle.setHandlesVisible != null
-          ) {
-            currentStateHandle.setHandlesVisible(false);
-          }
-        }
-
-        activeTarget = true;
-      } else {
-        var elts = [
-          roundSource,
-          roundTarget,
-          arrowUp,
-          arrowRight,
-          arrowDown,
-          arrowLeft,
-        ];
-
-        for (var i = 0; i < elts.length; i++) {
-          if (elts[i].parentNode != null) {
-            elts[i].parentNode.removeChild(elts[i]);
-          }
-        }
-      }
-    }
+    this.dropArrows.display();
 
     if (!activeTarget && currentStateHandle != null) {
       currentStateHandle.setHandlesVisible(true);
     }
-
     // Handles drop target
-    var target =
-      (!mxEvent.isAltDown(evt) || mxEvent.isShiftDown(evt)) &&
-      !(currentStyleTarget != null && activeArrow == styleTarget)
-        ? mxDragSource.prototype.getDropTarget.apply(this, [graph, x, y, evt])
-        : null;
-    var model = graph.getModel();
-
-    if (target != null) {
-      if (activeArrow != null || !graph.isSplitTarget(target, cells, evt)) {
-        // Selects parent group as drop target
-        while (
-          target != null &&
-          !graph.isValidDropTarget(target, cells, evt) &&
-          model.isVertex(model.getParent(target))
-        ) {
-          target = model.getParent(target);
-        }
-
-        if (
-          target != null &&
-          (graph.view.currentRoot == target ||
-            (!graph.isValidRoot(target) &&
-              graph.getModel().getChildCount(target) == 0) ||
-            graph.isCellLocked(target) ||
-            model.isEdge(target) ||
-            !graph.isValidDropTarget(target, cells, evt))
-        ) {
-          target = null;
-        }
-      }
-    }
+    var target = this.createTarget(evt, pos);
+    target = this.selectParentGroupAsDropTarget(target, evt);
 
     return target;
   };
+
+  selectParentGroupAsDropTarget(target, evt) {
+    const { model, graph, activeArrow, cells } = this;
+    if (!target || !activeArrow) return target;
+    if (graph.isSplitTarget(target, cells, evt)) return;
+
+    // Selects parent group as drop target
+    while (
+      target != null &&
+      !graph.isValidDropTarget(target, cells, evt) &&
+      model.isVertex(model.getParent(target))
+    ) {
+      target = model.getParent(target);
+    }
+
+    if (!target) return target;
+    if (this.shouldIgnoreTarget(target, evt)) {
+      return null;
+    }
+    return target;
+  }
+
+  get model() {
+    return this.graph.getModel();
+  }
+
+  shouldIgnoreTarget(target, evt) {
+    const { graph, model, cells } = this;
+    return (
+      graph.view.currentRoot == target ||
+      (!graph.isValidRoot(target) &&
+        graph.getModel().getChildCount(target) == 0) ||
+      graph.isCellLocked(target) ||
+      model.isEdge(target) ||
+      !graph.isValidDropTarget(target, cells, evt)
+    );
+  }
+
+  createTarget(evt, { x, y }) {
+    const { graph, currentStyleTarget, activeArrow, styleTarget } = this;
+    return (!mxEvent.isAltDown(evt) || mxEvent.isShiftDown(evt)) &&
+      !(currentStyleTarget != null && activeArrow == styleTarget)
+      ? mxDragSource.prototype.getDropTarget.apply(this, [graph, x, y, evt])
+      : null;
+  }
+
+  createValidTarget(cell) {
+    const { firstVertex, graph, cells } = this;
+    return (
+      (firstVertex == null || graph.isCellConnectable(cells[firstVertex])) &&
+      ((graph.model.isEdge(cell) && firstVertex != null) ||
+        (graph.model.isVertex(cell) && graph.isCellConnectable(cell)))
+    );
+  }
+
+  getCell(evt, { x, y }) {
+    const { cells, graph } = this;
+    return !mxEvent.isAltDown(evt) && cells != null
+      ? graph.getCellAt(x, y)
+      : null;
+  }
+
+  createCell(evt, pos) {
+    const { graph } = this;
+    // Alt means no targets at all
+    // LATER: Show preview where result will go
+    let cell = this.getCell(evt, pos);
+
+    // Uses connectable parent vertex if one exists
+    if (cell != null && !graph.isCellConnectable(cell)) {
+      const parent = graph.getModel().getParent(cell);
+
+      if (
+        graph.getModel().isVertex(parent) &&
+        graph.isCellConnectable(parent)
+      ) {
+        cell = parent;
+      }
+    }
+
+    // Ignores locked cells
+    if (graph.isCellLocked(cell)) {
+      cell = null;
+    }
+    return cell;
+  }
 }
