@@ -38,7 +38,7 @@ export class StencilPalette extends AbstractPalette {
 
       mxStencilRegistry["loadStencilSet"](
         stencilFile,
-        (packageName, stencilName, displayName, w, h) => {
+        (packageName, stencilName, _displayName, w, h) => {
           if (ignore == null || mxUtils.indexOf(ignore, stencilName) < 0) {
             var tmp = this.getTagsForStencil(packageName, stencilName);
             var tmpTags = tags != null ? tags[stencilName] : null;
@@ -84,7 +84,7 @@ export class StencilPalette extends AbstractPalette {
 
         mxStencilRegistry["loadStencilSet"](
           stencilFile,
-          (packageName, stencilName, displayName, w, h) => {
+          (packageName, stencilName, _displayName, w, h) => {
             if (ignore == null || mxUtils.indexOf(ignore, stencilName) < 0) {
               content.appendChild(
                 this.createVertexTemplate(

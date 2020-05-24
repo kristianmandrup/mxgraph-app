@@ -1,8 +1,14 @@
 import mx from "@mxgraph-app/mx";
 import resources from "@mxgraph-app/resources";
-import { ShapeUpdater } from "./shapes/ShapeUpdater";
 import { Thumbnail } from "./Thumbnail";
 import { SidebarInitializer } from "./SidebarInitializer";
+import { SearchPalette } from "./palette";
+import { DropHandler } from "./drag-drop/drop/DropHandler";
+import { DropConnect } from "./drag-drop/drop/connector/DropConnect";
+import { DragSource } from "./drag-drop/drag/DragSource";
+import { ClickHandler } from "./ClickHandler";
+import { SingleClickInserter } from "./SingleClickInserter";
+import { FoldingHandler } from "./FoldingHandler";
 // import { HoverIcons } from "";
 const { mxResources, mxRectangle, mxClient, mxUtils, mxEvent } = mx;
 const { STENCIL_PATH, IMAGE_PATH } = resources;
@@ -240,12 +246,23 @@ export class Sidebar {
   /**
    * Adds shape search UI.
    */
-  addSearchPalette(expand) {}
+  addSearchPalette(expand) {
+    return new SearchPalette().create(expand);
+  }
 
   /**
    * Adds the general palette to the sidebar.
    */
-  insertSearchHint(div, searchTerm, count, page, results, len, more, terms) {
+  insertSearchHint(
+    div,
+    searchTerm,
+    _count,
+    page,
+    results,
+    _len,
+    _more,
+    _terms
+  ) {
     if (results.length == 0 && page == 1) {
       var err = document.createElement("div");
       err.className = "geTitle";
@@ -401,7 +418,14 @@ export class Sidebar {
   /**
    * Creates a drop handler for inserting the given cells.
    */
-  createDropHandler(cells, allowSplit, allowCellsInserted, bounds) {}
+  createDropHandler(cells, allowSplit, allowCellsInserted, bounds) {
+    return new DropHandler().create(
+      cells,
+      allowSplit,
+      allowCellsInserted,
+      bounds
+    );
+  }
 
   /**
    * Creates and returns a preview element for the given width and height.
@@ -418,47 +442,67 @@ export class Sidebar {
   /**
    * Creates a drag source for the given element.
    */
-  dropAndConnect(source, targets, direction, dropCellIndex, evt) {}
+  dropAndConnect(source, targets, direction, dropCellIndex, evt) {
+    return new DropConnect(this.editorUi).dropAndConnect(
+      source,
+      targets,
+      direction,
+      dropCellIndex,
+      evt
+    );
+  }
 
   /**
    * Limits drop style to non-transparent source shapes.
    */
   isDropStyleEnabled(cells, firstVertex) {
-    this.dropCheck.isDropStyleEnabled(cells, firstVertex);
+    return this.dropCheck.isDropStyleEnabled(cells, firstVertex);
   }
 
   /**
    * Ignores swimlanes as drop style targets.
    */
   isDropStyleTargetIgnored(state) {
-    this.dropCheck.isDropStyleTargetIgnored(state);
+    return this.dropCheck.isDropStyleTargetIgnored(state);
   }
 
   /**
    * Creates a drag source for the given element.
    */
   createDragSource(elt, dropHandler, preview, cells, bounds) {
-    // return new DragSource();
+    return new DragSource(this.editorUi).create(
+      elt,
+      dropHandler,
+      preview,
+      cells,
+      bounds
+    );
   }
 
   /**
    * Adds a handler for inserting the cell with a single click.
    */
-  itemClicked(cells, ds, evt, elt) {}
+  itemClicked(cells, ds, evt, elt) {
+    return new SingleClickInserter().itemClicked(cells, ds, evt, elt);
+  }
 
   /**
    * Adds a handler for inserting the cell with a single click.
    */
-  addClickHandler(elt, ds, cells) {}
+  addClickHandler(elt, ds, cells) {
+    return new ClickHandler().add(elt, ds, cells);
+  }
 
   addEntry(tags, fn?) {
-    this.entries.addEntry(tags, fn);
+    return this.entries.addEntry(tags, fn);
   }
 
   /**
    * Create the given title element.
    */
-  addFoldingHandler(title, content, funct) {}
+  addFoldingHandler(title, content, funct) {
+    return new FoldingHandler().add(title, content, funct);
+  }
 
   /**
    * Creates the array of tags for the given stencil. Duplicates are allowed and will be filtered out later.
@@ -480,7 +524,8 @@ export class Sidebar {
   }
 
   /**
-   * Adds the given stencil palette.
+   * Destroys it
+   * TODO: SidebarDestroyer
    */
   destroy() {
     if (this.graph != null) {

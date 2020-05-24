@@ -9,7 +9,7 @@ export class ClickHandler {
   /**
    * Adds a handler for inserting the cell with a single click.
    */
-  addClickHandler(elt, ds, cells) {
+  add(elt, ds, cells) {
     var graph = this.editorUi.editor.graph;
     var oldMouseDown = ds.mouseDown;
     var oldMouseMove = ds.mouseMove;

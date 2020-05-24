@@ -7,7 +7,7 @@ export class DropHandler {
   /**
    * Creates a drop handler for inserting the given cells.
    */
-  createDropHandler(cells, allowSplit, allowCellsInserted, bounds) {
+  create(cells, allowSplit, allowCellsInserted, bounds) {
     allowCellsInserted = allowCellsInserted != null ? allowCellsInserted : true;
 
     return (graph, evt, target, x, y, force) => {

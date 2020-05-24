@@ -1,4 +1,6 @@
 import mx from "@mxgraph-app/mx";
+import { DropConnect } from "./drag-drop/drop/connector/DropConnect";
+import { ShapeUpdater } from "./shapes/ShapeUpdater";
 const { mxConstants, mxEvent } = mx;
 
 export class SingleClickInserter {
@@ -7,14 +9,24 @@ export class SingleClickInserter {
   /**
    * Creates a drag source for the given element.
    */
-  dropAndConnect(source, targets, direction, dropCellIndex, evt) {}
+  dropAndConnect(source, targets, direction, dropCellIndex, evt) {
+    return new DropConnect(this.editorUi).dropAndConnect(
+      source,
+      targets,
+      direction,
+      dropCellIndex,
+      evt
+    );
+  }
 
-  updateShapes(source, targets) {}
+  updateShapes(source, targets) {
+    return new ShapeUpdater(this.editorUi).updateShapes(source, targets);
+  }
 
   /**
    * Adds a handler for inserting the cell with a single click.
    */
-  itemClicked(cells, ds, evt, elt) {
+  itemClicked(cells, ds, evt, _elt) {
     var graph = this.editorUi.editor.graph;
     graph.container.focus();
 

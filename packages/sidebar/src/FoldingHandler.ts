@@ -28,7 +28,7 @@ export class FoldingHandler {
   /**
    * Create the given title element.
    */
-  addFoldingHandler(title, content, funct) {
+  add(title, content, funct) {
     var initialized = false;
 
     // Avoids mixed content warning in IE6-8
