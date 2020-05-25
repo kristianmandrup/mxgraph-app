@@ -18,35 +18,51 @@ export class BasicPalette extends AbstractPalette {
       null,
       null,
       [
-        this.createVertexTemplateEntry(
-          "shape=partialRectangle;whiteSpace=wrap;html=1;top=0;bottom=0;fillColor=none;",
-          120,
-          60,
-          "",
-          "Partial Rectangle"
-        ),
-        this.createVertexTemplateEntry(
-          "shape=partialRectangle;whiteSpace=wrap;html=1;right=0;top=0;bottom=0;fillColor=none;routingCenterX=-0.5;",
-          120,
-          60,
-          "",
-          "Partial Rectangle"
-        ),
-        this.createVertexTemplateEntry(
-          "shape=partialRectangle;whiteSpace=wrap;html=1;bottom=0;right=0;fillColor=none;",
-          120,
-          60,
-          "",
-          "Partial Rectangle"
-        ),
-        this.createVertexTemplateEntry(
-          "shape=partialRectangle;whiteSpace=wrap;html=1;top=0;left=0;fillColor=none;",
-          120,
-          60,
-          "",
-          "Partial Rectangle"
-        ),
+        this.partialRectangle1(),
+        this.partialRectangle2(),
+        this.partialRectangle3(),
+        this.partialRectangle4(),
       ]
+    );
+  }
+
+  partialRectangle1() {
+    this.createVertexTemplateEntry(
+      "shape=partialRectangle;whiteSpace=wrap;html=1;top=0;bottom=0;fillColor=none;",
+      120,
+      60,
+      "",
+      "Partial Rectangle"
+    );
+  }
+
+  partialRectangle2() {
+    this.createVertexTemplateEntry(
+      "shape=partialRectangle;whiteSpace=wrap;html=1;right=0;top=0;bottom=0;fillColor=none;routingCenterX=-0.5;",
+      120,
+      60,
+      "",
+      "Partial Rectangle"
+    );
+  }
+
+  partialRectangle3() {
+    this.createVertexTemplateEntry(
+      "shape=partialRectangle;whiteSpace=wrap;html=1;bottom=0;right=0;fillColor=none;",
+      120,
+      60,
+      "",
+      "Partial Rectangle"
+    );
+  }
+
+  partialRectangle4() {
+    this.createVertexTemplateEntry(
+      "shape=partialRectangle;whiteSpace=wrap;html=1;top=0;left=0;fillColor=none;",
+      120,
+      60,
+      "",
+      "Partial Rectangle"
     );
   }
 }
