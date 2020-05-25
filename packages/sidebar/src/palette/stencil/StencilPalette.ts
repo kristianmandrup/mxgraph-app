@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { AbstractPalette } from "./AbstractPalette";
+import { AbstractPalette } from "../AbstractPalette";
 const { mxStencilRegistry, mxUtils } = mx;
 
 export class StencilPalette extends AbstractPalette {

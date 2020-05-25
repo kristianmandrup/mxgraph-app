@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { AbstractPalette } from "./AbstractPalette";
+import { AbstractPalette } from "../AbstractPalette";
 const { mxResources } = mx;
 
 export class BasicPalette extends AbstractPalette {

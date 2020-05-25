@@ -1,17 +1,17 @@
-import { MiscPalette } from "./MiscPalette";
-import { BasicPalette } from "./BasicPalette";
-import { GeneralPalette } from "./GeneralPalette";
-import { ImagePalette } from "./ImagePalette";
-import { SearchPalette } from "./SearchPalette";
-import { StencilPalette } from "./StencilPalette";
+import { MiscPalette } from "./misc/MiscPalette";
+import { BasicPalette } from "./basic/BasicPalette";
+import { GeneralPalette } from "./general/GeneralPalette";
+import { ImagePalette } from "./image/ImagePalette";
+import { SearchPalette } from "./search/SearchPalette";
+import { StencilPalette } from "./stencil/StencilPalette";
 
 import mx from "@mxgraph-app/mx";
 import { AdvancedShapes } from "../shapes/AdvancedShapes";
 import { PaletteAdder } from "./PaletteAdder";
 const { mxResources } = mx;
 import resources from "@mxgraph-app/resources";
-import { UmlPalette } from "./UmlPalette";
-import { BpmnPalette } from "./BmpnPalette";
+import { UmlPalette } from "./uml/UmlPalette";
+import { BpmnPalette } from "./bpmn/BmpnPalette";
 const { STENCIL_PATH } = resources;
 
 export class Palettes {

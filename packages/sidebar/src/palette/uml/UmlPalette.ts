@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { AbstractPalette } from "./AbstractPalette";
+import { AbstractPalette } from "../AbstractPalette";
 const { mxPoint, mxCell, mxGeometry, mxResources } = mx;
 
 export class UmlPalette extends AbstractPalette {

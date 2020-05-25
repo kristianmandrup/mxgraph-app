@@ -1,4 +1,4 @@
-import { AbstractPalette } from "./AbstractPalette";
+import { AbstractPalette } from "../AbstractPalette";
 import mx from "@mxgraph-app/mx";
 const { mxResources, mxCell, mxGeometry } = mx;
 

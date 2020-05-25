@@ -1,4 +1,4 @@
-import { AbstractPalette } from "./AbstractPalette";
+import { AbstractPalette } from "../AbstractPalette";
 
 export class ImagePalette extends AbstractPalette {
   defaultImageWidth: any;
@@ -24,7 +24,9 @@ export class ImagePalette extends AbstractPalette {
 
         fns.push(
           this.createVertexTemplateEntry(
-            "image;html=1;labelBackgroundColor=#ffffff;image=" + prefix + item +
+            "image;html=1;labelBackgroundColor=#ffffff;image=" +
+              prefix +
+              item +
               postfix,
             this.defaultImageWidth,
             this.defaultImageHeight,
@@ -32,14 +34,14 @@ export class ImagePalette extends AbstractPalette {
             title,
             title != null,
             null,
-            this.filterTags(tmpTags),
-          ),
+            this.filterTags(tmpTags)
+          )
         );
       };
       addItem(
         items[i],
         titles != null ? titles[i] : null,
-        tags != null ? tags[items[i]] : null,
+        tags != null ? tags[items[i]] : null
       );
     }
 

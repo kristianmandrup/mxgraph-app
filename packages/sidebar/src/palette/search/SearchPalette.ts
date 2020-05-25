@@ -1,5 +1,5 @@
 import mx from "@mxgraph-app/mx";
-import { AbstractPalette } from "./AbstractPalette";
+import { AbstractPalette } from "../AbstractPalette";
 import { Dialog } from "@mxgraph-app/dialogs";
 const { mxEvent, mxUtils, mxClient, mxResources } = mx;
 

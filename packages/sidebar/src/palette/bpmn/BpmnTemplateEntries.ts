@@ -336,4 +336,131 @@ export class BpmnTemplateEntries extends AbstractPalette {
       "zZTBbsIwDIafJvfU6dDOlI0LSEg8QUQtEi1tUBJGy9PPbcJQWTsxaZs4VLJ//07sT1WYKKpm6eRBrW2JhokXJgpnbYhR1RRoDAOuSyYWDIDTx+B1opr1VX6QDutwTwPEhndpjhiVjbUmij60Jon+pCsja8rmKlQ05SKjcKe0KVeytcfuLh/k7u2SzR16fcbNZZDsRlrLhlTenWedPts6SJMEOseFLTkph6Fj212RbGlwdAGbyeV7KW2+RFthcC1ZTroMKjry5wiIK9R7ldrELInSR2H/2XtlSUHCOY5WfEG76ggCz+7E+w2InzCAcQapIf0fAySzESQZ/AKSfAoJPCKS9mbzf0H0NIVIPDAiyP8QEaXX97CvDZ7LDw=="
     );
   }
+
+  get swimlanePool() {
+    return this.createVertexTemplateEntry(
+      "swimlane;startSize=20;horizontal=0;",
+      320,
+      120,
+      "Lane",
+      "Horizontal Swimlane",
+      null,
+      null,
+      "swimlane lane pool"
+    );
+  }
+
+  get verticalPools() {
+    return [this.verticalPool1, this.verticalPool2];
+  }
+
+  get verticalPool1() {
+    return this.addDataEntry(
+      "container swimlane pool horizontal",
+      360,
+      480,
+      "Vertical Pool 1",
+      "xZRBbsIwEEVP4709ThFrQssGJKSewCIjbNXGyDEl4fSdxKa0NJFQVTULSzP/e+T5b2EmS9esgjrqja/QMvnMZBm8j6lyTYnWMuCmYnLJADgdBi8jruhdflQBD/GRAUgD78qeMClb720S69jaLNZn46w6ULfQ0dGWS0HlThtbrVXrT91bdVS7t2u3CFibC26vi4g7aaMaUjmpNBbiKxnUQyfkjTBEbEZT9VKOtELvMIaWrpxNFXW6IWcpOddo9jqPFfMsqjoJ+8/ZGyQqMqdhZvIHs3WHBrh4kNvvIsNw5Da7OdgXAgKGCMz+gEAxRgCmINDcxZ2CyNMYETkhESj+jwi1t1+r9759ah8="
+    );
+  }
+
+  get verticalPool2() {
+    return this.addDataEntry(
+      "container swimlane pool vertical",
+      380,
+      480,
+      "Vertical Pool 2",
+      "xZTPbsIwDMafJvf86dDOlI0LSEg8QUQtEi1pUBJGy9PPbdJ1G1TqhXGoZH/219g/RSGitM3ay5PaugoMEW9ElN65mCLblGAM4VRXRKwI5xQ/wt8nqqyv0pP0UMc5Bp4Mn9KcISk750wSQ2xNFsNFWyNrzJYqWpxyxTA8KG2qjWzduTsrRHn4GLKlh6CvsBsGYX+krWxQpaiizcc9FjDnnaCc11dXR2lyxyjsuyPy3/Lg4CM0k8v3Ut58Dc5C9C22XHQVVeoQrwkQVaCPKtuKQZQhCcdv78gSg4zzPlpxg3bTEeSUzcR7Q2bWyvz+ytmQr8NPAow/ikAxRYA/kQAr/hPByxQC8cxLsHggAkzH56uv/XrdvgA="
+    );
+  }
+
+  get swimlanePool2() {
+    return this.createVertexTemplateEntry(
+      "swimlane;startSize=20;",
+      120,
+      320,
+      "Lane",
+      "Vertical Swimlane",
+      null,
+      null,
+      "swimlane lane pool"
+    );
+  }
+
+  get businessProcessModel2() {
+    return this.createVertexTemplateEntry(
+      "rounded=1;arcSize=10;dashed=1;strokeColor=#000000;fillColor=none;gradientColor=none;dashPattern=8 3 1 3;strokeWidth=2;",
+      200,
+      200,
+      "",
+      "Group",
+      null,
+      null,
+      this.getTagsForStencil(
+        "bpmn",
+        "group",
+        "bpmn business process model "
+      ).join(" ")
+    );
+  }
+
+  get sequenceFlow() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=block;endFill=1;endSize=6;html=1;",
+      100,
+      0,
+      "",
+      "Sequence Flow",
+      null,
+      "bpmn sequence flow"
+    );
+  }
+
+  get defaultFlow() {
+    return this.createEdgeTemplateEntry(
+      "startArrow=dash;startSize=8;endArrow=block;endFill=1;endSize=6;html=1;",
+      100,
+      0,
+      "",
+      "Default Flow",
+      null,
+      "bpmn default flow"
+    );
+  }
+
+  get conditionalFlow() {
+    return this.createEdgeTemplateEntry(
+      "startArrow=diamondThin;startFill=0;startSize=14;endArrow=block;endFill=1;endSize=6;html=1;",
+      100,
+      0,
+      "",
+      "Conditional Flow",
+      null,
+      "bpmn conditional flow"
+    );
+  }
+
+  get messageFlow() {
+    return this.createEdgeTemplateEntry(
+      "startArrow=oval;startFill=0;startSize=7;endArrow=block;endFill=0;endSize=10;dashed=1;html=1;",
+      100,
+      0,
+      "",
+      "Message Flow 1",
+      null,
+      "bpmn message flow"
+    );
+  }
+
+  get bpmnLink() {
+    return this.createEdgeTemplateEntry(
+      "shape=link;html=1;",
+      100,
+      0,
+      "",
+      "Link",
+      null,
+      "bpmn link"
+    );
+  }
 }
