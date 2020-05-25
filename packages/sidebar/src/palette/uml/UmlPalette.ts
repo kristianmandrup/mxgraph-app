@@ -1,9 +1,14 @@
 import mx from "@mxgraph-app/mx";
 import { AbstractPalette } from "../AbstractPalette";
+import { UmlTemplateEntries } from "./UmlTemplateEntries";
+import { UmlEntries } from "./UmlEntries";
 const { mxPoint, mxCell, mxGeometry, mxResources } = mx;
 
 export class UmlPalette extends AbstractPalette {
   gearImage: any;
+
+  _divider: any;
+  _field: any;
 
   /**
    * Adds the general palette to the sidebar.
@@ -12,405 +17,70 @@ export class UmlPalette extends AbstractPalette {
     // Avoids having to bind all functions to "this"
     var sb = this;
 
-    // Reusable cells
-    var field = new mxCell(
-      "+ field: type",
-      new mxGeometry(0, 0, 100, 26),
-      "text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;"
-    );
-    field.vertex = true;
+    const templateEntries = new UmlTemplateEntries();
+    const entries = new UmlEntries();
 
-    var divider = new mxCell(
-      "",
-      new mxGeometry(0, 0, 40, 8),
-      "line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;"
-    );
-    divider.vertex = true;
+    const {
+      objectInstance,
+      interfaceObjectInstance,
+      titleLabel,
+      block,
+      moduleComponent,
+      $package,
+      objectInstance3,
+      erEntityTabel,
+      requiredInterfaceLollipop,
+      boundaryObject,
+      entityObject,
+      controlObject,
+      actor,
+      useCase,
+    } = templateEntries;
 
-    // Default tags
-    var dt = "uml static class ";
+    const {
+      objectInstanceEntry,
+      sectionSubsection,
+      itemMemberMethod1,
+      itemMemberMethod2,
+      dividerHlineSeparator,
+      spacerSpaceGapSeparator,
+      component,
+      componentWithAttributtes,
+      objectInstanceClass3,
+      objectInstanceClass4,
+      objectInstanceClass5,
+      objectInstanceInterface2,
+      lollipopNotation,
+    } = entries;
 
     var fns = [
-      this.createVertexTemplateEntry(
-        "html=1;",
-        110,
-        50,
-        "Object",
-        "Object",
-        null,
-        null,
-        dt + "object instance"
-      ),
-      this.createVertexTemplateEntry(
-        "html=1;",
-        110,
-        50,
-        "&laquo;interface&raquo;<br><b>Name</b>",
-        "Interface",
-        null,
-        null,
-        dt + "interface object instance annotated annotation"
-      ),
-      this.addEntry(dt + "object instance", function () {
-        var cell = new mxCell(
-          "Classname",
-          new mxGeometry(0, 0, 160, 90),
-          "swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;"
-        );
-        cell.vertex = true;
-        cell.insert(field.clone());
-        cell.insert(divider.clone());
-        const cloned = sb.cloneCell(field, "+ method(type): type");
-        cell.insert(cloned);
-
-        return sb.createVertexTemplateFromCells(
-          [cell],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Class"
-        );
-      }),
-      this.addEntry(dt + "section subsection", function () {
-        var cell = new mxCell(
-          "Classname",
-          new mxGeometry(0, 0, 140, 110),
-          "swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;"
-        );
-        cell.vertex = true;
-        cell.insert(field.clone());
-        cell.insert(field.clone());
-        cell.insert(field.clone());
-
-        return sb.createVertexTemplateFromCells(
-          [cell],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Class 2"
-        );
-      }),
-      this.addEntry(
-        dt + "item member method function variable field attribute label",
-        function () {
-          return sb.createVertexTemplateFromCells(
-            [sb.cloneCell(field, "+ item: attribute")],
-            field.geometry.width,
-            field.geometry.height,
-            "Item 1"
-          );
-        }
-      ),
-      this.addEntry(
-        dt + "item member method function variable field attribute label",
-        function () {
-          var cell = new mxCell(
-            "item: attribute",
-            new mxGeometry(0, 0, 120, field.geometry.height),
-            "label;fontStyle=0;strokeColor=none;fillColor=none;align=left;verticalAlign=top;overflow=hidden;" +
-              "spacingLeft=28;spacingRight=4;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;imageWidth=16;imageHeight=16;image=" +
-              sb.gearImage
-          );
-          cell.vertex = true;
-
-          return sb.createVertexTemplateFromCells(
-            [cell],
-            cell.geometry.width,
-            cell.geometry.height,
-            "Item 2"
-          );
-        }
-      ),
-      this.addEntry(dt + "divider hline line separator", function () {
-        return sb.createVertexTemplateFromCells(
-          [divider.clone()],
-          divider.geometry.width,
-          divider.geometry.height,
-          "Divider"
-        );
-      }),
-      this.addEntry(dt + "spacer space gap separator", function () {
-        var cell = new mxCell(
-          "",
-          new mxGeometry(0, 0, 20, 14),
-          "text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=4;spacingRight=4;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;"
-        );
-        cell.vertex = true;
-
-        return sb.createVertexTemplateFromCells(
-          [cell.clone()],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Spacer"
-        );
-      }),
-      this.createVertexTemplateEntry(
-        "text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;",
-        80,
-        26,
-        "Title",
-        "Title",
-        null,
-        null,
-        dt + "title label"
-      ),
-      this.addEntry(dt + "component", function () {
-        var cell = new mxCell(
-          "&laquo;Annotation&raquo;<br/><b>Component</b>",
-          new mxGeometry(0, 0, 180, 90),
-          "html=1;dropTarget=0;"
-        );
-        cell.vertex = true;
-
-        var symbol = new mxCell(
-          "",
-          new mxGeometry(1, 0, 20, 20),
-          "shape=component;jettyWidth=8;jettyHeight=4;"
-        );
-        symbol.vertex = true;
-        symbol.geometry.relative = true;
-        symbol.geometry.offset = new mxPoint(-27, 7);
-        cell.insert(symbol);
-
-        return sb.createVertexTemplateFromCells(
-          [cell],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Component"
-        );
-      }),
-      this.addEntry(dt + "component", function () {
-        var cell = new mxCell(
-          '<p style="margin:0px;margin-top:6px;text-align:center;"><b>Component</b></p>' +
-            '<hr/><p style="margin:0px;margin-left:8px;">+ Attribute1: Type<br/>+ Attribute2: Type</p>',
-          new mxGeometry(0, 0, 180, 90),
-          "align=left;overflow=fill;html=1;dropTarget=0;"
-        );
-        cell.vertex = true;
-
-        var symbol = new mxCell(
-          "",
-          new mxGeometry(1, 0, 20, 20),
-          "shape=component;jettyWidth=8;jettyHeight=4;"
-        );
-        symbol.vertex = true;
-        symbol.geometry.relative = true;
-        symbol.geometry.offset = new mxPoint(-24, 4);
-        cell.insert(symbol);
-
-        return sb.createVertexTemplateFromCells(
-          [cell],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Component with Attributes"
-        );
-      }),
-      this.createVertexTemplateEntry(
-        "verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;",
-        180,
-        120,
-        "Block",
-        "Block",
-        null,
-        null,
-        dt + "block"
-      ),
-      this.createVertexTemplateEntry(
-        "shape=module;align=left;spacingLeft=20;align=center;verticalAlign=top;",
-        100,
-        50,
-        "Module",
-        "Module",
-        null,
-        null,
-        dt + "module component"
-      ),
-      this.createVertexTemplateEntry(
-        "shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;",
-        70,
-        50,
-        "package",
-        "Package",
-        null,
-        null,
-        dt + "package"
-      ),
-      this.createVertexTemplateEntry(
-        "verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;",
-        160,
-        90,
-        '<p style="margin:0px;margin-top:4px;text-align:center;text-decoration:underline;"><b>Object:Type</b></p><hr/>' +
-          '<p style="margin:0px;margin-left:8px;">field1 = value1<br/>field2 = value2<br>field3 = value3</p>',
-        "Object",
-        null,
-        null,
-        dt + "object instance"
-      ),
-      this.createVertexTemplateEntry(
-        "verticalAlign=top;align=left;overflow=fill;html=1;",
-        180,
-        90,
-        '<div style="box-sizing:border-box;width:100%;background:#e4e4e4;padding:2px;">Tablename</div>' +
-          '<table style="width:100%;font-size:1em;" cellpadding="2" cellspacing="0">' +
-          "<tr><td>PK</td><td>uniqueId</td></tr><tr><td>FK1</td><td>" +
-          "foreignKey</td></tr><tr><td></td><td>fieldname</td></tr></table>",
-        "Entity",
-        null,
-        null,
-        "er entity table"
-      ),
-      this.addEntry(dt + "object instance", function () {
-        var cell = new mxCell(
-          '<p style="margin:0px;margin-top:4px;text-align:center;">' +
-            "<b>Class</b></p>" +
-            '<hr size="1"/><div style="height:2px;"></div>',
-          new mxGeometry(0, 0, 140, 60),
-          "verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;"
-        );
-        cell.vertex = true;
-
-        return sb.createVertexTemplateFromCells(
-          [cell.clone()],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Class 3"
-        );
-      }),
-      this.addEntry(dt + "object instance", function () {
-        var cell = new mxCell(
-          '<p style="margin:0px;margin-top:4px;text-align:center;">' +
-            "<b>Class</b></p>" +
-            '<hr size="1"/><div style="height:2px;"></div><hr size="1"/><div style="height:2px;"></div>',
-          new mxGeometry(0, 0, 140, 60),
-          "verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;"
-        );
-        cell.vertex = true;
-
-        return sb.createVertexTemplateFromCells(
-          [cell.clone()],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Class 4"
-        );
-      }),
-      this.addEntry(dt + "object instance", function () {
-        var cell = new mxCell(
-          '<p style="margin:0px;margin-top:4px;text-align:center;">' +
-            "<b>Class</b></p>" +
-            '<hr size="1"/><p style="margin:0px;margin-left:4px;">+ field: Type</p><hr size="1"/>' +
-            '<p style="margin:0px;margin-left:4px;">+ method(): Type</p>',
-          new mxGeometry(0, 0, 160, 90),
-          "verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;"
-        );
-        cell.vertex = true;
-
-        return sb.createVertexTemplateFromCells(
-          [cell.clone()],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Class 5"
-        );
-      }),
-      this.addEntry(dt + "object instance", function () {
-        var cell = new mxCell(
-          '<p style="margin:0px;margin-top:4px;text-align:center;">' +
-            "<i>&lt;&lt;Interface&gt;&gt;</i><br/><b>Interface</b></p>" +
-            '<hr size="1"/><p style="margin:0px;margin-left:4px;">+ field1: Type<br/>' +
-            "+ field2: Type</p>" +
-            '<hr size="1"/><p style="margin:0px;margin-left:4px;">' +
-            "+ method1(Type): Type<br/>" +
-            "+ method2(Type, Type): Type</p>",
-          new mxGeometry(0, 0, 190, 140),
-          "verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;"
-        );
-        cell.vertex = true;
-
-        return sb.createVertexTemplateFromCells(
-          [cell.clone()],
-          cell.geometry.width,
-          cell.geometry.height,
-          "Interface 2"
-        );
-      }),
-      this.createVertexTemplateEntry(
-        "shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;",
-        20,
-        20,
-        "",
-        "Provided/Required Interface",
-        null,
-        null,
-        "uml provided required interface lollipop notation"
-      ),
-      this.createVertexTemplateEntry(
-        "shape=requiredInterface;html=1;verticalLabelPosition=bottom;",
-        10,
-        20,
-        "",
-        "Required Interface",
-        null,
-        null,
-        "uml required interface lollipop notation"
-      ),
-      this.addEntry(
-        "uml lollipop notation provided required interface",
-        function () {
-          return sb.createVertexTemplateFromData(
-            "zVTBrptADPyavVYEkt4b0uQd3pMq5dD2uAUD27dgZJwE8vX1spsQlETtpVWRIjFjex3PmFVJWvc70m31hjlYlXxWSUqI7N/qPgVrVRyZXCUbFceR/FS8fRJdjNGo1QQN/0lB7AuO2h7AM57oeLCBIDw0Obj8SCVrJK6wxEbbV8RWyIWQP4F52Juzq9AHRqEqrm2IQpN/IsKTwAYb8MzWWBuO9B0hL2E2BGsqIQyxvJ9rzApD7QBrYBokhcBqNsf5UbrzsLzmXUu/oJET42jwGat5QYcHyiDkTDLKy03TiRrFfSx08m+FrrQtUkOZvZdbFKThmwMfVhf4fQ43/W3uZriiPPT+KKhjwnf4anKuQv//wsg+NPJ7/9d9Xf7eVykwbeeMOFWGYd/qzEVO8tHP/Suw4a2ujXV/+gXsEdhkOgSC8os44BQt0tggicZHeG1N2QiXibhAV48epRayEDd8MT7Ct06TUaXVWq027tCuhcx5VZjebeeaoDNn/WMcb/p+j0AM/dNr6InLl4Lgzylsk6OCgRWYsuI592gNZh5OhgmcblPv7+1l+ws=",
-            40,
-            10,
-            "Lollipop Notation"
-          );
-        }
-      ),
-      this.createVertexTemplateEntry(
-        "shape=umlBoundary;whiteSpace=wrap;html=1;",
-        100,
-        80,
-        "Boundary Object",
-        "Boundary Object",
-        null,
-        null,
-        "uml boundary object"
-      ),
-      this.createVertexTemplateEntry(
-        "ellipse;shape=umlEntity;whiteSpace=wrap;html=1;",
-        80,
-        80,
-        "Entity Object",
-        "Entity Object",
-        null,
-        null,
-        "uml entity object"
-      ),
-      this.createVertexTemplateEntry(
-        "ellipse;shape=umlControl;whiteSpace=wrap;html=1;",
-        70,
-        80,
-        "Control Object",
-        "Control Object",
-        null,
-        null,
-        "uml control object"
-      ),
-      this.createVertexTemplateEntry(
-        "shape=umlActor;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;",
-        30,
-        60,
-        "Actor",
-        "Actor",
-        false,
-        null,
-        "uml actor"
-      ),
-      this.createVertexTemplateEntry(
-        "ellipse;whiteSpace=wrap;html=1;",
-        140,
-        70,
-        "Use Case",
-        "Use Case",
-        null,
-        null,
-        "uml use case usecase"
-      ),
+      objectInstance,
+      interfaceObjectInstance,
+      objectInstanceEntry,
+      sectionSubsection,
+      itemMemberMethod1,
+      itemMemberMethod2,
+      dividerHlineSeparator,
+      spacerSpaceGapSeparator,
+      titleLabel,
+      component,
+      componentWithAttributtes,
+      block,
+      moduleComponent,
+      $package,
+      objectInstance3,
+      erEntityTabel,
+      objectInstanceClass3,
+      objectInstanceClass4,
+      objectInstanceClass5,
+      objectInstanceInterface2,
+      requiredInterfaceLollipop,
+      lollipopNotation,
+      boundaryObject,
+      entityObject,
+      controlObject,
+      actor,
+      useCase,
       this.addEntry("uml activity state start", function () {
         var cell = new mxCell(
           "",
@@ -1018,4 +688,38 @@ export class UmlPalette extends AbstractPalette {
       fns
     );
   }
+
+  get field() {
+    this._field = this._field || this.createField();
+    return this._field;
+  }
+
+  // Reusable cells
+  createField() {
+    var field = new mxCell(
+      "+ field: type",
+      new mxGeometry(0, 0, 100, 26),
+      "text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;"
+    );
+    field.vertex = true;
+    return field;
+  }
+
+  get divider() {
+    this._divider = this._divider || this.createDivider();
+    return this._divider;
+  }
+
+  createDivider() {
+    var divider = new mxCell(
+      "",
+      new mxGeometry(0, 0, 40, 8),
+      "line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;"
+    );
+    divider.vertex = true;
+    return divider;
+  }
+
+  // Default tags
+  dt = "uml static class ";
 }
