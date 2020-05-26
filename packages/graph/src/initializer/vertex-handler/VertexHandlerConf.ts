@@ -1,5 +1,18 @@
 import mx from "@mxgraph-app/mx";
-const { mxVertexHandler, mxUtils } = mx;
+import { Graph } from "../../Graph";
+const {
+  mxRubberband,
+  mxConnectionHandler,
+  mxGraphHandler,
+  mxConstants,
+  mxPopupMenu,
+  mxGuide,
+  mxDragSource,
+  mxVertexHandler,
+  mxUtils,
+  mxClient,
+  mxEvent,
+} = mx;
 
 export class VertexHandlerConfig {
   setConnectable: any;
@@ -11,9 +24,62 @@ export class VertexHandlerConfig {
   resetEdgesOnConnect: any;
   constrainChildren: any;
   constrainRelativeChildren: any;
+  alternateEdgeStyle: any;
+  previewColor: any;
+  getRubberband: any;
+  loadStylesheet: any;
+  setGuideStates: any;
+  currentState: any;
+  isToggleEvent: any;
+  isEnabled: any;
+  panningHandler: any;
+  container: any;
+  popupMenuHandler: any;
+  tooltipHandler: any;
+  click: any;
+  isCellLocked: any;
+  clearSelection: any;
+  getClickableLinkForCell: any;
+  isCustomLink: any;
+  customLinkClicked: any;
+  openLink: any;
+  getCursorForMouseEvent: any;
+  getCursorForCell: any;
+  selectRegion: any;
+  getAllCells: any;
+  selectCellsForEvent: any;
+  getCurrentRoot: any;
+  isCellVisible: any;
+  addListener: any;
+  isSelectionEmpty: any;
+  isCellSelected: any;
+  getSelectionCells: any;
+  addSelectionCells: any;
+  removeSelectionCell: any;
+  getSelectionCount: any;
+  selectionModel: any;
+  updateMouseEvent: any;
+  initTouch: any;
+
   graphHandler: any;
+  connectionHandler: any;
+  graph: any;
+  stylesheet: any;
+
+  get view() {
+    return this.graph.view;
+  }
+
+  get model() {
+    return this.graph.model;
+  }
+
+  getModel() {
+    return this.graph.getModel();
+  }
 
   config() {
+    const { stylesheet } = this;
     // All code below not available and not needed in embed mode
     if (mxVertexHandler) {
       this.setConnectable(true);
@@ -35,7 +101,7 @@ export class VertexHandlerConfig {
       this.connectionHandler.insertBeforeSource = true;
 
       // Disables built-in connection starts
-      this.connectionHandler.isValidSource = (cell, me) => {
+      this.connectionHandler.isValidSource = (_cell, _me) => {
         return false;
       };
 
@@ -52,26 +118,21 @@ export class VertexHandlerConfig {
       mxDragSource.prototype.dragElementZIndex = mxPopupMenu.prototype.zIndex;
 
       // Overrides color for virtual guides for page centers
-      mxGuide.prototype.getGuideColor(state, horizontal);
-      {
+      mxGuide.prototype.getGuideColor = (state, _horizontal) => {
         return state.cell == null
           ? "#ffa500" /* orange */
           : mxConstants.GUIDE_COLOR;
-      }
+      };
 
       // Changes color of move preview for black backgrounds
-      this.graphHandler.createPreviewShape(bounds);
-      {
+      this.graphHandler.createPreviewShape = (bounds) => {
         this.previewColor =
           this.graph.background == "#000000"
             ? "#ffffff"
             : mxGraphHandler.prototype.previewColor;
 
-        return mxGraphHandler.prototype.createPreviewShape.apply(
-          this,
-          arguments
-        );
-      }
+        return mxGraphHandler.prototype.createPreviewShape.apply(this, bounds);
+      };
 
       // Handles parts of cells by checking if part=1 is in the style and returning the parent
       // if the parent is not already in the list of cells. container style is used to disable
@@ -79,10 +140,9 @@ export class VertexHandlerConfig {
       // LATER: Handle recursive parts
       var graphHandlerGetCells = this.graphHandler.getCells;
 
-      this.graphHandler.getCells(initialCell);
-      {
+      this.graphHandler.getCells = (_initialCell) => {
         var cells = graphHandlerGetCells.apply(this, arguments);
-        var newCells = [];
+        var newCells: any[] = [];
 
         for (var i = 0; i < cells.length; i++) {
           var cell = this.graph.getCompositeParent(cells[i]);
@@ -95,35 +155,32 @@ export class VertexHandlerConfig {
         }
 
         return newCells;
-      }
+      };
 
       // Handles parts of cells for drag and drop
       var graphHandlerStart = this.graphHandler.start;
 
-      this.graphHandler.start(cell, x, y, cells);
-      {
+      this.graphHandler.start = (cell, _x, _y, _cells) => {
         cell = this.graph.getCompositeParent(cell);
 
         graphHandlerStart.apply(this, arguments);
-      }
+      };
 
       // Handles parts of cells when cloning the source for new connections
-      this.connectionHandler.createTargetVertex(evt, source);
-      {
+      this.connectionHandler.createTargetVertex = (evt, source) => {
         source = this.graph.getCompositeParent(source);
 
-        return mxConnectionHandler.prototype.createTargetVertex.apply(
-          this,
-          arguments
-        );
-      }
+        return mxConnectionHandler.prototype.createTargetVertex.apply(this, [
+          evt,
+          source,
+        ]);
+      };
 
       var rubberband = new mxRubberband(this);
 
-      this.getRubberband();
-      {
+      this.getRubberband = () => {
         return rubberband;
-      }
+      };
 
       // Timer-based activation of outline connect in connection handler
       var startTime = new Date().getTime();
@@ -151,8 +208,7 @@ export class VertexHandlerConfig {
       var connectionHandleIsOutlineConnectEvent = this.connectionHandler
         .isOutlineConnectEvent;
 
-      this.connectionHandler.isOutlineConnectEvent(me);
-      {
+      this.connectionHandler.isOutlineConnectEvent = (me) => {
         return (
           (this.currentState != null &&
             me.getState() == this.currentState &&
@@ -162,26 +218,24 @@ export class VertexHandlerConfig {
               "0") &&
             connectionHandleIsOutlineConnectEvent.apply(this, arguments))
         );
-      }
+      };
 
       // Adds shift+click to toggle selection state
       var isToggleEvent = this.isToggleEvent;
-      this.isToggleEvent(evt);
-      {
+      this.isToggleEvent = (evt) => {
         return (
           isToggleEvent.apply(this, arguments) ||
           (!mxClient.IS_CHROMEOS && mxEvent.isShiftDown(evt))
         );
-      }
+      };
 
       // Workaround for Firefox where first mouse down is received
       // after tap and hold if scrollbars are visible, which means
       // start rubberband immediately if no cell is under mouse.
       var isForceRubberBandEvent = rubberband.isForceRubberbandEvent;
-      rubberband.isForceRubberbandEvent(me);
-      {
+      rubberband.isForceRubberbandEvent = (me) => {
         return (
-          (isForceRubberBandEvent.apply(this, arguments) &&
+          (isForceRubberBandEvent.apply(this, [me]) &&
             !mxEvent.isShiftDown(me.getEvent()) &&
             !mxEvent.isControlDown(me.getEvent())) ||
           (mxClient.IS_CHROMEOS && mxEvent.isShiftDown(me.getEvent())) ||
@@ -191,7 +245,7 @@ export class VertexHandlerConfig {
             me.getState() == null &&
             mxEvent.isTouchEvent(me.getEvent()))
         );
-      }
+      };
 
       // Shows hand cursor while panning
       var prevCursor = null;
@@ -211,15 +265,13 @@ export class VertexHandlerConfig {
 
       this.popupMenuHandler.autoExpand = true;
 
-      this.popupMenuHandler.isSelectOnPopup(me);
-      {
+      this.popupMenuHandler.isSelectOnPopup = (me) => {
         return mxEvent.isMouseEvent(me.getEvent());
-      }
+      };
 
       // Handles links if graph is read-only or cell is locked
       var click = this.click;
-      this.click(me);
-      {
+      this.click = (me) => {
         var locked =
           me.state == null &&
           me.sourceState != null &&
@@ -246,18 +298,16 @@ export class VertexHandlerConfig {
         } else {
           return click.apply(this, arguments);
         }
-      }
+      };
 
       // Redirects tooltips for locked cells
-      this.tooltipHandler.getStateForEvent(me);
-      {
+      this.tooltipHandler.getStateForEvent = (me) => {
         return me.sourceState;
-      }
+      };
 
       // Redirects cursor for locked cells
-      var getCursorForMouseEvent = this.getCursorForMouseEvent;
-      this.getCursorForMouseEvent(me);
-      {
+      // var getCursorForMouseEvent = this.getCursorForMouseEvent;
+      this.getCursorForMouseEvent = (me) => {
         var locked =
           me.state == null &&
           me.sourceState != null &&
@@ -266,13 +316,12 @@ export class VertexHandlerConfig {
         return this.getCursorForCell(
           locked ? me.sourceState.cell : me.getCell()
         );
-      }
+      };
 
       // Shows pointer cursor for clickable cells with links
       // ie. if the graph is disabled and cells cannot be selected
       var getCursorForCell = this.getCursorForCell;
-      this.getCursorForCell(cell);
-      {
+      this.getCursorForCell = (cell) => {
         if (!this.isEnabled() || this.isCellLocked(cell)) {
           var link = this.getClickableLinkForCell(cell);
 
@@ -284,20 +333,18 @@ export class VertexHandlerConfig {
         }
 
         return getCursorForCell.apply(this, arguments);
-      }
+      };
 
       // Changes rubberband selection to be recursive
-      this.selectRegion(rect, evt);
-      {
+      this.selectRegion = (rect, evt) => {
         var cells = this.getAllCells(rect.x, rect.y, rect.width, rect.height);
         this.selectCellsForEvent(cells, evt);
 
         return cells;
-      }
+      };
 
       // Recursive implementation for rubberband selection
-      this.getAllCells(x, y, width, height, parent, result);
-      {
+      this.getAllCells = (x, y, width, height, parent, result) => {
         result = result != null ? result : [];
 
         if (width > 0 || height > 0) {
@@ -326,8 +373,11 @@ export class VertexHandlerConfig {
                 mxUtils.getValue(state.style, "locked", "0") != "1"
               ) {
                 var deg =
-                  mxUtils.getValue(state.style, mxConstants.STYLE_ROTATION) ||
-                  0;
+                  mxUtils.getValue(
+                    state.style,
+                    mxConstants.STYLE_ROTATION,
+                    undefined
+                  ) || 0;
                 var box = state;
 
                 if (deg != 0) {
@@ -351,40 +401,41 @@ export class VertexHandlerConfig {
         }
 
         return result;
-      }
+      };
 
       // Never removes cells from parents that are being moved
       var graphHandlerShouldRemoveCellsFromParent = this.graphHandler
         .shouldRemoveCellsFromParent;
-      this.graphHandler.shouldRemoveCellsFromParent(parent, cells, evt);
-      {
+      this.graphHandler.shouldRemoveCellsFromParent = (
+        parent,
+        _cells,
+        _evt
+      ) => {
         if (this.graph.isCellSelected(parent)) {
           return false;
         }
 
         return graphHandlerShouldRemoveCellsFromParent.apply(this, arguments);
-      }
+      };
 
       // Unlocks all cells
-      this.isCellLocked(cell);
-      {
+      this.isCellLocked = (cell) => {
         var pState = this.view.getState(cell);
 
         while (pState != null) {
           if (mxUtils.getValue(pState.style, "locked", "0") == "1") {
             return true;
           }
-
           pState = this.view.getState(this.model.getParent(pState.cell));
         }
 
         return false;
-      }
+      };
 
       var tapAndHoldSelection = null;
 
       // Uses this event to process mouseDown to check the selection state before it is changed
-      this.addListener(mxEvent.FIRE_MOUSE_EVENT, (sender, evt) => {
+      this.addListener(mxEvent.FIRE_MOUSE_EVENT, (_sender, evt) => {
         if (evt.getProperty("eventName") == "mouseDown") {
           var me = evt.getProperty("event");
           var state = me.getState();
@@ -403,7 +454,7 @@ export class VertexHandlerConfig {
 
       // Tap and hold on background starts rubberband for multiple selected
       // cells the cell associated with the event is deselected
-      this.addListener(mxEvent.TAP_AND_HOLD, (sender, evt) => {
+      this.addListener(mxEvent.TAP_AND_HOLD, (_sender, evt) => {
         if (!mxEvent.isMultiTouchEvent(evt)) {
           var me = evt.getProperty("event");
           var cell = evt.getProperty("cell");
@@ -431,16 +482,17 @@ export class VertexHandlerConfig {
       });
 
       // On connect the target is selected and we clone the cell of the preview edge for insert
-      this.connectionHandler.selectCells(edge, target);
-      {
+      this.connectionHandler.selectCells = (edge, target) => {
         this.graph.setSelectionCell(target || edge);
-      }
+      };
 
       // Shows connection points only if cell not selected
-      this.connectionHandler.constraintHandler.isStateIgnored(state, source);
-      {
+      this.connectionHandler.constraintHandler.isStateIgnored = (
+        state,
+        source
+      ) => {
         return source && state.view.graph.isCellSelected(state.cell);
-      }
+      };
 
       // Updates constraint handler if the selection changes
       this.selectionModel.addListener(mxEvent.CHANGE, () => {
@@ -467,8 +519,7 @@ export class VertexHandlerConfig {
        * Adds locking
        */
       var graphUpdateMouseEvent = this.updateMouseEvent;
-      this.updateMouseEvent(me);
-      {
+      this.updateMouseEvent = (me) => {
         me = graphUpdateMouseEvent.apply(this, arguments);
 
         if (me.state != null && this.isCellLocked(me.getCell())) {
@@ -476,7 +527,7 @@ export class VertexHandlerConfig {
         }
 
         return me;
-      }
+      };
     }
   }
 }

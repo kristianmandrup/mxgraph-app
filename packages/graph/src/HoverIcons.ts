@@ -8,7 +8,7 @@ const {
   mxConstants,
   mxEvent,
 } = mx;
-import resources from "resources/resources";
+import resources from "@mxgraph-app/resources";
 import { Graph } from "./Graph";
 const { IMAGE_PATH } = resources;
 
@@ -229,7 +229,7 @@ export class HoverIcons {
     });
 
     // Resets current state when in-place editor starts
-    this.graph.addListener(mxEvent.START_EDITING, (evt) => {
+    this.graph.addListener(mxEvent.START_EDITING, (_evt) => {
       this.reset();
     });
 
@@ -254,7 +254,7 @@ export class HoverIcons {
 
     // Implements a listener for hover and click handling
     this.graph.addMouseListener({
-      mouseDown: (sender, me) => {
+      mouseDown: (_sender, me) => {
         connectionHandlerActive = false;
         var evt = me.getEvent();
 
@@ -270,7 +270,7 @@ export class HoverIcons {
 
         this.setDisplay("none");
       },
-      mouseMove: (sender, me) => {
+      mouseMove: (_sender, me) => {
         var evt = me.getEvent();
 
         if (this.isResetEvent(evt)) {
@@ -290,13 +290,13 @@ export class HoverIcons {
           connectionHandlerActive = true;
         }
       },
-      mouseUp: (sender, me) => {
-        var evt = me.getEvent();
-        var pt = mxUtils.convertPoint(
-          this.graph.container,
-          mxEvent.getClientX(evt),
-          mxEvent.getClientY(evt)
-        );
+      mouseUp: (_sender, me) => {
+        const evt = me.getEvent();
+        // const pt = mxUtils.convertPoint(
+        //   this.graph.container,
+        //   mxEvent.getClientX(evt),
+        //   mxEvent.getClientY(evt)
+        // );
 
         if (this.isResetEvent(evt)) {
           this.reset();
@@ -343,7 +343,7 @@ export class HoverIcons {
   /**
    *
    */
-  isResetEvent(evt, allowShift?) {
+  isResetEvent(evt, _allowShift?) {
     return (
       mxEvent.isAltDown(evt) ||
       (this.activeArrow == null && mxEvent.isShiftDown(evt)) ||
@@ -431,7 +431,7 @@ export class HoverIcons {
       }
     });
 
-    mxEvent.addListener(arrow, "mouseleave", (evt) => {
+    mxEvent.addListener(arrow, "mouseleave", (_evt) => {
       // Workaround for IE11 firing this event on touch
       if (!this.graph.isMouseDown) {
         this.resetActiveArrow();
@@ -553,7 +553,7 @@ export class HoverIcons {
   /**
    *
    */
-  getStateAt(state, x, y) {
+  getStateAt(_state, x, y) {
     return this.graph.view.getState(this.graph.getCellAt(x, y));
   }
 

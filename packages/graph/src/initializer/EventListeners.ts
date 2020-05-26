@@ -79,9 +79,9 @@ export class EventListeners {
 
   mouseMove = new MouseMove().handler;
 
-  mouseDown = (sender, me) => {};
+  mouseDown = (_sender, _me) => {};
 
-  mouseUp = (sender, me) => {
+  mouseUp = (_sender, _me) => {
     const { start } = this;
     start.state = null;
     start.event = null;

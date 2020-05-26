@@ -45,7 +45,7 @@ export class Svg {
     var exp = new mxImageExport();
 
     // Adds hyperlinks (experimental)
-    exp.getLinkForCellState = (state, canvas) => {
+    exp.getLinkForCellState = (state, _canvas) => {
       return this.getLinkForCell(state.cell);
     };
 
@@ -163,19 +163,19 @@ export class Svg {
       // Adds simple text fallback for viewers with no support for foreignObjects
       var getAlternateText = svgCanvas.getAlternateText;
       svgCanvas.getAlternateText = (
-        fo,
-        x,
-        y,
+        _fo,
+        _x,
+        _y,
         w,
-        h,
+        _h,
         str,
-        align,
-        valign,
-        wrap,
-        format,
-        overflow,
-        clip,
-        rotation
+        _align,
+        _valign,
+        _wrap,
+        _format,
+        _overflow,
+        _clip,
+        _rotation
       ) => {
         // Assumes a max character width of 0.5em
         if (str != null && this.state.fontSize > 0) {
@@ -259,7 +259,7 @@ export class Svg {
       // Ignores custom links
       var imgExportGetLinkForCellState = imgExport.getLinkForCellState;
 
-      imgExport.getLinkForCellState = (state, canvas) => {
+      imgExport.getLinkForCellState = (state, _canvas) => {
         var result = imgExportGetLinkForCellState.apply(this, arguments);
 
         return result != null && !state.view.graph.isCustomLink(result)
@@ -267,7 +267,7 @@ export class Svg {
           : null;
       }; // Implements ignoreSelection flag
 
-      imgExport.drawCellState = (state, canvas) => {
+      imgExport.drawCellState = (state, _canvas) => {
         var graph = state.view.graph;
         var selected = graph.isCellSelected(state.cell);
         var parent = graph.model.getParent(state.cell);

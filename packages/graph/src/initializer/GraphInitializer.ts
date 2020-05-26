@@ -59,7 +59,7 @@ export class GraphInitializer {
    * Graph inherits from mxGraph
    */
   // mxUtils.extend(Graph, mxGraph);
-  create(container, model, renderHint, stylesheet, themes, standalone) {
+  create(container, _model, _renderHint, _stylesheet, themes, standalone) {
     // mxGraph.call(container, model, renderHint, stylesheet);
     this.container = container;
     this.themes = themes || this.defaultThemes;

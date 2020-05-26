@@ -87,7 +87,7 @@ export class Click extends BaseEventer {
   /**
    * Adds a handler for clicking on shapes with links. This replaces all links in labels.
    */
-  addClickHandler(highlight, beforeClick, onClick) {
+  addClickHandler(_highlight, beforeClick, _onClick) {
     // Replaces links in labels for consistent right-clicks
     var checkLinks = () => {
       var links = this.container.getElementsByTagName("a");

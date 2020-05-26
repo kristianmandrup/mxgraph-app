@@ -22,7 +22,7 @@ export class MouseMove {
     return this.graph.view;
   }
 
-  handler = (sender, me) => {
+  handler = (_sender, me) => {
     // Checks if any other handler is active
     const { start } = this;
     var handlerMap = this.selectionCellsHandler.handlers.map;

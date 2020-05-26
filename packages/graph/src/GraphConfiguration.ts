@@ -118,7 +118,7 @@ export class GraphConfiguration {
   setPaintLine() {
     var mxConnectorPaintLine = mxConnector.prototype.paintLine;
     const proto = mxConnector.prototype;
-    const { state, style, strokewidth, scale } = proto;
+    const { state, strokewidth, scale } = proto;
     mxConnector.prototype.paintLine = (c, absPts, rounded) => {
       const stRp = state["routedPoints"];
       // Required for checking dirty state
@@ -321,8 +321,8 @@ export class GraphConfiguration {
     mxGraphView.prototype["snapToAnchorPoint"] = (
       edge,
       start,
-      end,
-      source,
+      _end,
+      _source,
       pt
     ) => {
       if (start != null && edge != null) {

@@ -1,6 +1,6 @@
 import mx from "@mxgraph-app/mx";
 import { SidebarEntries } from "../Entries";
-import { Graph } from "ui/graph/Graph";
+import { Graph } from "@mxgraph-app/graph";
 const { mxPoint, mxGraphModel, mxCodec, mxUtils, mxCell, mxGeometry } = mx;
 
 export class CellCreator {

@@ -30,9 +30,8 @@ const {
 } = mx;
 
 import resources from "@mxgraph-app/resources";
-import { GraphConstructor } from "./GraphConstructor";
-import { TableRowLayout } from "./table/TableRowLayout";
-import { TableLayout } from "./table/TableLayout";
+import { TableLayout, TableRowLayout } from "./table";
+import { GraphInitializer } from "./initializer/GraphInitializer";
 const { urlParams } = resources;
 
 /**
@@ -137,7 +136,7 @@ export class Graph {
    */
   // mxUtils.extend(Graph, mxGraph);
   constructor(container, model, renderHint, stylesheet, themes?, standalone?) {
-    new GraphConstructor().construct(
+    new GraphInitializer().create(
       container,
       model,
       renderHint,
@@ -606,7 +605,7 @@ export class Graph {
   /**
    * Adds support for page links.
    */
-  customLinkClicked(link) {
+  customLinkClicked(_link) {
     return false;
   }
 
@@ -832,7 +831,7 @@ export class Graph {
   /**
    * Sanitizes the given HTML markup.
    */
-  sanitizeHtml(value, editing?) {
+  sanitizeHtml(value, _editing?) {
     // Uses https://code.google.com/p/google-caja/wiki/JsHtmlSanitizer
     // NOTE: Original minimized sanitizer was modified to support
     // data URIs for images, mailto and special data:-links.
@@ -858,7 +857,7 @@ export class Graph {
    * Revalidates all cells with placeholders in the current graph model.
    */
   updatePlaceholders() {
-    var model = this.model;
+    // var model = this.model;
     var validate = false;
 
     for (var key in this.model.cells) {
@@ -974,7 +973,7 @@ export class Graph {
     this.fireEvent("gridSizeChanged");
   }
 
-  fireEvent(event) {
+  fireEvent(_event) {
     // this.fireEvent(new mxEventObject('gridSizeChanged'));
   }
 
@@ -2715,14 +2714,14 @@ export class Graph {
   /**
    * Updates cell IDs in custom links on the given cell and its label.
    */
-  updateCustomLinksForCell(mapping, cell) {
+  updateCustomLinksForCell(_mapping, _cell) {
     // Hook for subclassers
   }
 
   /**
    * Overrides method to provide connection constraints for shapes.
    */
-  getAllConnectionConstraints(terminal, source) {
+  getAllConnectionConstraints(terminal, _source) {
     if (terminal != null) {
       var constraints = mxUtils.getValue(terminal.style, "points", null);
 
@@ -2896,7 +2895,7 @@ export class Graph {
    * Overridden to stop moving edge labels between cells.
    */
   getDropTarget(cells, evt, cell, clone) {
-    var model = this.getModel();
+    // var model = this.getModel();
 
     // Disables drop into group if alt is pressed
     if (mxEvent.isAltDown(evt)) {

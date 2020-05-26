@@ -6,10 +6,10 @@ const {
   mxStencilRegistry,
   mxCellRenderer,
 } = mx;
-import resources from "resources/resources";
+import resources from "@mxgraph-app/resources";
 const { STENCIL_PATH } = resources;
 
-class StencilRegistry {
+export class StencilRegistry {
   setGlobals() {
     /**
      * Overrides stencil registry for dynamic loading of stencils.
@@ -197,7 +197,7 @@ class StencilRegistry {
     // Loads the given stencil XML file.
     mxStencilRegistry["loadStencil"] = (filename, fn) => {
       if (fn != null) {
-        var req = mxUtils.get(filename, (req) => {
+        return mxUtils.get(filename, (req) => {
           fn(
             req.getStatus() >= 200 && req.getStatus() <= 299
               ? req.getXml()

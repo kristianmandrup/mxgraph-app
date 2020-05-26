@@ -558,7 +558,7 @@ export class Functionas {
       return this.graph.connectionHandler.first != null;
     }; // Hides menu when editing starts
 
-    this.addListener(mxEvent.START_EDITING, (sender, evt) => {
+    this.addListener(mxEvent.START_EDITING, (_sender, _evt) => {
       this.popupMenuHandler.hideMenu();
     });
 
@@ -599,7 +599,7 @@ export class Functionas {
 
     var oldFireMouseEvent = this.fireMouseEvent;
 
-    this.fireMouseEvent = (evtName, me, sender) => {
+    this.fireMouseEvent = (evtName, me, _sender) => {
       if (evtName == mxEvent.MOUSE_DOWN) {
         // For hit detection on edges
         me = this.updateMouseEvent(me);

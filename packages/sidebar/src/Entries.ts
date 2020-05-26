@@ -1,6 +1,6 @@
 import { CellCreator } from "./shapes/CellCreator";
 import { AbstractShaper } from "./shapes/AbstractShaper";
-import { Graph } from "ui/graph/Graph";
+import { Graph } from "@mxgraph-app/graph";
 
 import mx from "@mxgraph-app/mx";
 const { mxDictionary } = mx;
@@ -129,7 +129,7 @@ export class SidebarEntries extends AbstractShaper {
   /**
    * Adds shape search UI.
    */
-  searchEntries(searchTerms, count, page, success, error) {
+  searchEntries(searchTerms, count, page, success, _error) {
     if (this.taglist != null && searchTerms != null) {
       var tmp = searchTerms.toLowerCase().split(" ");
       var dict = new mxDictionary();

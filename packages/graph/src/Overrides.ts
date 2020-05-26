@@ -10,9 +10,13 @@ const {
   mxEdgeHandler,
   mxConstants,
   mxVertexHandler,
+  mxCellState,
 } = mx;
 
 export class Overrides {
+  graph: any;
+  highlightColor: any;
+  error: any;
   /**
    * These overrides are only added if mxVertexHandler is defined (ie. not in embedded graph)
    */
@@ -47,36 +51,33 @@ export class Overrides {
     mxRubberband.prototype.fadeOut = true;
 
     // Alt-move disables guides
-    mxGuide.prototype.isEnabledForEvent(evt);
-    {
+    mxGuide.prototype.isEnabledForEvent = (evt) => {
       return !mxEvent.isAltDown(evt);
-    } // Extends connection handler to enable ctrl+drag for cloning source cell
+    }; // Extends connection handler to enable ctrl+drag for cloning source cell
     // since copyOnConnect is now disabled by default
 
     var mxConnectionHandlerCreateTarget =
       mxConnectionHandler.prototype.isCreateTarget;
-    mxConnectionHandler.prototype.isCreateTarget(evt);
-    {
+
+    mxConnectionHandler.prototype.isCreateTarget = (evt) => {
       return (
         mxEvent.isControlDown(evt) ||
-        mxConnectionHandlerCreateTarget.apply(this, arguments)
+        mxConnectionHandlerCreateTarget.apply(this, [evt])
       );
-    } // Overrides highlight shape for connection points
+    }; // Overrides highlight shape for connection points
 
-    mxConstraintHandler.prototype.createHighlightShape();
-    {
+    mxConstraintHandler.prototype.createHighlightShape = () => {
       var hl = new mxEllipse(null, this.highlightColor, this.highlightColor, 0);
       hl.opacity = mxConstants.HIGHLIGHT_OPACITY;
 
       return hl;
-    } // Overrides edge preview to use current edge shape and default style
+    }; // Overrides edge preview to use current edge shape and default style
 
     mxConnectionHandler.prototype.livePreview = true;
     mxConnectionHandler.prototype.cursor = "crosshair";
 
     // Uses current edge style for connect preview
-    mxConnectionHandler.prototype.createEdgeState(me);
-    {
+    mxConnectionHandler.prototype.createEdgeState = (_me) => {
       var style = this.graph.createCurrentEdgeStyle();
       var edge = this.graph.createEdge(null, null, null, null, null, style);
       var state = new mxCellState(
@@ -90,42 +91,36 @@ export class Overrides {
       }
 
       return state;
-    } // Overrides dashed state with current edge style
+    }; // Overrides dashed state with current edge style
 
     var connectionHandlerCreateShape =
       mxConnectionHandler.prototype.createShape;
-    mxConnectionHandler.prototype.createShape();
-    {
-      var shape = connectionHandlerCreateShape.apply(this, arguments);
+    mxConnectionHandler.prototype.createShape = () => {
+      var shape = connectionHandlerCreateShape.apply(this, []);
 
       shape.isDashed =
         this.graph.currentEdgeStyle[mxConstants.STYLE_DASHED] == "1";
 
       return shape;
-    }
+    };
 
     // Overrides live preview to keep current style
-    mxConnectionHandler.prototype.updatePreview(valid);
-    {
+    mxConnectionHandler.prototype.updatePreview = (_valid) => {
       // do not change color of preview
-    } // Overrides connection handler to ignore edges instead of not allowing connections
+    }; // Overrides connection handler to ignore edges instead of not allowing connections
 
     var mxConnectionHandlerCreateMarker =
       mxConnectionHandler.prototype.createMarker;
-    mxConnectionHandler.prototype.createMarker();
-    {
-      var marker = mxConnectionHandlerCreateMarker.apply(this, arguments);
-
+    mxConnectionHandler.prototype.createMarker = () => {
+      var marker = mxConnectionHandlerCreateMarker.apply(this, []);
       var markerGetCell = marker.getCell;
-      marker.getCell = (me) => {
+      marker.getCell = (_me) => {
         var result = markerGetCell.apply(this, arguments);
-
         this.error = null;
-
         return result;
       };
 
       return marker;
-    }
+    };
   }
 }
