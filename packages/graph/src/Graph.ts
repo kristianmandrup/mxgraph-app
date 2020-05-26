@@ -29,11 +29,11 @@ const {
   mxUtils,
 } = mx;
 
-import resources from "resources/resources";
+import resources from "@mxgraph-app/resources";
 import { GraphConstructor } from "./GraphConstructor";
 import { TableRowLayout } from "./table/TableRowLayout";
 import { TableLayout } from "./table/TableLayout";
-const { urlParams, IMAGE_PATH } = resources;
+const { urlParams } = resources;
 
 /**
  * Constructs a new graph instance. Note that the constructor does not take a
@@ -124,6 +124,14 @@ export class Graph {
     return this.graph.getModel();
   }
 
+  start: any = {
+    point: null,
+    event: null,
+    state: null,
+    handle: null,
+    selected: false,
+  };
+
   /**
    * Graph inherits from mxGraph
    */
@@ -135,14 +143,15 @@ export class Graph {
       renderHint,
       stylesheet,
       themes,
-      standalone,
+      standalone
     );
   }
 
   /**
    * Specifies if the touch UI should be used (cannot detect touch in FF so always on for Windows/Linux)
    */
-  static touchStyle = mxClient.IS_TOUCH ||
+  static touchStyle =
+    mxClient.IS_TOUCH ||
     (mxClient.IS_FF && mxClient.IS_WIN) ||
     navigator.maxTouchPoints > 0 ||
     navigator.msMaxTouchPoints > 0 ||
@@ -152,7 +161,8 @@ export class Graph {
   /**
    * Shortcut for capability check.
    */
-  static fileSupport = window.File != null &&
+  static fileSupport =
+    window.File != null &&
     window.FileReader != null &&
     window.FileList != null &&
     (window["urlParams"] == null || urlParams["filesupport"] != "0");
@@ -205,15 +215,15 @@ export class Graph {
             : "") +
           'version="1.1">' +
           data +
-          "</svg>",
-      ),
+          "</svg>"
+      )
     );
 
     return new mxImage(
       "data:image/svg+xml;base64," +
         (window.btoa ? btoa(tmp) : Base64.encode(tmp, true)),
       w,
-      h,
+      h
     );
   }
 
@@ -302,7 +312,7 @@ export class Graph {
       var inflated = decodeURIComponent(
         inflate
           ? pako.inflate(tmp, { to: "string" })
-          : pako.inflateRaw(tmp, { to: "string" }),
+          : pako.inflateRaw(tmp, { to: "string" })
       );
 
       return checked ? inflated : Graph.zapGremlins(inflated);
@@ -323,9 +333,8 @@ export class Graph {
    * Sets the policy for links. Possible values are "self" to replace any framesets,
    * "blank" to load the URL in <linkTarget> and "auto" (default).
    */
-  linkPolicy = urlParams["target"] == "frame"
-    ? "blank"
-    : urlParams["target"] || "auto";
+  linkPolicy =
+    urlParams["target"] == "frame" ? "blank" : urlParams["target"] || "auto";
 
   /**
    * Target for links that open in a new window. Default is _blank.
@@ -423,10 +432,13 @@ export class Graph {
   /**
    * Base URL for relative links.
    */
-  baseUrl = urlParams["base"] != null
-    ? decodeURIComponent(urlParams["base"])
-    : (window != window.top ? document.referrer : document.location.toString())
-      .split("#")[0];
+  baseUrl =
+    urlParams["base"] != null
+      ? decodeURIComponent(urlParams["base"])
+      : (window != window.top
+          ? document.referrer
+          : document.location.toString()
+        ).split("#")[0];
 
   /**
    * Specifies if the label should be edited after an insert.
@@ -467,7 +479,8 @@ export class Graph {
       };
 
       var move = (evt) => {
-        handleClick = handleClick &&
+        handleClick =
+          handleClick &&
           first != null &&
           Math.abs(first.x - mxEvent.getClientX(evt)) < tol &&
           Math.abs(first.y - mxEvent.getClientY(evt)) < tol;
@@ -692,12 +705,12 @@ export class Graph {
             treeLayout.groupPadding = mxUtils.getValue(
               style,
               "parentPadding",
-              20,
+              20
             );
             treeLayout.levelDistance = mxUtils.getValue(
               style,
               "treeLevelDistance",
-              30,
+              30
             );
             treeLayout.maintainParentLocation = true;
             treeLayout.edgeRouting = false;
@@ -710,15 +723,15 @@ export class Graph {
               mxUtils.getValue(
                 style,
                 "flowOrientation",
-                mxConstants.DIRECTION_EAST,
-              ),
+                mxConstants.DIRECTION_EAST
+              )
             );
             flowLayout.resizeParent =
               mxUtils.getValue(style, "resizeParent", "1") == "1";
             flowLayout.parentBorder = mxUtils.getValue(
               style,
               "parentPadding",
-              20,
+              20
             );
             flowLayout.maintainParentLocation = true;
 
@@ -726,22 +739,22 @@ export class Graph {
             flowLayout.intraCellSpacing = mxUtils.getValue(
               style,
               "intraCellSpacing",
-              mxHierarchicalLayout.prototype.intraCellSpacing,
+              mxHierarchicalLayout.prototype.intraCellSpacing
             );
             flowLayout.interRankCellSpacing = mxUtils.getValue(
               style,
               "interRankCellSpacing",
-              mxHierarchicalLayout.prototype.interRankCellSpacing,
+              mxHierarchicalLayout.prototype.interRankCellSpacing
             );
             flowLayout.interHierarchySpacing = mxUtils.getValue(
               style,
               "interHierarchySpacing",
-              mxHierarchicalLayout.prototype.interHierarchySpacing,
+              mxHierarchicalLayout.prototype.interHierarchySpacing
             );
             flowLayout.parallelEdgeSpacing = mxUtils.getValue(
               style,
               "parallelEdgeSpacing",
-              mxHierarchicalLayout.prototype.parallelEdgeSpacing,
+              mxHierarchicalLayout.prototype.parallelEdgeSpacing
             );
 
             return flowLayout;
@@ -750,7 +763,8 @@ export class Graph {
           } else if (style["childLayout"] == "organicLayout") {
             return new mxFastOrganicLayout(this.graph);
           } else if (
-            this.graph.isTableRow(cell) || this.graph.isTableCell(cell)
+            this.graph.isTableRow(cell) ||
+            this.graph.isTableCell(cell)
           ) {
             return rowLayout;
           } else if (this.graph.isTable(cell)) {
@@ -769,11 +783,11 @@ export class Graph {
   getPageSize() {
     return this.pageVisible
       ? new mxRectangle(
-        0,
-        0,
-        this.pageFormat.width * this.pageScale,
-        this.pageFormat.height * this.pageScale,
-      )
+          0,
+          0,
+          this.pageFormat.width * this.pageScale,
+          this.pageFormat.height * this.pageScale
+        )
       : this.scrollTileSize;
   }
 
@@ -792,22 +806,24 @@ export class Graph {
     } else {
       var x0 = Math.floor(
         Math.ceil(bounds.x / this.view.scale - this.view.translate.x) /
-          size.width,
+          size.width
       );
       var y0 = Math.floor(
         Math.ceil(bounds.y / this.view.scale - this.view.translate.y) /
-          size.height,
+          size.height
       );
-      var w0 = Math.ceil(
-        (Math.floor((bounds.x + bounds.width) / this.view.scale) -
-          this.view.translate.x) /
-          size.width,
-      ) - x0;
-      var h0 = Math.ceil(
-        (Math.floor((bounds.y + bounds.height) / this.view.scale) -
-          this.view.translate.y) /
-          size.height,
-      ) - y0;
+      var w0 =
+        Math.ceil(
+          (Math.floor((bounds.x + bounds.width) / this.view.scale) -
+            this.view.translate.x) /
+            size.width
+        ) - x0;
+      var h0 =
+        Math.ceil(
+          (Math.floor((bounds.y + bounds.height) / this.view.scale) -
+            this.view.translate.y) /
+            size.height
+        ) - y0;
 
       return new mxRectangle(x0, y0, w0, h0);
     }
@@ -894,8 +910,10 @@ export class Graph {
    * Adds Alt+click to select cells behind cells (Shift+Click on Chrome OS).
    */
   isTransparentClickEvent(evt) {
-    return mxEvent.isAltDown(evt) ||
-      (mxClient.IS_CHROMEOS && mxEvent.isShiftDown(evt));
+    return (
+      mxEvent.isAltDown(evt) ||
+      (mxClient.IS_CHROMEOS && mxEvent.isShiftDown(evt))
+    );
   }
 
   /**
@@ -1073,10 +1091,8 @@ export class Graph {
     }
 
     var dF = this.dateFormatCache;
-    var token =
-        /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
-      timezone =
-        /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+    var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
+      timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
       timezoneClip = /[^-+\dA-Z]/g,
       pad = (val, len?) => {
         val = String(val);
@@ -1119,7 +1135,8 @@ export class Graph {
       o = utc ? 0 : date.getTimezoneOffset();
     const tz: any = String(date).match(timezone) || [""];
     const Z = utc ? "UTC" : tz.pop().replace(timezoneClip, "");
-    o = (o > 0 ? "-" : "+") +
+    o =
+      (o > 0 ? "-" : "+") +
       pad(Math.floor(Math.abs(o) / 60) * 100 + (Math.abs(o) % 60), 4);
     const $s: any = (d % 100) - (d % 10) != 10;
     const S = ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : ($s * d) % 10];
@@ -1188,8 +1205,10 @@ export class Graph {
 
         span.appendChild(cb);
 
-        var title = this.convertValueToString(layer) ||
-          mxResources.get("background") || "Background";
+        var title =
+          this.convertValueToString(layer) ||
+          mxResources.get("background") ||
+          "Background";
         span.setAttribute("title", title);
         mxUtils.write(span, title);
         div.appendChild(span);
@@ -1252,7 +1271,7 @@ export class Graph {
           }
 
           result.push(
-            str.substring(last, match.index) + (tmp != null ? tmp : val),
+            str.substring(last, match.index) + (tmp != null ? tmp : val)
           );
           last = match.index + val.length;
         }
@@ -1318,12 +1337,13 @@ export class Graph {
 
     ignoreCellAt = ignoreCellAt ? ignoreCellAt : false;
 
-    var pt = source.geometry.relative && source.parent.geometry != null
-      ? new mxPoint(
-        source.parent.geometry.width * source.geometry.x,
-        source.parent.geometry.height * source.geometry.y,
-      )
-      : new mxPoint(source.geometry.x, source.geometry.y);
+    var pt =
+      source.geometry.relative && source.parent.geometry != null
+        ? new mxPoint(
+            source.parent.geometry.width * source.geometry.x,
+            source.parent.geometry.height * source.geometry.y
+          )
+        : new mxPoint(source.geometry.x, source.geometry.y);
 
     if (direction == mxConstants.DIRECTION_NORTH) {
       pt.x += source.geometry.width / 2;
@@ -1357,9 +1377,10 @@ export class Graph {
     }
 
     // Checks actual end point of edge for target cell
-    var target = ignoreCellAt || (mxEvent.isControlDown(evt) && !forceClone)
-      ? null
-      : this.getCellAt(dx + pt.x * s, dy + pt.y * s);
+    var target =
+      ignoreCellAt || (mxEvent.isControlDown(evt) && !forceClone)
+        ? null
+        : this.getCellAt(dx + pt.x * s, dy + pt.y * s);
 
     if (this.model.isAncestor(target, source)) {
       target = null;
@@ -1415,7 +1436,8 @@ export class Graph {
     }
 
     if (
-      target == source || this.model.isEdge(target) ||
+      target == source ||
+      this.model.isEdge(target) ||
       !this.isCellConnectable(target)
     ) {
       target = null;
@@ -1462,18 +1484,20 @@ export class Graph {
         layout = this.layoutManager.getLayout(this.model.getParent(source));
       }
 
-      var edge = (mxEvent.isControlDown(evt) && duplicate) ||
-        (target == null && layout != null &&
+      var edge =
+        (mxEvent.isControlDown(evt) && duplicate) ||
+        (target == null &&
+          layout != null &&
           layout.constructor == mxStackLayout)
-        ? null
-        : this.insertEdge(
-          this.model.getParent(source),
-          null,
-          "",
-          source,
-          realTarget,
-          this.createCurrentEdgeStyle(),
-        );
+          ? null
+          : this.insertEdge(
+              this.model.getParent(source),
+              null,
+              "",
+              source,
+              realTarget,
+              this.createCurrentEdgeStyle()
+            );
 
       // Inserts edge before source
       if (edge != null && this.connectionHandler.insertBeforeSource) {
@@ -1617,7 +1641,8 @@ export class Graph {
       // Removes links with leading javascript: protocol
       // TODO: Check more possible attack vectors
       if (
-        link != null && link.toLowerCase().substring(0, 11) === "javascript:"
+        link != null &&
+        link.toLowerCase().substring(0, 11) === "javascript:"
       ) {
         link = link.substring(11);
       }
@@ -1654,7 +1679,9 @@ export class Graph {
    */
   updateAlternateBounds(cell, geo, willCollapse) {
     if (
-      cell != null && geo != null && this.layoutManager != null &&
+      cell != null &&
+      geo != null &&
+      this.layoutManager != null &&
       geo.alternateBounds != null
     ) {
       var layout = this.layoutManager.getLayout(this.model.getParent(cell));
@@ -1668,18 +1695,21 @@ export class Graph {
       }
     }
 
-    mxGraph.prototype.updateAlternateBounds.apply(
-      this,
-      [cell, geo, willCollapse],
-    );
+    mxGraph.prototype.updateAlternateBounds.apply(this, [
+      cell,
+      geo,
+      willCollapse,
+    ]);
   }
 
   /**
    * Adds Shift+collapse/expand and size management for folding inside stack
    */
   isMoveCellsEvent(evt, state) {
-    return mxEvent.isShiftDown(evt) ||
-      mxUtils.getValue(state.style, "moveCells", "0") == "1";
+    return (
+      mxEvent.isShiftDown(evt) ||
+      mxUtils.getValue(state.style, "moveCells", "0") == "1"
+    );
   }
 
   /**
@@ -1696,10 +1726,13 @@ export class Graph {
       this.model.beginUpdate();
 
       try {
-        mxGraph.prototype.foldCells.apply(
-          this,
-          [collapse, recurse, cells, checkFoldable, evt],
-        );
+        mxGraph.prototype.foldCells.apply(this, [
+          collapse,
+          recurse,
+          cells,
+          checkFoldable,
+          evt,
+        ]);
 
         // Resizes all parent stacks if alt is not pressed
         if (this.layoutManager != null) {
@@ -1759,11 +1792,11 @@ export class Graph {
             geo = geo.clone();
             geo.translate(
               Math.round(
-                dx * Math.max(0, Math.min(1, (tmp.x - state.x) / state.width)),
+                dx * Math.max(0, Math.min(1, (tmp.x - state.x) / state.width))
               ),
               Math.round(
-                dy * Math.max(0, Math.min(1, (tmp.y - state.y) / state.height)),
-              ),
+                dy * Math.max(0, Math.min(1, (tmp.y - state.y) / state.height))
+              )
             );
             this.model.setGeometry(cells[i], geo);
           }
@@ -1803,11 +1836,11 @@ export class Graph {
             pgeo = pgeo.clone();
 
             if (layout.horizontal) {
-              pgeo.width += dx +
-                Math.min(0, pstate.width / this.view.scale - pgeo.width);
+              pgeo.width +=
+                dx + Math.min(0, pstate.width / this.view.scale - pgeo.width);
             } else {
-              pgeo.height += dy +
-                Math.min(0, pstate.height / this.view.scale - pgeo.height);
+              pgeo.height +=
+                dy + Math.min(0, pstate.height / this.view.scale - pgeo.height);
             }
 
             this.model.setGeometry(parent, pgeo);
@@ -1974,8 +2007,8 @@ export class Graph {
    * Overridden to limit zoom to 1% - 16.000%.
    */
   zoom(factor, center?) {
-    factor = Math.max(0.01, Math.min(this.view.scale * factor, 160)) /
-      this.view.scale;
+    factor =
+      Math.max(0.01, Math.min(this.view.scale * factor, 160)) / this.view.scale;
     mxGraph.prototype.zoom.apply(this, [factor, center]);
   }
 
@@ -1992,8 +2025,9 @@ export class Graph {
       // Uses to 5% zoom steps for better grid rendering in webkit
       // and to avoid rounding errors for zoom steps
       this.zoom(
-        Math.round(this.view.scale * this.zoomFactor * 20) / 20 /
-          this.view.scale,
+        Math.round(this.view.scale * this.zoomFactor * 20) /
+          20 /
+          this.view.scale
       );
     }
   }
@@ -2011,9 +2045,10 @@ export class Graph {
       // Uses to 5% zoom steps for better grid rendering in webkit
       // and to avoid rounding errors for zoom steps
       this.zoom(
-        Math.round(this.view.scale * (1 / this.zoomFactor) * 20) / 20 /
+        Math.round(this.view.scale * (1 / this.zoomFactor) * 20) /
+          20 /
           this.view.scale,
-        null,
+        null
       );
     }
   }
@@ -2065,9 +2100,8 @@ export class Graph {
 
         for (var i = 0; i < temp.length; i++) {
           if (temp[i].name != "link" || !this.isCustomLink(temp[i].value)) {
-            tip += (temp[i].name != "link"
-              ? "<b>" + temp[i].name + ":</b> "
-              : "") +
+            tip +=
+              (temp[i].name != "link" ? "<b>" + temp[i].name + ":</b> " : "") +
               mxUtils.htmlEntities(temp[i].value) +
               "\n";
           }
@@ -2157,7 +2191,7 @@ export class Graph {
         0,
         colCount * w,
         rowCount * h,
-        "html=1;whiteSpace=wrap;container=1;collapsible=0;childLayout=tableLayout;",
+        "html=1;whiteSpace=wrap;container=1;collapsible=0;childLayout=tableLayout;"
       ),
       this.createParent(
         this.createVertex(
@@ -2168,7 +2202,7 @@ export class Graph {
           0,
           colCount * w,
           h,
-          "html=1;whiteSpace=wrap;container=1;collapsible=0;points=[[0,0.5],[1,0.5]];part=1;",
+          "html=1;whiteSpace=wrap;container=1;collapsible=0;points=[[0,0.5],[1,0.5]];part=1;"
         ),
         this.createVertex(
           null,
@@ -2178,11 +2212,11 @@ export class Graph {
           0,
           w,
           h,
-          "html=1;whiteSpace=wrap;connectable=0;part=1;",
+          "html=1;whiteSpace=wrap;connectable=0;part=1;"
         ),
-        colCount,
+        colCount
       ),
-      rowCount,
+      rowCount
     );
   }
 
@@ -2193,7 +2227,8 @@ export class Graph {
     w = w != null ? w : 120;
     h = h != null ? h : 120;
 
-    var s = "swimlane;html=1;whiteSpace=wrap;container=1;" +
+    var s =
+      "swimlane;html=1;whiteSpace=wrap;container=1;" +
       "collapsible=0;recursiveResize=0;expand=0;";
 
     var table = this.createVertex(
@@ -2204,7 +2239,7 @@ export class Graph {
       0,
       colCount * w,
       rowCount * h,
-      s + "childLayout=tableLayout;",
+      s + "childLayout=tableLayout;"
     );
     var row = this.createVertex(
       null,
@@ -2214,7 +2249,7 @@ export class Graph {
       0,
       colCount * w,
       h,
-      s + "horizontal=0;points=[[0,0.5],[1,0.5]];part=1;",
+      s + "horizontal=0;points=[[0,0.5],[1,0.5]];part=1;"
     );
     table.insert(
       this.createParent(
@@ -2227,10 +2262,10 @@ export class Graph {
           0,
           w,
           h,
-          s + "connectable=0;part=1;",
+          s + "connectable=0;part=1;"
         ),
-        colCount,
-      ),
+        colCount
+      )
     );
 
     if (rowCount > 1) {
@@ -2246,11 +2281,11 @@ export class Graph {
             0,
             w,
             h,
-            s + "connectable=0;part=1;startSize=0;",
+            s + "connectable=0;part=1;startSize=0;"
           ),
-          colCount,
+          colCount
         ),
-        rowCount - 1,
+        rowCount - 1
       );
     } else {
       return table;
@@ -2292,8 +2327,8 @@ export class Graph {
         mxUtils.getValue(
           style,
           mxConstants.STYLE_STARTSIZE,
-          mxConstants.DEFAULT_STARTSIZE,
-        ),
+          mxConstants.DEFAULT_STARTSIZE
+        )
       );
       var flipH = mxUtils.getValue(style, mxConstants.STYLE_FLIPH, 0) == 1;
       var flipV = mxUtils.getValue(style, mxConstants.STYLE_FLIPV, 0) == 1;
@@ -2307,7 +2342,7 @@ export class Graph {
       var dir = mxUtils.getValue(
         style,
         mxConstants.STYLE_DIRECTION,
-        mxConstants.DIRECTION_EAST,
+        mxConstants.DIRECTION_EAST
       );
 
       if (dir == mxConstants.DIRECTION_NORTH) {
@@ -2631,7 +2666,7 @@ export class Graph {
     const cellMapping = this.createCellMapping(
       cloneMap,
       this.createCellLookup(cells, null),
-      null,
+      null
     );
     this.updateCustomLinks(cellMapping, clones);
 
@@ -2645,16 +2680,21 @@ export class Graph {
   moveCells(cells, dx, dy, clone, target, evt, mapping) {
     var graphMoveCells = Graph.prototype.moveCells;
     mapping = mapping != null ? mapping : new Object();
-    var result = graphMoveCells.apply(
-      this,
-      [cells, dx, dy, clone, target, evt, mapping],
-    );
+    var result = graphMoveCells.apply(this, [
+      cells,
+      dx,
+      dy,
+      clone,
+      target,
+      evt,
+      mapping,
+    ]);
 
     if (clone) {
       const cellMapping = this.createCellMapping(
         mapping,
         this.createCellLookup(cells, null),
-        null,
+        null
       );
       this.updateCustomLinks(cellMapping, result);
     }
@@ -2702,8 +2742,8 @@ export class Graph {
                 tmp.length > 2 ? tmp[2] != "0" : true,
                 undefined,
                 tmp.length > 3 ? tmp[3] : 0,
-                tmp.length > 4 ? tmp[4] : 0,
-              ),
+                tmp.length > 4 ? tmp[4] : 0
+              )
             );
           }
         } catch (e) {
@@ -2754,11 +2794,12 @@ export class Graph {
       var elbow = mxUtils.getValue(
         style,
         mxConstants.STYLE_ELBOW,
-        mxConstants.ELBOW_HORIZONTAL,
+        mxConstants.ELBOW_HORIZONTAL
       );
-      var value = elbow == mxConstants.ELBOW_HORIZONTAL
-        ? mxConstants.ELBOW_VERTICAL
-        : mxConstants.ELBOW_HORIZONTAL;
+      var value =
+        elbow == mxConstants.ELBOW_HORIZONTAL
+          ? mxConstants.ELBOW_VERTICAL
+          : mxConstants.ELBOW_HORIZONTAL;
       this.setCellStyles(mxConstants.STYLE_ELBOW, value, [edge]);
     }
   }
@@ -2869,10 +2910,12 @@ export class Graph {
       }
     }
 
-    return mxGraph.prototype.getDropTarget.apply(
-      this,
-      [cells, evt, cell, clone],
-    );
+    return mxGraph.prototype.getDropTarget.apply(this, [
+      cells,
+      evt,
+      cell,
+      clone,
+    ]);
   }
 
   /**
@@ -2906,15 +2949,19 @@ export class Graph {
       var scale = this.view.scale;
       label.geometry.offset = new mxPoint(
         Math.round((x - pt2.x) / scale),
-        Math.round((y - pt2.y) / scale),
+        Math.round((y - pt2.y) / scale)
       );
     } else {
       var tr = this.view.translate;
       label.geometry.width = 40;
       label.geometry.height = 20;
-      label.geometry.x = Math.round(x / this.view.scale) - tr.x -
+      label.geometry.x =
+        Math.round(x / this.view.scale) -
+        tr.x -
         (state != null ? state.origin.x : 0);
-      label.geometry.y = Math.round(y / this.view.scale) - tr.y -
+      label.geometry.y =
+        Math.round(y / this.view.scale) -
+        tr.y -
         (state != null ? state.origin.y : 0);
       label.style += "autosize=1;";
     }
@@ -2973,7 +3020,8 @@ export class Graph {
    * @returns
    */
   isCloneEvent(evt) {
-    return (mxClient.IS_MAC && mxEvent.isMetaDown(evt)) ||
-      mxEvent.isControlDown(evt);
+    return (
+      (mxClient.IS_MAC && mxEvent.isMetaDown(evt)) || mxEvent.isControlDown(evt)
+    );
   }
 }

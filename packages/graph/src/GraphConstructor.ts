@@ -1,6 +1,4 @@
 import mx from "@mxgraph-app/mx";
-import pako from "pako";
-import Base64 from "Base64";
 const {
   mxRubberband,
   mxConnectionHandler,
@@ -10,23 +8,17 @@ const {
   mxGuide,
   mxEdgeHandler,
   mxEdgeStyle,
-  mxObjectIdentity,
   mxVertexHandler,
   mxRectangle,
   mxCellRenderer,
-  mxEventObject,
   mxConstants,
   mxClient,
-  mxResources,
   mxPoint,
   mxEvent,
-  mxGraph,
   mxUtils,
 } = mx;
 
-import resources from "resources/resources";
 import { Graph } from "./Graph";
-// const { urlParams, IMAGE_PATH } = resources
 
 export class GraphConstructor {
   container: any;
@@ -34,7 +26,6 @@ export class GraphConstructor {
   renderHint: any;
   stylesheet: any;
   themes: any;
-  standalone?: boolean;
   currentEdgeStyle: any;
   currentVertexStyle: any;
   defaultEdgeStyle: any;
@@ -157,14 +148,6 @@ export class GraphConstructor {
 
     // Implements a listener for hover and click handling on edges
     if (this.edgeMode) {
-      var start: any = {
-        point: null,
-        event: null,
-        state: null,
-        handle: null,
-        selected: false,
-      };
-
       // Uses this event to process mouseDown to check the selection state before it is changed
       this.addListener(mxEvent.FIRE_MOUSE_EVENT, (sender, evt) => {
         if (evt.getProperty("eventName") == "mouseDown" && this.isEnabled()) {

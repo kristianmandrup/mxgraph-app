@@ -9,8 +9,8 @@ const {
   mxRectangle,
   mxPoint,
 } = mx;
-import resources from "resources/resources";
-const { urlParams, IMAGE_PATH } = resources;
+import resources from "@mxgraph-app/resources";
+const { urlParams } = resources;
 
 /**
  * Implements zoom and offset via CSS transforms. This is currently only used
