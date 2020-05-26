@@ -1,6 +1,5 @@
 import mx from "@mxgraph-app/mx";
 const { mxGeometry, mxCell } = mx;
-
 import { MiscPalette } from "./MiscPalette";
 
 export class MiscEntries extends MiscPalette {

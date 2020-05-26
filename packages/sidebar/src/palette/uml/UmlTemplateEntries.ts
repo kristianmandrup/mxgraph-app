@@ -11,7 +11,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Object",
       null,
       null,
-      dt + "object instance"
+      dt + "object instance",
     );
   }
 
@@ -25,7 +25,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Interface",
       null,
       null,
-      dt + "interface object instance annotated annotation"
+      dt + "interface object instance annotated annotation",
     );
   }
 
@@ -39,7 +39,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Title",
       null,
       null,
-      dt + "title label"
+      dt + "title label",
     );
   }
 
@@ -53,7 +53,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Block",
       null,
       null,
-      dt + "block"
+      dt + "block",
     );
   }
 
@@ -67,7 +67,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Module",
       null,
       null,
-      dt + "module component"
+      dt + "module component",
     );
   }
 
@@ -81,7 +81,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Package",
       null,
       null,
-      dt + "package"
+      dt + "package",
     );
   }
 
@@ -96,7 +96,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Object",
       null,
       null,
-      dt + "object instance"
+      dt + "object instance",
     );
   }
   get erEntityTabel() {
@@ -111,7 +111,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Entity",
       null,
       null,
-      "er entity table"
+      "er entity table",
     );
   }
 
@@ -124,7 +124,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Provided/Required Interface",
       null,
       null,
-      "uml provided required interface lollipop notation"
+      "uml provided required interface lollipop notation",
     );
   }
 
@@ -137,7 +137,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Boundary Object",
       null,
       null,
-      "uml boundary object"
+      "uml boundary object",
     );
   }
   get entityObject() {
@@ -149,7 +149,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Entity Object",
       null,
       null,
-      "uml entity object"
+      "uml entity object",
     );
   }
   get controlObject() {
@@ -161,7 +161,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Control Object",
       null,
       null,
-      "uml control object"
+      "uml control object",
     );
   }
 
@@ -174,7 +174,7 @@ export class UmlTemplateEntries extends UmlPalette {
       "Actor",
       false,
       null,
-      "uml actor"
+      "uml actor",
     );
   }
 
@@ -187,7 +187,281 @@ export class UmlTemplateEntries extends UmlPalette {
       "Use Case",
       null,
       null,
-      "uml use case usecase"
+      "uml use case usecase",
+    );
+  }
+
+  get activityStateEnd() {
+    return this.createVertexTemplateEntry(
+      "ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#ff0000;",
+      30,
+      30,
+      "",
+      "End",
+      null,
+      null,
+      "uml activity state end",
+    );
+  }
+
+  get lifeline() {
+    return this.createVertexTemplateEntry(
+      "shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;",
+      100,
+      300,
+      ":Object",
+      "Lifeline",
+      null,
+      null,
+      "uml sequence participant lifeline",
+    );
+  }
+
+  get actorLifeline() {
+    return this.createVertexTemplateEntry(
+      "shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=36;labelBackgroundColor=#ffffff;outlineConnect=0;",
+      20,
+      300,
+      "",
+      "Actor Lifeline",
+      null,
+      null,
+      "uml sequence participant lifeline actor",
+    );
+  }
+
+  get boundaryLifeline() {
+    return this.createVertexTemplateEntry(
+      "shape=umlLifeline;participant=umlBoundary;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=36;labelBackgroundColor=#ffffff;outlineConnect=0;",
+      50,
+      300,
+      "",
+      "Boundary Lifeline",
+      null,
+      null,
+      "uml sequence participant lifeline boundary",
+    );
+  }
+
+  get entityLifeline() {
+    return this.createVertexTemplateEntry(
+      "shape=umlLifeline;participant=umlEntity;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=36;labelBackgroundColor=#ffffff;outlineConnect=0;",
+      40,
+      300,
+      "",
+      "Entity Lifeline",
+      null,
+      null,
+      "uml sequence participant lifeline entity",
+    );
+  }
+
+  get controlLifeline() {
+    return this.createVertexTemplateEntry(
+      "shape=umlLifeline;participant=umlControl;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=36;labelBackgroundColor=#ffffff;outlineConnect=0;",
+      40,
+      300,
+      "",
+      "Control Lifeline",
+      null,
+      null,
+      "uml sequence participant lifeline control",
+    );
+  }
+
+  get frame() {
+    return this.createVertexTemplateEntry(
+      "shape=umlFrame;whiteSpace=wrap;html=1;",
+      300,
+      200,
+      "frame",
+      "Frame",
+      null,
+      null,
+      "uml sequence frame",
+    );
+  }
+
+  get destruction() {
+    return this.createVertexTemplateEntry(
+      "shape=umlDestroy;whiteSpace=wrap;html=1;strokeWidth=3;",
+      30,
+      30,
+      "",
+      "Destruction",
+      null,
+      null,
+      "uml sequence destruction destroy",
+    );
+  }
+
+  get note() {
+    return this.createVertexTemplateEntry(
+      "shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;spacingTop=-6;",
+      100,
+      70,
+      "Note",
+      "Note",
+      null,
+      null,
+      "uml note",
+    );
+  }
+
+  get sequenceActivation() {
+    return this.createVertexTemplateEntry(
+      "html=1;points=[];perimeter=orthogonalPerimeter;",
+      10,
+      80,
+      "",
+      "Activation",
+      null,
+      null,
+      "uml sequence activation",
+    );
+  }
+
+  get dispatchMessage1() {
+    return this.createEdgeTemplateEntry(
+      "html=1;verticalAlign=bottom;startArrow=oval;startFill=1;endArrow=block;startSize=8;",
+      60,
+      0,
+      "dispatch",
+      "Found Message 1",
+      null,
+      "uml sequence message call invoke dispatch",
+    );
+  }
+
+  get dispatchMessage2() {
+    return this.createEdgeTemplateEntry(
+      "html=1;verticalAlign=bottom;startArrow=circle;startFill=1;endArrow=open;startSize=6;endSize=8;",
+      80,
+      0,
+      "dispatch",
+      "Found Message 2",
+      null,
+      "uml sequence message call invoke dispatch",
+    );
+  }
+
+  get dispatchMessage() {
+    return this.createEdgeTemplateEntry(
+      "html=1;verticalAlign=bottom;endArrow=block;",
+      80,
+      0,
+      "dispatch",
+      "Message",
+      null,
+      "uml sequence message call invoke dispatch",
+    );
+  }
+
+  get dependencyUse() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=open;endSize=12;dashed=1;html=1;",
+      160,
+      0,
+      "Use",
+      "Dependency",
+      null,
+      "uml dependency use",
+    );
+  }
+
+  get generalization() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=block;endSize=16;endFill=0;html=1;",
+      160,
+      0,
+      "Extends",
+      "Generalization",
+      null,
+      "uml generalization extend",
+    );
+  }
+
+  get association2() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=block;startArrow=block;endFill=1;startFill=1;html=1;",
+      160,
+      0,
+      "",
+      "Association 2",
+      null,
+      "uml association",
+    );
+  }
+
+  get innerClass() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=open;startArrow=circlePlus;endFill=0;startFill=0;endSize=8;html=1;",
+      160,
+      0,
+      "",
+      "Inner Class",
+      null,
+      "uml inner class",
+    );
+  }
+
+  get terminate() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=open;startArrow=cross;endFill=0;startFill=0;endSize=8;startSize=10;html=1;",
+      160,
+      0,
+      "",
+      "Terminate",
+      null,
+      "uml terminate",
+    );
+  }
+
+  get implementation() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=block;dashed=1;endFill=0;endSize=12;html=1;",
+      160,
+      0,
+      "",
+      "Implementation",
+      null,
+      "uml realization implementation",
+    );
+  }
+
+  get aggregation2() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=diamondThin;endFill=0;endSize=24;html=1;",
+      160,
+      0,
+      "",
+      "Aggregation 2",
+      null,
+      "uml aggregation",
+    );
+  }
+
+  get composition2() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=diamondThin;endFill=1;endSize=24;html=1;",
+      160,
+      0,
+      "",
+      "Composition 2",
+      null,
+      "uml composition",
+    );
+  }
+
+  get association3() {
+    return this.createEdgeTemplateEntry(
+      "endArrow=open;endFill=1;endSize=12;html=1;",
+      160,
+      0,
+      "",
+      "Association 3",
+      null,
+      "uml association",
     );
   }
 }
