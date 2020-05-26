@@ -1,21 +1,21 @@
-import { CellCreator } from './shapes/CellCreator'
-import { AbstractShaper } from './shapes/AbstractShaper'
-import { Graph } from 'ui/graph/Graph'
+import { CellCreator } from "./shapes/CellCreator";
+import { AbstractShaper } from "./shapes/AbstractShaper";
+import { Graph } from "ui/graph/Graph";
 
-import mx from 'mx'
-const { mxDictionary } = mx
+import mx from "@mxgraph-app/mx";
+const { mxDictionary } = mx;
 
 export class SidebarEntries extends AbstractShaper {
-  taglist: any[]
-  editorUi: any
+  taglist: any[];
+  editorUi: any;
 
   constructor(cellCreator: any) {
-    super(cellCreator)
-    this.taglist = []
+    super(cellCreator);
+    this.taglist = [];
   }
 
   createCellCreator() {
-    return new CellCreator(this)
+    return new CellCreator(this);
   }
 
   /**
@@ -23,8 +23,8 @@ export class SidebarEntries extends AbstractShaper {
    */
   addDataEntry(tags, width, height, title, data) {
     return this.addEntry(tags, () => {
-      return this.createVertexTemplateFromData(data, width, height, title)
-    })
+      return this.createVertexTemplateFromData(data, width, height, title);
+    });
   }
 
   /**
@@ -33,50 +33,53 @@ export class SidebarEntries extends AbstractShaper {
   addEntries(images) {
     for (var i = 0; i < images.length; i++) {
       const add = (img) => {
-        var data = img.data
-        var tags = img.title != null ? img.title : ''
+        var data = img.data;
+        var tags = img.title != null ? img.title : "";
 
         if (img.tags != null) {
-          tags += ' ' + img.tags
+          tags += " " + img.tags;
         }
 
         if (data != null && tags.length > 0) {
           this.addEntry(tags, () => {
-            data = this.editorUi.convertDataUri(data)
-            var s = 'shape=image;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;'
+            data = this.editorUi.convertDataUri(data);
+            var s =
+              "shape=image;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;";
 
-            if (img.aspect == 'fixed') {
-              s += 'aspect=fixed;'
+            if (img.aspect == "fixed") {
+              s += "aspect=fixed;";
             }
 
             return this.createVertexTemplate(
-              s + 'image=' + data,
+              s + "image=" + data,
               img.w,
               img.h,
-              '',
-              img.title || '',
+              "",
+              img.title || "",
               false,
               false,
               true
-            )
-          })
+            );
+          });
         } else if (img.xml != null && tags.length > 0) {
           this.addEntry(tags, () => {
-            var cells = this.editorUi.stringToCells(Graph.decompress(img.xml, undefined, undefined))
+            var cells = this.editorUi.stringToCells(
+              Graph.decompress(img.xml, undefined, undefined)
+            );
 
             return this.createVertexTemplateFromCells(
               cells,
               img.w,
               img.h,
-              img.title || '',
+              img.title || "",
               true,
               false,
               true
-            )
-          })
+            );
+          });
         }
-      }
-      add(images[i])
+      };
+      add(images[i]);
     }
   }
 
@@ -88,39 +91,39 @@ export class SidebarEntries extends AbstractShaper {
       // Replaces special characters
       var tmp = tags
         .toLowerCase()
-        .replace(/[\/\,\(\)]/g, ' ')
-        .split(' ')
+        .replace(/[\/\,\(\)]/g, " ")
+        .split(" ");
 
       var doAddEntry = (tag) => {
         if (tag != null && tag.length > 1) {
-          var entry = this.taglist[tag]
+          var entry = this.taglist[tag];
 
-          if (typeof entry !== 'object') {
-            entry = { entries: [], dict: new mxDictionary() }
-            this.taglist[tag] = entry
+          if (typeof entry !== "object") {
+            entry = { entries: [], dict: new mxDictionary() };
+            this.taglist[tag] = entry;
           }
 
           // Ignores duplicates
           if (entry.dict.get(fn) == null) {
-            entry.dict.put(fn, fn)
-            entry.entries.push(fn)
+            entry.dict.put(fn, fn);
+            entry.entries.push(fn);
           }
         }
-      }
+      };
 
       for (var i = 0; i < tmp.length; i++) {
-        doAddEntry(tmp[i])
+        doAddEntry(tmp[i]);
 
         // Adds additional entry with removed trailing numbers
-        var normalized = tmp[i].replace(/\.*\d*$/, '')
+        var normalized = tmp[i].replace(/\.*\d*$/, "");
 
         if (normalized != tmp[i]) {
-          doAddEntry(normalized)
+          doAddEntry(normalized);
         }
       }
     }
 
-    return fn
+    return fn;
   }
 
   /**
@@ -128,49 +131,49 @@ export class SidebarEntries extends AbstractShaper {
    */
   searchEntries(searchTerms, count, page, success, error) {
     if (this.taglist != null && searchTerms != null) {
-      var tmp = searchTerms.toLowerCase().split(' ')
-      var dict = new mxDictionary()
-      var max = (page + 1) * count
-      var results: any[] = []
-      var index = 0
+      var tmp = searchTerms.toLowerCase().split(" ");
+      var dict = new mxDictionary();
+      var max = (page + 1) * count;
+      var results: any[] = [];
+      var index = 0;
 
       for (var i = 0; i < tmp.length; i++) {
         if (tmp[i].length > 0) {
-          var entry = this.taglist[tmp[i]]
-          var tmpDict = new mxDictionary()
+          var entry = this.taglist[tmp[i]];
+          var tmpDict = new mxDictionary();
 
           if (entry != null) {
-            var arr = entry.entries
-            results = []
+            var arr = entry.entries;
+            results = [];
 
             for (var j = 0; j < arr.length; j++) {
-              var entry = arr[j]
+              var entry = arr[j];
 
               // NOTE Array does not contain duplicates
               if ((index == 0) == (dict.get(entry) == null)) {
-                tmpDict.put(entry, entry)
-                results.push(entry)
+                tmpDict.put(entry, entry);
+                results.push(entry);
 
                 if (i == tmp.length - 1 && results.length == max) {
-                  success(results.slice(page * count, max), max, true, tmp)
+                  success(results.slice(page * count, max), max, true, tmp);
 
-                  return
+                  return;
                 }
               }
             }
           } else {
-            results = []
+            results = [];
           }
 
-          dict = tmpDict
-          index++
+          dict = tmpDict;
+          index++;
         }
       }
 
-      var len = results.length
-      success(results.slice(page * count, (page + 1) * count), len, false, tmp)
+      var len = results.length;
+      success(results.slice(page * count, (page + 1) * count), len, false, tmp);
     } else {
-      success([], null, null, tmp)
+      success([], null, null, tmp);
     }
   }
 }
