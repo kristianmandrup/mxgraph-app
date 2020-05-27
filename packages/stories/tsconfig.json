@@ -1,5 +1,9 @@
 {
   "include": ["src"],
   "extends": "../../tsconfig.json",
-  "references": [{ "path": "../menus" }, { "path": "../dialogs" }]
+  "references": [
+    { "path": "../menus" },
+    { "path": "../dialogs" },
+    { "path": "../sidebar" }
+  ]
 }

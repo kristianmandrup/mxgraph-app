@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@mxgraph-app/menus": "*",
-    "@mxgraph-app/dialogs": "*"
+    "@mxgraph-app/dialogs": "*",
+    "@mxgraph-app/sidebar": "*"
   },
   "peerDependencies": {
     "react": "^16.8.0",
