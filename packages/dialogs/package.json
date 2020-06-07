@@ -23,6 +23,7 @@
     "react-dom": "^16.8.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^7.10.1",
     "@mxgraph-app/mx": "*",
     "@mxgraph-app/resources": "*"
   },

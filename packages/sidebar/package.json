@@ -25,7 +25,11 @@
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@testing-library/dom": "^7.10.1",
+    "@mxgraph-app/mx": "*",
+    "@mxgraph-app/resources": "*"
+  },
   "scripts": {
     "start": "tsc -w --preserveWatchOutput"
   }

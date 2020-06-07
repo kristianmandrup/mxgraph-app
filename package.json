@@ -8,6 +8,13 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "commit": "npx git-cz",
+    "l:version": "lerna version --conventional-commits --yes",
+    "l:test": "lerna run test --since",
+    "l:test:all": "lerna run test",
+    "l:diff": "lerna diff",
+    "l:test:toolbar": "lerna run test --scope=@mxgraph-app/toolbar",
+    "l:test:menus": "lerna run test --scope=@mxgraph-app/menus",
     "prestart": "yarn build",
     "start": "run-p start:*",
     "start:stories": "lerna run start --stream --scope=@mxgraph-app/stories",
@@ -25,6 +32,7 @@
     "Base64": "^1.1.0"
   },
   "devDependencies": {
+    "commitizen": "^4.1.2",
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",

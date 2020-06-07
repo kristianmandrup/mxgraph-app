@@ -41,13 +41,13 @@
   "references": [
     { "path": "packages/actions" },
     { "path": "packages/dialogs" },
-    // { "path": "packages/editor" },
+    { "path": "packages/editor" },
     { "path": "packages/format" },
-    // { "path": "packages/graph" },
+    { "path": "packages/graph" },
     { "path": "packages/menus" },
     { "path": "packages/mx" },
     { "path": "packages/resources" },
-    // { "path": "packages/sidebar" },
+    { "path": "packages/sidebar" },
     { "path": "packages/toolbar" }
   ]
 }

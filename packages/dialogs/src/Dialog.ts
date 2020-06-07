@@ -1,5 +1,18 @@
 import mx from "@mxgraph-app/mx";
 import resources from "@mxgraph-app/resources";
+
+type DialogOpts = {
+  w?;
+  h?;
+  modal?;
+  closable?;
+  onClose?;
+  noScroll?;
+  transparent?;
+  onResize?;
+  ignoreBgClick?;
+};
+
 const {
   mxEventObject,
   mxEvent,
@@ -41,7 +54,7 @@ export class Dialog {
   h: any;
   div: any;
 
-  getPosition(left, top, w, h): any {
+  getPosition(_left, _top, _w, _h): any {
     return {};
   }
 
@@ -90,19 +103,18 @@ export class Dialog {
    */
   bgOpacity = 80;
 
-  constructor(
-    editorUi,
-    elt,
-    w,
-    h,
-    modal,
-    closable,
-    onClose,
-    noScroll,
-    transparent,
-    onResize,
-    ignoreBgClick
-  ) {
+  constructor(editorUi, elt, opts: DialogOpts = {}) {
+    let {
+      w,
+      h,
+      modal,
+      closable,
+      onClose,
+      noScroll,
+      transparent,
+      // onResize,
+      ignoreBgClick,
+    } = opts;
     var dx = 0;
 
     if (
@@ -117,8 +129,8 @@ export class Dialog {
     w += dx;
     h += dx;
 
-    var w0 = w;
-    var h0 = h;
+    // var w0 = w;
+    // var h0 = h;
 
     var ds = mxUtils.getDocumentSize();
 
@@ -208,11 +220,16 @@ export class Dialog {
       if (!ignoreBgClick) {
         var mouseDownSeen = false;
 
-        mxEvent.addGestureListeners(this.bg, (evt) => {
-          mouseDownSeen = true;
-        }),
+        mxEvent.addGestureListeners(
+          this.bg,
+          (_evt) => {
+            mouseDownSeen = true;
+          },
+          undefined,
+          undefined
+        ),
           null,
-          (evt) => {
+          (_evt) => {
             if (mouseDownSeen) {
               editorUi.hideDialog(true);
               mouseDownSeen = false;

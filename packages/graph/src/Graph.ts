@@ -2,6 +2,9 @@ import mx from "@mxgraph-app/mx";
 import pako from "pako";
 import Base64 from "Base64";
 import html_sanitize from "sanitize-html";
+
+type GraphOpts = { renderHint?; stylesheet?; themes?; standalone? };
+
 const {
   mxGeometry,
   mxCell,
@@ -135,7 +138,8 @@ export class Graph {
    * Graph inherits from mxGraph
    */
   // mxUtils.extend(Graph, mxGraph);
-  constructor(container, model, renderHint, stylesheet, themes?, standalone?) {
+  constructor(container, model, opts: GraphOpts) {
+    const { renderHint, stylesheet, themes, standalone } = opts;
     new GraphInitializer().create(
       container,
       model,
