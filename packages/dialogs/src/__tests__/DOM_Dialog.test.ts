@@ -1,4 +1,4 @@
-import { Sidebar } from "../src";
+import { Dialog } from "..";
 // import // getByLabelText,
 // getByText,
 // getByTestId,
@@ -11,12 +11,12 @@ import { Sidebar } from "../src";
 import "@testing-library/jest-dom/extend-expect";
 
 test("examples of some things", async () => {
-  const editorElem = document.createElement("editor");
-  const sidebar = new Sidebar({}, editorElem);
-  const { container } = sidebar;
+  const elem = document.createElement("dialog");
+  const dialog = new Dialog({}, elem, {});
+  const { container } = dialog;
   // getByTestId and queryByTestId are an escape hatch to get elements
   // by a test id (could also attempt to get this element by its text)
-  expect(container).toBe(editorElem);
+  expect(container).toBe(elem);
   // jest snapshots work great with regular DOM nodes!
   expect(container).toMatchSnapshot();
 });

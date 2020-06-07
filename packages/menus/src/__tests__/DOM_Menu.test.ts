@@ -1,4 +1,4 @@
-import { MenuManager } from "../src";
+import { MenuManager } from "..";
 import // getByLabelText,
 // getByText,
 // getByTestId,

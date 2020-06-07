@@ -1,4 +1,4 @@
-import { Graph } from "../src";
+import { Graph } from "..";
 // import // getByLabelText,
 // getByText,
 // getByTestId,
